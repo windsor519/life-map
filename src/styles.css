@@ -737,7 +737,7 @@ input:focus {
   white-space: nowrap;
 }
 
-.weekly-calendar {
+.seasonal-calendar {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: clamp(0.35rem, 0.85vw, 0.65rem);
@@ -791,6 +791,18 @@ input:focus {
 .day-decisions {
   display: grid;
   gap: 0.55rem;
+}
+
+.season-step-note {
+  margin: -0.15rem 0 0.15rem;
+  color: #b9c6df;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.season-step.one-off {
+  border-color: rgba(251, 191, 36, 0.28);
+  background: rgba(63, 36, 10, 0.34);
 }
 
 .decision-card {
@@ -1014,7 +1026,7 @@ input:focus {
 }
 
 @media (max-width: 760px) {
-  .weekly-calendar {
+  .seasonal-calendar {
     gap: 0.28rem;
   }
 
@@ -1073,7 +1085,7 @@ input:focus {
   }
 }
 
-.weekly-summary-card {
+.seasonal-summary-card {
   isolation: isolate;
   overflow: hidden;
   background:
@@ -1547,11 +1559,13 @@ input:focus {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
 .music-toggle {
   background: linear-gradient(135deg, rgba(20, 184, 166, 0.28), rgba(99, 102, 241, 0.28));
 }
 
-.weekly-calendar {
+.seasonal-calendar {
   grid-template-columns: repeat(7, minmax(190px, 1fr));
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -1633,7 +1647,7 @@ input:focus {
 }
 
 @media (max-width: 680px) {
-  .weekly-calendar {
+  .seasonal-calendar {
     grid-template-columns: repeat(7, minmax(210px, 78vw));
   }
 }

@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
+import { WEEKS_PER_YEAR, buildSeasonSchedule, getNextSeasonState, getSeasonName, scaleEffects } from "./seasonModel.js";
 
 const STORAGE_KEY = "life-map-game";
-const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const decisionsPerDay = [2, 3, 4, 2, 3, 5, 2];
 const severityConfig = {
   minor: { label: "Minor", icon: "·" },
   moderate: { label: "Moderate", icon: "◆" },
@@ -37,7 +36,7 @@ const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
 
 const legacySkillConfig = {
-  grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
+  grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future seasons." },
   wellness: { label: "Wellness", icon: "🌿", description: "Carries forward healthier habits after a bad ending." },
   bonds: { label: "Bonds", icon: "💞", description: "Keeps a little relationship wisdom between lives." },
   parenting: { label: "Parenting", icon: "🧸", description: "Saves family lessons for the next run." },
@@ -166,46 +165,22 @@ const getRandomEventId = (excludeId) => {
 };
 
 const getSeverity = (event) => event.severity ?? "minor";
-const getRandomChoice = (eventSeed, week, dayIndex, decisionIndex, choices) => {
-  const choiceIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex, "choice") * choices.length);
+const getRandomChoice = (eventSeed, season, stepIndex, decisionIndex, choices) => {
+  const choiceIndex = Math.floor(seededRandom(eventSeed, season, stepIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
 };
-const getNextWeekState = (week, age) => {
-  const nextWeek = week === 52 ? 1 : week + 1;
 
-  return {
-    age: week === 52 ? age + 1 : age,
-    month: Math.min(12, Math.ceil(nextWeek / 4.333)),
-    week: nextWeek
-  };
-};
-
-const surpriseEvents = events.filter((event) => event.surprise);
-const getDecoratedEvent = (event, eventSeed, week, dayIndex, decisionIndex) => ({
+const getDecoratedEvent = (event) => ({
   ...event,
   severity: getSeverity(event),
-  key: `${eventSeed}-${week}-${dayIndex}-${decisionIndex}-${event.id}`,
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getWeekSchedule = (week, eventSeed) => {
-  const surpriseDayIndex = Math.floor(seededRandom(eventSeed, week, "surprise-day") * dayNames.length);
-  const surpriseDecisionIndex = Math.floor(seededRandom(eventSeed, week, "surprise-decision") * decisionsPerDay[surpriseDayIndex]);
-  const surpriseEvent = surpriseEvents.length > 0
-    ? surpriseEvents[Math.floor(seededRandom(eventSeed, week, "surprise-event") * surpriseEvents.length)]
-    : null;
-
-  return dayNames.map((day, dayIndex) => ({
-    day,
-    decisions: Array.from({ length: decisionsPerDay[dayIndex] }, (_, decisionIndex) => {
-      const useSurpriseEvent = surpriseEvent && dayIndex === surpriseDayIndex && decisionIndex === surpriseDecisionIndex;
-      const eventIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex) * events.length);
-      const event = useSurpriseEvent ? surpriseEvent : events[eventIndex];
-
-      return getDecoratedEvent(event, eventSeed, week, dayIndex, decisionIndex);
-    })
+const getDecoratedSeasonSchedule = (week, eventSeed) =>
+  buildSeasonSchedule({ events, seed: eventSeed, week }).map((step) => ({
+    ...step,
+    decisions: step.decisions.map((decision) => getDecoratedEvent(decision))
   }));
-};
 
 const summaryCopy = {
   chaos: {
@@ -247,7 +222,7 @@ const summaryCopy = {
   survived: {
     mood: "😵‍💫",
     headline: "You made it through somehow",
-    joke: "No one knows how, but the week has legally ended.",
+    joke: "No one knows how, but the season has legally ended.",
     award: "Emotional Support Calendar Needed"
   }
 };
@@ -268,11 +243,11 @@ const getLifeWeather = (deltas) => {
   if (deltas.health >= 8) return "Sunny with gains and suspiciously clean sneakers 💪";
   if (deltas.marriage >= 8) return "Warm rom-com breeze from the relationship department 💞";
   if (deltas.children >= 8) return "High-pressure family hugs with snack gusts 🌱";
-  return "Partly chaotic, clearing by next Monday 😵‍💫";
+  return "Partly chaotic, clearing before next season 😵‍💫";
 };
 
-const createWeeklySummary = ({ previousGame, nextState, highlights = [] }) => {
-  const startStats = previousGame.weekStartStats ?? captureStats(previousGame);
+const createSeasonalSummary = ({ previousGame, nextState, highlights = [] }) => {
+  const startStats = previousGame.seasonStartStats ?? captureStats(previousGame);
   const endStats = captureStats(nextState);
   const deltas = summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: endStats[key] - (startStats[key] ?? previousGame[key] ?? 0) }), {});
   const tone = getSummaryTone(deltas);
@@ -281,6 +256,7 @@ const createWeeklySummary = ({ previousGame, nextState, highlights = [] }) => {
   return {
     id: `${previousGame.eventSeed}-${previousGame.week}-${Date.now()}`,
     week: previousGame.week,
+    seasonName: getSeasonName(previousGame.week),
     age: previousGame.age,
     deltas,
     highlights: highlights.slice(-3),
@@ -356,7 +332,7 @@ const buildNextLegacy = (legacy, finalGame) => {
     ),
     lastRun: {
       age: finalGame.age,
-      week: finalGame.week,
+      season: finalGame.week,
       stats: captureStats(finalGame),
       reason: finalGame.gameOverReason ?? getGameOverReason(finalGame)
     }
@@ -563,13 +539,13 @@ const createGameFromProfile = (profile) => {
     memories: [`You started as ${profile.title}: ${profile.description}`],
     currentEventId: getRandomEventId(),
     eventSeed: createEventSeed(),
-    weeklySummary: null,
+    seasonSummary: null,
     initialized: true
   };
 
   return {
     ...newGame,
-    weekStartStats: captureStats(newGame)
+    seasonStartStats: captureStats(newGame)
   };
 };
 
@@ -587,8 +563,8 @@ const createDefaultGame = () => ({
   memories: [],
   currentEventId: getRandomEventId(),
   eventSeed: createEventSeed(),
-  weekStartStats: null,
-  weeklySummary: null,
+  seasonStartStats: null,
+  seasonSummary: null,
   gameOver: false,
   gameOverReason: null,
   legacy: createDefaultLegacy(),
@@ -596,28 +572,34 @@ const createDefaultGame = () => ({
   initialized: false
 });
 
-const normalizeGame = (game) => ({
-  ...createDefaultGame(),
-  ...game,
-  money: Math.round(Number(game?.money ?? 0)),
-  age: clamp(Number(game?.age ?? 25), 12, 100),
-  health: clamp(Number(game?.health ?? 70)),
-  marriage: clamp(Number(game?.marriage ?? 40)),
-  children: clamp(Number(game?.children ?? 0)),
-  stress: clamp(Number(game?.stress ?? 30)),
-  month: clamp(Number(game?.month ?? 1), 1, 12),
-  week: clamp(Number(game?.week ?? game?.month ?? 1), 1, 52),
-  completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
-  selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
-  memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
-  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
-  weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
-  gameOver: Boolean(game?.gameOver),
-  gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
-  legacy: normalizeLegacy(game?.legacy)
-  character: game?.character && typeof game.character === "object" ? game.character : null
-});
+const normalizeGame = (game) => {
+  const hasSeasonalPlanningState = game?.seasonStartStats && typeof game.seasonStartStats === "object";
+
+  return {
+    ...createDefaultGame(),
+    ...game,
+    money: Math.round(Number(game?.money ?? 0)),
+    age: clamp(Number(game?.age ?? 25), 12, 100),
+    health: clamp(Number(game?.health ?? 70)),
+    marriage: clamp(Number(game?.marriage ?? 40)),
+    children: clamp(Number(game?.children ?? 0)),
+    stress: clamp(Number(game?.stress ?? 30)),
+    month: clamp(Number(game?.month ?? 1), 1, 12),
+    week: clamp(Number(game?.week ?? game?.month ?? 1), 1, WEEKS_PER_YEAR),
+    completedDecisions: hasSeasonalPlanningState && Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
+    selectedChoices: hasSeasonalPlanningState && game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
+    memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
+    eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
+    // LocalStorage migration: old week-by-week saves used weekStartStats/weeklySummary.
+    // Keep the player stats and current calendar week, but reset volatile seasonal planning state.
+    seasonStartStats: game?.seasonStartStats && typeof game.seasonStartStats === "object" ? game.seasonStartStats : null,
+    seasonSummary: game?.seasonSummary && typeof game.seasonSummary === "object" ? game.seasonSummary : null,
+    gameOver: Boolean(game?.gameOver),
+    gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
+    legacy: normalizeLegacy(game?.legacy),
+    character: game?.character && typeof game.character === "object" ? game.character : null
+  };
+};
 
 const loadSavedGame = () => {
   if (typeof window === "undefined") {
@@ -801,7 +783,7 @@ export default function App() {
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
-      weeklySummary: null,
+      seasonSummary: null,
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
@@ -811,7 +793,7 @@ export default function App() {
 
     setGame({
       ...newGame,
-      weekStartStats: captureStats(newGame)
+      seasonStartStats: captureStats(newGame)
     });
     startZenMusic();
   };
@@ -845,12 +827,12 @@ export default function App() {
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
-  const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
-  const totalWeeklyDecisions = weekSchedule.reduce((total, day) => total + day.decisions.length, 0);
+  const seasonSchedule = useMemo(() => getDecoratedSeasonSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
+  const totalSeasonDecisions = seasonSchedule.reduce((total, step) => total + step.decisions.length, 0);
   const selectedChoices = game.selectedChoices ?? {};
-  const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
-  const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
-  const currentYearProgress = Math.round((game.week / 52) * 100);
+  const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
+  const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
+  const currentYearProgress = Math.round((game.week / WEEKS_PER_YEAR) * 100);
   const legacy = normalizeLegacy(game.legacy);
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
   const runNumber = getRunNumber(legacy);
@@ -928,32 +910,35 @@ export default function App() {
     };
   };
 
-  const handleChoice = (choice, decision, dayName) => {
+  const getChoiceEffects = (baseState, choice, decision) => {
+    const seasonalEffects = scaleEffects(choice.effects, decision.effectMultiplier ?? 1);
+    const difficultyEffects = scaleEffectsForDifficulty(seasonalEffects, baseState.legacy?.difficulty ?? 1);
+    return applyTalentModifiers(baseState, difficultyEffects);
+  };
+
+  const handleChoice = (choice, decision, stepLabel) => {
     setGame((prevGame) => {
-      const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
       const previousSelection = prevGame.selectedChoices?.[decision.key];
       const undoEffects = previousSelection
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
         : null;
       const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
-      const nextState = applyEffects(stateBeforeChoice, adjustedEffects);
-      const modifiedEffects = applyTalentModifiers(stateBeforeChoice, choice.effects);
-      const nextState = applyEffects(stateBeforeChoice, modifiedEffects);
+      const finalEffects = getChoiceEffects(stateBeforeChoice, choice, decision);
+      const nextState = applyEffects(stateBeforeChoice, finalEffects);
       const selectedChoices = {
         ...(prevGame.selectedChoices ?? {}),
         [decision.key]: {
-          dayName,
+          stepLabel,
           eventTitle: decision.title,
           label: choice.label,
-          effects: adjustedEffects,
-          effects: modifiedEffects,
+          effects: finalEffects,
           originalEffects: choice.effects,
           memory: choice.memory
         }
       };
       const completedDecisions = Object.keys(selectedChoices);
-      const weekComplete = completedDecisions.length >= totalWeeklyDecisions;
-      const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
+      const seasonComplete = completedDecisions.length >= totalSeasonDecisions;
+      const timestamp = `${getSeasonName(prevGame.week)} season, age ${prevGame.age}`;
       const memoryAction = previousSelection ? `changed ${decision.title} from ${previousSelection.label} to ${choice.label}` : choice.memory;
 
       const updatedGame = {
@@ -966,53 +951,52 @@ export default function App() {
 
       return finishRunIfNeeded({
         ...updatedGame,
-        weekStartStats: weekComplete ? captureStats(updatedGame) : prevGame.weekStartStats ?? captureStats(prevGame),
-        weeklySummary: weekComplete
-          ? createWeeklySummary({ previousGame: prevGame, nextState, highlights: [`${dayName}: ${decision.title} → ${choice.label}`] })
-          : prevGame.weeklySummary
+        seasonStartStats: seasonComplete ? captureStats(updatedGame) : prevGame.seasonStartStats ?? captureStats(prevGame),
+        seasonSummary: seasonComplete
+          ? createSeasonalSummary({ previousGame: prevGame, nextState, highlights: [`${stepLabel}: ${decision.title} → ${choice.label}`] })
+          : prevGame.seasonSummary
       }, prevGame);
     });
   };
 
-  const handleAdvanceWeek = () => {
+  const handleAdvanceSeason = () => {
     setExpandedDecisionKey(null);
     setGame((prevGame) => prevGame.gameOver ? prevGame : ({
       ...prevGame,
-      ...getNextWeekState(prevGame.week, prevGame.age),
+      ...getNextSeasonState({ week: prevGame.week, age: prevGame.age }),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(prevGame.currentEventId),
-      memories: [...prevGame.memories, `Week ${prevGame.week} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+      seasonStartStats: captureStats(prevGame),
+      memories: [...prevGame.memories, `${getSeasonName(prevGame.week)} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     }));
   };
 
-  const handleSimulateWeek = () => {
+  const handleSimulateSeason = () => {
     setExpandedDecisionKey(null);
     setGame((prevGame) => {
-      const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
+      const schedule = getDecoratedSeasonSchedule(prevGame.week, prevGame.eventSeed);
       let nextState = prevGame;
       const simulatedMemories = [];
       const summaryHighlights = [];
 
-      schedule.forEach((day, dayIndex) => {
-        const dayResults = [];
+      schedule.forEach((step, stepIndex) => {
+        const stepResults = [];
 
-        day.decisions.forEach((decision, decisionIndex) => {
+        step.decisions.forEach((decision, decisionIndex) => {
           if (prevGame.completedDecisions.includes(decision.key)) {
             return;
           }
 
-          const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, dayIndex, decisionIndex, decision.choices);
-          const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
-          nextState = applyEffects(nextState, adjustedEffects);
-          const modifiedEffects = applyTalentModifiers(nextState, choice.effects);
-          nextState = applyEffects(nextState, modifiedEffects);
-          dayResults.push(`${decision.title}: ${choice.label}`);
-          summaryHighlights.push(`${day.day}: ${decision.title} → ${choice.label}`);
+          const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, stepIndex, decisionIndex, decision.choices);
+          const finalEffects = getChoiceEffects(nextState, choice, decision);
+          nextState = applyEffects(nextState, finalEffects);
+          stepResults.push(`${decision.title}: ${choice.label}`);
+          summaryHighlights.push(`${step.label}: ${decision.title} → ${choice.label}`);
         });
 
-        if (dayResults.length > 0) {
-          simulatedMemories.push(`Week ${prevGame.week}, ${day.day}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
+        if (stepResults.length > 0) {
+          simulatedMemories.push(`${getSeasonName(prevGame.week)} ${step.label}, age ${prevGame.age}: Went with the flow (${stepResults.join("; ")}).`);
         }
       });
 
@@ -1022,7 +1006,7 @@ export default function App() {
 
       const advancedGame = {
         ...nextState,
-        ...getNextWeekState(prevGame.week, prevGame.age),
+        ...getNextSeasonState({ week: prevGame.week, age: prevGame.age }),
         completedDecisions: [],
         selectedChoices: {},
         currentEventId: getRandomEventId(prevGame.currentEventId),
@@ -1031,14 +1015,14 @@ export default function App() {
 
       return finishRunIfNeeded({
         ...advancedGame,
-        weekStartStats: captureStats(advancedGame),
-        weeklySummary: createWeeklySummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
+        seasonStartStats: captureStats(advancedGame),
+        seasonSummary: createSeasonalSummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
       }, prevGame);
     });
   };
 
-  const renderEffectPreview = (effects) => {
-    const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
+  const renderEffectPreview = (effects, multiplier = 1) => {
+    const adjustedEffects = scaleEffectsForDifficulty(scaleEffects(effects, multiplier), difficultyMultiplier);
 
     return (
     <span className="choice-effects" aria-label="Choice effects">
@@ -1119,7 +1103,7 @@ export default function App() {
           <div>
             <p className="eyebrow">Life simulator</p>
             <h1>Design a life path worth replaying.</h1>
-            <p className="subtitle">Improve your life one week at a time.</p>
+            <p className="subtitle">Improve your life one season at a time.</p>
           </div>
           <div className="life-board" aria-hidden="true">
             <span className="board-node node-money">💸</span>
@@ -1241,8 +1225,8 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
-          <h1>Weekly Life Map</h1>
+          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · {getSeasonName(game.week)} · Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
+          <h1>Seasonal Life Map</h1>
           {game.character ? (
             <div className="active-character">
               <span>{game.character.talent?.icon}</span>
@@ -1254,10 +1238,10 @@ export default function App() {
           ) : null}
         </div>
         <div className="topbar-actions">
-          {pendingThisWeek === 0 ? (
-            <button onClick={handleAdvanceWeek}>Advance Week</button>
+          {pendingThisSeason === 0 ? (
+            <button onClick={handleAdvanceSeason}>Advance Season</button>
           ) : (
-            <button onClick={handleSimulateWeek}>Simulate Week</button>
+            <button onClick={handleSimulateSeason}>Simulate Season</button>
           )}
           <button className="secondary music-toggle" onClick={toggleZenMusic}>{musicPlaying ? "Pause Zen" : "Play Zen"}</button>
           <button className="secondary" onClick={resetGame}>Restart Setup</button>
@@ -1291,32 +1275,33 @@ export default function App() {
         <section className="panel calendar-card">
           <div className="section-heading calendar-heading">
             <div>
-              <p className="eyebrow">This week</p>
-              <h2>Plan your week</h2>
+              <p className="eyebrow">This season</p>
+              <h2>Plan your season</h2>
             </div>
-            <span>{pendingThisWeek} decisions left · 1 random emergency</span>
+            <span>{pendingThisSeason} decisions left · routines extrapolate, seasonal events apply once</span>
           </div>
-          <p className="calendar-intro">Build a weekly plan by picking key choices, then let the simulation resolve the rest. Every week includes one random emergency so life can still throw a car, furnace, or fence problem at you.</p>
+          <p className="calendar-intro">Build a seasonal plan from two representative weeks plus rare one-off seasonal events. Routine habits like gym, budget, sleep, therapy, date night, volunteering, and side hustle are extrapolated across the quarter; recitals, school conferences, checkups, and major family events apply once.</p>
           <div className="flow-panel">
             <div>
-              <strong>{pendingThisWeek === 0 ? "Weekly plan ready" : "Planning mode: choose what matters"}</strong>
-              <span>{completedThisWeek}/{totalWeeklyDecisions} decisions selected. {pendingThisWeek === 0 ? "Review or change any highlighted choice before advancing." : `${pendingThisWeek} will go with the flow if you simulate.`}</span>
+              <strong>{pendingThisSeason === 0 ? "Seasonal plan ready" : "Planning mode: choose what matters"}</strong>
+              <span>{completedThisSeason}/{totalSeasonDecisions} decisions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before advancing 13 weeks." : `${pendingThisSeason} will be auto-picked if you simulate the season.`}</span>
             </div>
-            {pendingThisWeek === 0 ? (
-              <button onClick={handleAdvanceWeek}>Advance Week</button>
+            {pendingThisSeason === 0 ? (
+              <button onClick={handleAdvanceSeason}>Advance Season</button>
             ) : (
-              <button onClick={handleSimulateWeek}>Simulate Week</button>
+              <button onClick={handleSimulateSeason}>Simulate Season</button>
             )}
           </div>
-          <div className="weekly-calendar">
-            {weekSchedule.map((day) => (
-              <article className="day-column" key={day.day}>
+          <div className="seasonal-calendar">
+            {seasonSchedule.map((step) => (
+              <article className={`day-column season-step ${step.type}`} key={step.id}>
                 <div className="day-header">
-                  <strong>{day.day}</strong>
-                  <span>{day.decisions.length} decisions</span>
+                  <strong>{step.label}</strong>
+                  <span>{step.type === "routine" ? "Representative" : "One-off"} · {step.decisions.length} decisions</span>
                 </div>
+                <p className="season-step-note">{step.type === "routine" ? `Choices in this representative week are extrapolated about ${step.effectMultiplier}× across the quarter.` : "These events happen once and are not repeated as chores."}</p>
                 <div className="day-decisions">
-                  {day.decisions.map((decision) => {
+                  {step.decisions.map((decision) => {
                     const selectedChoice = selectedChoices[decision.key];
                     const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
                     const completed = Boolean(selectedChoice) || lockedLegacyChoice;
@@ -1364,7 +1349,7 @@ export default function App() {
                                     disabled={lockedLegacyChoice}
                                     key={choice.label}
                                     onClick={() => {
-                                      handleChoice(choice, decision, day.day);
+                                      handleChoice(choice, decision, step.label);
                                       setExpandedDecisionKey(null);
                                     }}
                                   >
@@ -1372,7 +1357,7 @@ export default function App() {
                                       <strong>{choice.label}</strong>
                                       {isSelected ? <span className="selected-pill">Selected</span> : null}
                                     </span>
-                                    {renderEffectPreview(choice.effects)}
+                                    {renderEffectPreview(choice.effects, decision.effectMultiplier)}
                                   </button>
                                 );
                               })}
@@ -1396,18 +1381,18 @@ export default function App() {
             </div>
             <div className="year-ring" style={{ "--progress": `${currentYearProgress}%` }}>
               <div>
-                <strong>W{game.week}</strong>
+                <strong>{getSeasonName(game.week)}</strong>
                 <span>Age {game.age}</span>
               </div>
             </div>
-            <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday. If a core stat collapses, the run ends and scaled legacy bonuses roll into New Game+.</p>
-            <p>Plan the choices you care about, then use Simulate Week to resolve Monday through Sunday. Week 52 adds a new birthday.</p>
+            <p>Use Simulate Season to automatically resolve the representative decisions for this quarter; finishing Fall adds a birthday. If a core stat collapses, the run ends and scaled legacy bonuses roll into New Game+.</p>
+            <p>Simulate Season auto-picks any unfinished representative or one-off decisions, applies routine multipliers, records a recap, and advances about 13 weeks.</p>
           </section>
 
-          {game.weeklySummary ? (
-            <section className="panel weekly-summary-card" aria-live="polite">
+          {game.seasonSummary ? (
+            <section className="panel seasonal-summary-card" aria-live="polite">
               <div className="summary-confetti" aria-hidden="true">
-                <span>{game.weeklySummary.mood}</span>
+                <span>{game.seasonSummary.mood}</span>
                 <span>💸</span>
                 <span>⚡</span>
                 <span>💪</span>
@@ -1415,34 +1400,34 @@ export default function App() {
               <div className="section-heading summary-heading">
                 <div>
                   <p className="eyebrow">Ridiculous recap</p>
-                  <h2>Week {game.weeklySummary.week}</h2>
+                  <h2>{game.seasonSummary.seasonName}</h2>
                 </div>
-                <span>Age {game.weeklySummary.age}</span>
+                <span>Age {game.seasonSummary.age}</span>
               </div>
               <div className="summary-hero">
-                <span className="summary-mascot" aria-hidden="true">{game.weeklySummary.mood}</span>
+                <span className="summary-mascot" aria-hidden="true">{game.seasonSummary.mood}</span>
                 <div>
-                  <h3>{game.weeklySummary.headline}</h3>
-                  <p>{game.weeklySummary.joke}</p>
+                  <h3>{game.seasonSummary.headline}</h3>
+                  <p>{game.seasonSummary.joke}</p>
                 </div>
               </div>
               <div className="summary-weather">
                 <span>Life weather</span>
-                <strong>{game.weeklySummary.weather}</strong>
+                <strong>{game.seasonSummary.weather}</strong>
               </div>
-              <div className="summary-deltas" aria-label="Weekly stat changes">
-                {summaryStatKeys.map((key) => renderSummaryDelta(key, game.weeklySummary.deltas[key] ?? 0))}
+              <div className="summary-deltas" aria-label="Seasonal stat changes">
+                {summaryStatKeys.map((key) => renderSummaryDelta(key, game.seasonSummary.deltas[key] ?? 0))}
               </div>
               <div className="summary-award">
                 <span aria-hidden="true">🏅</span>
                 <div>
                   <small>Fake award</small>
-                  <strong>{game.weeklySummary.award}</strong>
+                  <strong>{game.seasonSummary.award}</strong>
                 </div>
               </div>
-              {(game.weeklySummary.highlights ?? []).length > 0 ? (
+              {(game.seasonSummary.highlights ?? []).length > 0 ? (
                 <ul className="summary-highlights">
-                  {(game.weeklySummary.highlights ?? []).map((highlight) => (
+                  {(game.seasonSummary.highlights ?? []).map((highlight) => (
                     <li key={highlight}>{highlight}</li>
                   ))}
                 </ul>

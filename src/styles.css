@@ -69,7 +69,8 @@ body::before {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -92,7 +93,8 @@ button:focus-visible {
   transform: translateY(-2px);
 }
 
-input {
+input,
+textarea {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 1rem;
@@ -103,7 +105,13 @@ input {
   outline: none;
 }
 
-input:focus {
+textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
   border-color: rgba(125, 211, 252, 0.8);
   box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
 }
@@ -2279,7 +2287,8 @@ input:focus {
   }
 }
 
-.randomizer-panel {
+.randomizer-panel,
+.family-panel {
   display: grid;
   gap: 1rem;
   border: 1px solid rgba(147, 197, 253, 0.24);
@@ -2309,6 +2318,28 @@ input:focus {
   margin: 0.4rem 0 0;
   color: #c8d3e9;
   line-height: 1.55;
+}
+
+
+.family-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.family-grid label {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 0.9rem;
+}
+
+.family-grid span {
+  color: #dbeafe;
+  font-size: 0.75rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .character-options {
@@ -2469,7 +2500,8 @@ input:focus {
 
 @media (max-width: 1180px) {
   .setup-shell,
-  .character-options {
+  .character-options,
+  .family-grid {
     grid-template-columns: 1fr;
   }
 

@@ -75,7 +75,8 @@ input:focus {
 }
 
 .app-shell {
-  width: min(1180px, calc(100% - 2rem));
+  width: 90vw;
+  max-width: none;
   margin: 0 auto;
   padding: 2rem 0 3rem;
 }
@@ -630,7 +631,7 @@ input:focus {
 
 @media (max-width: 680px) {
   .app-shell {
-    width: min(100% - 1rem, 1180px);
+    width: calc(100% - 1rem);
     padding-top: 0.5rem;
   }
 
@@ -805,14 +806,76 @@ input:focus {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
+.decision-card.expanded {
+  border-color: rgba(147, 197, 253, 0.38);
+  background:
+    radial-gradient(circle at 100% 0, var(--accent-glow, rgba(124, 58, 237, 0.32)), transparent 10rem),
+    rgba(255, 255, 255, 0.095);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+}
+
+.decision-toggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0.85rem;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  text-align: left;
+}
+
+.decision-toggle:hover,
+.decision-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.16);
+  filter: none;
+  transform: none;
+}
+
+.decision-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.28rem;
+}
+
+.expand-cue {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #dbeafe;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.decision-details {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+}
+
 .decision-card.completed {
   opacity: 0.58;
 }
 
+.decision-card.completed.expanded {
+  opacity: 1;
+}
+
 .decision-card.completed::after {
   position: absolute;
-  top: 0.45rem;
   right: 0.45rem;
+  bottom: 0.45rem;
   border-radius: 999px;
   color: #dcfce7;
   background: rgba(34, 197, 94, 0.22);
@@ -820,6 +883,7 @@ input:focus {
   font-size: 0.6rem;
   font-weight: 950;
   padding: 0.2rem 0.45rem;
+  pointer-events: none;
 }
 
 .decision-title {
@@ -830,7 +894,7 @@ input:focus {
   padding-right: 0;
 }
 
-.decision-title > div {
+.decision-title > span:last-child {
   min-width: 0;
 }
 
@@ -1256,6 +1320,7 @@ input:focus {
   .summary-mascot {
     animation: none;
   }
+}
 
 .selected-summary {
   display: grid;

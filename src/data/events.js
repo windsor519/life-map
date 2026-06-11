@@ -4,6 +4,7 @@ const baseEvents = [
     tags: ["young-family", "general"],
     title: "Daughter's Recital",
     description: "Your daughter has a recital tonight, but a client also wants a late call.",
+    wisdom: "Kids remember who showed up. They forget the money you didn't make. This isn't just a recital—it's the moment she knows, deep down, that she mattered more than the deadline.",
     choices: [
       { label: "Attend the recital", effects: { money: -100, children: 12, stress: -5 }, memory: "You showed up for your daughter's recital." },
       { label: "Work overtime", effects: { money: 500, children: -8, stress: 7 }, memory: "You took the overtime call and missed the recital." },
@@ -15,6 +16,7 @@ const baseEvents = [
     tags: ["general"],
     title: "Friend's Birthday",
     description: "A close friend is celebrating their birthday and wants everyone together.",
+    wisdom: "Good friendships are the backbone of a good life, and they require showing up. Skipping birthdays feels like nothing in the moment, but it's how friendships slowly evaporate without anyone noticing.",
     choices: [
       { label: "Bring a gift", effects: { money: -75, marriage: 5, stress: -2 }, memory: "You celebrated a friend's birthday with a thoughtful gift." },
       { label: "Skip it", effects: { marriage: -5, stress: 5 }, memory: "You skipped a friend's birthday to save time." },
@@ -26,6 +28,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Gym Session",
     description: "A gym session is scheduled, but the couch looks tempting.",
+    wisdom: "Exercise is one of the few things you can do right now that your future self will thank you for. The couch will still be there, but the habit you build today might be what keeps you standing in five years.",
     choices: [
       { label: "Go to the gym", effects: { health: 7, stress: -4 }, memory: "You completed a gym session and felt healthier." },
       { label: "Rest at home", effects: { health: -2, stress: 3 }, memory: "You skipped the gym and rested at home." }
@@ -36,6 +39,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Annual Checkup",
     description: "Your doctor has an opening for a preventive visit, but it means taking time off work.",
+    wisdom: "Prevention is the cheapest insurance you'll ever buy. A checkup now catches problems early, before they become expensive emergencies and time off the calendar.",
     choices: [
       { label: "Book the appointment", effects: { money: -180, health: 8, stress: -3 }, memory: "You made time for a preventive health checkup." },
       { label: "Put it off", effects: { money: 120, health: -5, stress: 2 }, memory: "You postponed your annual checkup again." },
@@ -47,6 +51,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Weekend Getaway",
     description: "Your partner suggests a low-key weekend away to reconnect.",
+    wisdom: "Relationships don't fail from one big fight—they fade from a thousand small moments you didn't make time for. This getaway is a chance to remember why you chose each other.",
     choices: [
       { label: "Plan the trip", effects: { money: -650, marriage: 12, stress: -8 }, memory: "You planned a weekend getaway and reconnected." },
       { label: "Stay home and save", effects: { money: 250, marriage: -4, stress: 3 }, memory: "You stayed home to protect the budget." },
@@ -58,6 +63,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Career Course",
     description: "A practical online course could improve your future earning power.",
+    wisdom: "Your career is either growing or shrinking—there's no standing still. An investment now in new skills is a bet that future-you will have more options when life throws something unexpected.",
     choices: [
       { label: "Enroll", effects: { money: -400, stress: 6, health: -1 }, memory: "You enrolled in a career course and invested in yourself." },
       { label: "Keep evenings free", effects: { stress: -4, health: 2 }, memory: "You protected your evenings instead of adding coursework." },
@@ -68,6 +74,7 @@ const baseEvents = [
     id: "school-project",
     tags: ["young-family", "general"],
     title: "School Project",
+    wisdom: "There's a difference between helping and rescuing. A child who learns to solve problems independently becomes an adult who can handle a crisis. A child who's bailed out every time becomes someone who calls you at 35 when the coffee maker breaks.",
     description: "Your child needs help building a last-minute science project.",
     choices: [
       { label: "Help all evening", effects: { children: 10, stress: 5, marriage: 2 }, memory: "You helped finish a chaotic science project." },
@@ -79,6 +86,7 @@ const baseEvents = [
     id: "grocery-budget",
     tags: ["young-family", "midlife", "general"],
     title: "Grocery Run",
+    wisdom: "What you feed your body matters, even when you're tired. Home cooking is slower but it's cheaper, healthier, and it keeps you from slowly sliding into meals that cost more and nourish less.",
     description: "The fridge is empty and the weekly food budget is already tight.",
     choices: [
       { label: "Cook budget meals", effects: { money: -95, health: 4, stress: -2 }, memory: "You stocked up for simple home-cooked meals." },
@@ -90,6 +98,7 @@ const baseEvents = [
     id: "car-repair",
     tags: ["midlife", "general"],
     title: "Car Repair",
+    wisdom: "Small problems compound. A $400 repair today is a $2000 emergency next month if you ignore it. The calendar is already tight—don't let maintenance become a crisis.",
     description: "A warning light appears before a packed week of errands.",
     choices: [
       { label: "Fix it today", effects: { money: -420, stress: -4 }, memory: "You handled the car repair before it became an emergency." },
@@ -101,6 +110,7 @@ const baseEvents = [
     id: "team-lunch",
     tags: ["midlife", "general"],
     title: "Team Lunch",
+    wisdom: "Relationships at work are more than just transactions. Taking time to connect with people eases stress and builds a safety net for when things get rough. Nobody survives alone.",
     description: "Coworkers invite you out during a busy workday.",
     choices: [
       { label: "Join lunch", effects: { money: -28, marriage: 3, stress: -3 }, memory: "You bonded with coworkers over lunch." },
@@ -110,6 +120,7 @@ const baseEvents = [
   {
     id: "neighbor-help",
     title: "Neighbor Needs Help",
+    wisdom: "Community is built in small moments of inconvenience. The neighbor who helps when it's hard is the one who has people around when things fall apart.",
     description: "A neighbor asks for help moving furniture after dinner.",
     choices: [
       { label: "Help them", effects: { marriage: 4, health: 2, stress: 2 }, memory: "You helped a neighbor and strengthened community ties." },
@@ -121,6 +132,7 @@ const baseEvents = [
     id: "date-night",
     tags: ["midlife", "general"],
     title: "Date Night",
+    wisdom: "The person you chose matters. Protect time with them like you'd protect your health—because your relationship is your health. Rescheduling again is how marriages become roommates.",
     description: "There is finally a free evening for your relationship.",
     choices: [
       { label: "Go out", effects: { money: -120, marriage: 10, stress: -4 }, memory: "You invested in a relaxed date night." },
@@ -132,6 +144,7 @@ const baseEvents = [
     id: "sleep-debt",
     tags: ["midlife", "general"],
     title: "Sleep Debt",
+    wisdom: "Sleep is when your body repairs itself and your mind processes the day. Chronically tired people make worse decisions, love their partners less, and snap at their kids. This is non-negotiable biology.",
     description: "Late nights are catching up and tomorrow starts early.",
     choices: [
       { label: "Sleep early", effects: { health: 7, stress: -6, marriage: -1 }, memory: "You chose an early night and recovered energy." },
@@ -144,6 +157,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Home Maintenance",
     description: "A small leak under the sink is easy to postpone.",
+    wisdom: "Small leaks become big ones. The anxiety of a broken home eats at you. Fix it now, move on, and free up mental space for things that actually matter.",
     choices: [
       { label: "Repair it", effects: { money: -160, stress: -3 }, memory: "You fixed the leak before it caused damage." },
       { label: "Delay repair", effects: { money: 0, stress: 5 }, memory: "You delayed the repair and kept worrying about it." },
@@ -154,6 +168,7 @@ const baseEvents = [
     id: "volunteer-shift",
     title: "Volunteer Shift",
     description: "A local group needs extra help this week.",
+    wisdom: "Generosity compounds. When you give your time to something bigger than yourself, you become the kind of person others show up for. Plus, helping others is scientifically better for your own mood than almost anything else.",
     choices: [
       { label: "Take a shift", effects: { marriage: 4, children: 3, stress: 3 }, memory: "You volunteered and felt useful to the community." },
       { label: "Donate instead", effects: { money: -90, marriage: 2, stress: -1 }, memory: "You donated when you could not volunteer." },
@@ -165,6 +180,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Side Hustle Offer",
     description: "A short freelance job could add cash but eats into family time.",
+    wisdom: "Extra money is seductive, but time is finite. Once you give it to work, you don't get it back. The real question is: what are you sacrificing to gain this? Is it worth it?",
     choices: [
       { label: "Accept it", effects: { money: 750, stress: 9, marriage: -4, children: -3 }, memory: "You accepted a demanding side hustle." },
       { label: "Negotiate scope", effects: { money: 420, stress: 4, marriage: -1 }, memory: "You negotiated a smaller freelance project." },
@@ -176,6 +192,7 @@ const baseEvents = [
     tags: ["eldercare", "young-family", "general"],
     title: "Family Call",
     description: "An older relative wants a long catch-up call.",
+    wisdom: "The time you have with older family members is finite and you don't know how finite. A call now is a memory they'll cherish and a story you'll be grateful for later.",
     choices: [
       { label: "Call tonight", effects: { children: 3, marriage: 2, stress: -1 }, memory: "You made time for a meaningful family call." },
       { label: "Text back", effects: { stress: -1, marriage: -1 }, memory: "You sent a quick text instead of calling." },
@@ -187,6 +204,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Therapy Session",
     description: "A therapy opening appears during a stressful stretch.",
+    wisdom: "Talking to someone trained to help you think clearly is not weakness—it's smart maintenance. The conversations you have now might prevent a breakdown later.",
     choices: [
       { label: "Take the slot", effects: { money: -150, health: 4, stress: -10 }, memory: "You used therapy to process a hard week." },
       { label: "Journal instead", effects: { health: 2, stress: -4 }, memory: "You journaled through your feelings." },
@@ -198,6 +216,7 @@ const baseEvents = [
     tags: ["young-family", "general"],
     title: "Kids' Sports Signup",
     description: "Registration opens for a season your child is excited about.",
+    wisdom: "Sports teaches kids things school can't: how to fail, how to try again, how to be part of a team. The cost is real, but so is what your kid learns about themselves.",
     choices: [
       { label: "Sign up", effects: { money: -240, children: 9, stress: 4 }, memory: "You signed up for a busy sports season." },
       { label: "Find scholarship", effects: { money: -60, children: 7, stress: 6 }, memory: "You searched for a scholarship to make sports possible." },
@@ -209,6 +228,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Investment Choice",
     description: "You have a chance to move extra cash into savings or spend it now.",
+    wisdom: "Every dollar you don't invest today is a dollar that won't be there when you need it. Spending it feels good now, but it's stealing from future-you who might be in a tight spot.",
     choices: [
       { label: "Invest extra", effects: { money: 260, stress: 2 }, memory: "You moved extra cash toward future savings." },
       { label: "Buy something fun", effects: { money: -220, stress: -5, marriage: 2 }, memory: "You spent extra cash on a fun purchase." },
@@ -220,6 +240,7 @@ const baseEvents = [
     tags: ["midlife", "general"],
     title: "Digital Detox",
     description: "Your screen time report is higher than you expected.",
+    wisdom: "Your phone is designed to be addictive. It wins if you don't actively push back. One phone-free evening won't ruin anything—but it might remind you what presence feels like.",
     choices: [
       { label: "Phone-free night", effects: { health: 3, marriage: 4, stress: -4 }, memory: "You took a phone-free night and felt present." },
       { label: "Set app limits", effects: { health: 2, stress: -2 }, memory: "You added screen-time guardrails." },
@@ -231,6 +252,7 @@ const baseEvents = [
     tags: ["young-family", "general"],
     title: "Pop Quiz",
     severity: "minor",
+    wisdom: "A bad grade is not a tragedy. How you respond to it teaches your child whether failure is shameful or something to learn from. Your calm reassurance matters more than the grade.",
     description: "A surprise quiz lands in first period, and your child is nervous about the result.",
     choices: [
       { label: "Review mistakes together", effects: { children: 6, stress: 2 }, memory: "You turned a pop quiz into a calm study moment." },
@@ -242,6 +264,7 @@ const baseEvents = [
     id: "school-supply-list",
     title: "School Supply List",
     severity: "minor",
+    wisdom: "Small expenses compound. One supply list is nothing. Ten of them add up. But your child showing up with what they need matters to their day and their teacher's sanity.",
     description: "A new supply list comes home with a few unexpected classroom requests.",
     choices: [
       { label: "Buy everything", effects: { money: -85, children: 5, stress: -2 }, memory: "You stocked the backpack with every requested supply." },
@@ -253,6 +276,7 @@ const baseEvents = [
     id: "parent-teacher-conference",
     title: "Parent-Teacher Conference",
     severity: "moderate",
+    wisdom: "Ignoring problems at school doesn't make them go away—it makes them bigger. A teacher reaching out is actually them being on your team. Show up and make a plan together.",
     description: "The teacher asks for a conference about slipping homework and classroom focus.",
     choices: [
       { label: "Attend in person", effects: { children: 10, stress: 4, money: -80 }, memory: "You attended the conference and made a school plan." },
@@ -264,6 +288,7 @@ const baseEvents = [
     id: "field-trip-form",
     title: "Field Trip Form",
     severity: "minor",
+    wisdom: "Field trips are the rare times school cracks open and your kid gets to explore something real. The teacher also gets a chance to see who is invested. Show up if you can.",
     description: "A permission slip and fee are due tomorrow for a museum field trip.",
     choices: [
       { label: "Pay and chaperone", effects: { money: -70, children: 8, stress: 3 }, memory: "You joined the field trip and made a shared memory." },
@@ -275,6 +300,7 @@ const baseEvents = [
     id: "bullying-report",
     title: "Bullying Report",
     severity: "major",
+    wisdom: "This is serious. Your child just trusted you with something that scares them. What you do now teaches them whether you have their back. Sometimes you have to be the adult in the room.",
     description: "Your child says another student has been targeting them at school.",
     choices: [
       { label: "Meet the principal", effects: { children: 14, stress: 9, money: -120 }, memory: "You pushed the school for a safety plan after bullying." },
@@ -286,6 +312,7 @@ const baseEvents = [
     id: "honor-roll-invite",
     title: "Honor Roll Invite",
     severity: "minor",
+    wisdom: "Your kid worked hard for this. Showing up and making a big deal about it tells them that you see them and that effort matters. This is free emotional fuel for the next hard stretch.",
     description: "The school invites families to celebrate students who improved their grades.",
     choices: [
       { label: "Celebrate loudly", effects: { money: -60, children: 9, stress: -3 }, memory: "You celebrated academic progress and boosted confidence." },

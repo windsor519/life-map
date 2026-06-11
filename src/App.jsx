@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import events from "./data/events.js";
 
 const STORAGE_KEY = "life-map-game";
+const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const decisionsPerDay = [2, 3, 4, 2, 3, 5, 2];
 const monthNames = [
   "January",
   "February",
@@ -32,7 +34,21 @@ const eventVisuals = {
   "annual-checkup": { icon: "🩺", accent: "blue", label: "Health" },
   "weekend-getaway": { icon: "🌄", accent: "amber", label: "Relationship" },
   "online-course": { icon: "💡", accent: "indigo", label: "Career" },
-  "school-project": { icon: "🔬", accent: "teal", label: "Parenting" }
+  "school-project": { icon: "🔬", accent: "teal", label: "Parenting" },
+  "grocery-budget": { icon: "🛒", accent: "green", label: "Home" },
+  "car-repair": { icon: "🚗", accent: "amber", label: "Errands" },
+  "team-lunch": { icon: "🥗", accent: "blue", label: "Work" },
+  "neighbor-help": { icon: "📦", accent: "teal", label: "Community" },
+  "date-night": { icon: "🌙", accent: "rose", label: "Relationship" },
+  "sleep-debt": { icon: "🛌", accent: "indigo", label: "Recovery" },
+  "home-maintenance": { icon: "🔧", accent: "amber", label: "Home" },
+  "volunteer-shift": { icon: "🤝", accent: "teal", label: "Community" },
+  "side-hustle": { icon: "💼", accent: "violet", label: "Work" },
+  "family-call": { icon: "☎️", accent: "blue", label: "Family" },
+  "therapy-session": { icon: "🧠", accent: "green", label: "Wellness" },
+  "kids-sports": { icon: "⚽", accent: "rose", label: "Parenting" },
+  "investment-choice": { icon: "📈", accent: "amber", label: "Money" },
+  "digital-detox": { icon: "📵", accent: "indigo", label: "Wellness" }
 };
 
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(value)));
@@ -42,6 +58,20 @@ const getRandomEventId = (excludeId) => {
   return pool[Math.floor(Math.random() * pool.length)].id;
 };
 
+const getWeekSchedule = (week) =>
+  dayNames.map((day, dayIndex) => ({
+    day,
+    decisions: Array.from({ length: decisionsPerDay[dayIndex] }, (_, decisionIndex) => {
+      const eventIndex = ((week - 1) * 11 + dayIndex * 5 + decisionIndex * 2) % events.length;
+      const event = events[eventIndex];
+      return {
+        ...event,
+        key: `${week}-${dayIndex}-${decisionIndex}-${event.id}`,
+        visual: eventVisuals[event.id] ?? { icon: "✨", accent: "blue", label: "Life" }
+      };
+    })
+  }));
+
 const createDefaultGame = () => ({
   age: 40,
   money: 100000,
@@ -50,6 +80,8 @@ const createDefaultGame = () => ({
   children: 35,
   stress: 30,
   month: 1,
+  week: 1,
+  completedDecisions: [],
   memories: [],
   currentEventId: getRandomEventId(),
   initialized: false
@@ -65,6 +97,8 @@ const normalizeGame = (game) => ({
   children: clamp(Number(game?.children ?? 0)),
   stress: clamp(Number(game?.stress ?? 30)),
   month: clamp(Number(game?.month ?? 1), 1, 12),
+  week: clamp(Number(game?.week ?? game?.month ?? 1), 1, 52),
+  completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : []
 });
 
@@ -144,6 +178,8 @@ export default function App() {
       children: clamp(children),
       stress: clamp(stress),
       month: 1,
+      week: 1,
+      completedDecisions: [],
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
       initialized: true
@@ -160,12 +196,10 @@ export default function App() {
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
   };
 
-  const currentEvent = useMemo(
-    () => events.find((event) => event.id === game.currentEventId) ?? events[0],
-    [game.currentEventId]
-  );
-  const currentVisual = eventVisuals[currentEvent.id] ?? { icon: "✨", accent: "blue", label: "Life event" };
-  const currentYearProgress = Math.round((game.month / 12) * 100);
+  const weekSchedule = useMemo(() => getWeekSchedule(game.week), [game.week]);
+  const totalWeeklyDecisions = weekSchedule.reduce((total, day) => total + day.decisions.length, 0);
+  const completedThisWeek = game.completedDecisions.length;
+  const currentYearProgress = Math.round((game.week / 52) * 100);
 
   const applyEffects = (baseState, effects) => {
     const next = { ...baseState };
@@ -183,17 +217,28 @@ export default function App() {
     };
   };
 
-  const handleChoice = (choice) => {
+  const handleChoice = (choice, decision, dayName) => {
     setGame((prevGame) => {
-      const nextMonth = prevGame.month === 12 ? 1 : prevGame.month + 1;
-      const nextAge = prevGame.month === 12 ? prevGame.age + 1 : prevGame.age;
+      if (prevGame.completedDecisions.includes(decision.key)) {
+        return prevGame;
+      }
+
+      const schedule = getWeekSchedule(prevGame.week);
+      const totalDecisions = schedule.reduce((total, day) => total + day.decisions.length, 0);
+      const completedDecisions = [...prevGame.completedDecisions, decision.key];
+      const weekComplete = completedDecisions.length >= totalDecisions;
+      const nextWeek = weekComplete ? (prevGame.week === 52 ? 1 : prevGame.week + 1) : prevGame.week;
+      const nextMonth = Math.min(12, Math.ceil(nextWeek / 4.333));
+      const nextAge = weekComplete && prevGame.week === 52 ? prevGame.age + 1 : prevGame.age;
       const nextState = applyEffects(prevGame, choice.effects);
-      const timestamp = `${monthNames[prevGame.month - 1]}, age ${prevGame.age}`;
+      const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
 
       return {
         ...nextState,
         age: nextAge,
         month: nextMonth,
+        week: nextWeek,
+        completedDecisions: weekComplete ? [] : completedDecisions,
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, `${timestamp}: ${choice.memory}`].slice(-8)
       };
@@ -272,8 +317,8 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">{monthNames[game.month - 1]} · Age {game.age}</p>
-          <h1>Life Map</h1>
+          <p className="eyebrow">Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
+          <h1>Weekly Life Map</h1>
         </div>
         <button className="secondary" onClick={resetGame}>Restart Setup</button>
       </header>
@@ -294,22 +339,53 @@ export default function App() {
       </section>
 
       <div className="game-layout">
-        <section className={`panel event-card accent-${currentVisual.accent}`}>
-          <div className="event-kicker">
-            <span className="event-icon" aria-hidden="true">{currentVisual.icon}</span>
+        <section className="panel calendar-card">
+          <div className="section-heading calendar-heading">
             <div>
-              <p className="eyebrow">This month</p>
-              <span>{currentVisual.label}</span>
+              <p className="eyebrow">This week</p>
+              <h2>Choose your daily decisions</h2>
             </div>
+            <span>{completedThisWeek}/{totalWeeklyDecisions} done</span>
           </div>
-          <h2>{currentEvent.title}</h2>
-          <p>{currentEvent.description}</p>
-          <div className="choice-grid">
-            {currentEvent.choices.map((choice) => (
-              <button className="choice-button" key={choice.label} onClick={() => handleChoice(choice)}>
-                <strong>{choice.label}</strong>
-                {renderEffectPreview(choice.effects)}
-              </button>
+          <p className="calendar-intro">Each day includes 2–5 decisions, and several decisions have three options so the week feels less binary.</p>
+          <div className="weekly-calendar">
+            {weekSchedule.map((day) => (
+              <article className="day-column" key={day.day}>
+                <div className="day-header">
+                  <strong>{day.day}</strong>
+                  <span>{day.decisions.length} decisions</span>
+                </div>
+                <div className="day-decisions">
+                  {day.decisions.map((decision) => {
+                    const completed = game.completedDecisions.includes(decision.key);
+                    return (
+                      <section className={`decision-card accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
+                        <div className="decision-title">
+                          <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
+                          <div>
+                            <small>{decision.visual.label}</small>
+                            <h3>{decision.title}</h3>
+                          </div>
+                        </div>
+                        <p>{decision.description}</p>
+                        <div className="decision-options">
+                          {decision.choices.map((choice) => (
+                            <button
+                              className="option-button"
+                              disabled={completed}
+                              key={choice.label}
+                              onClick={() => handleChoice(choice, decision, day.day)}
+                            >
+                              <strong>{choice.label}</strong>
+                              {renderEffectPreview(choice.effects)}
+                            </button>
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
+              </article>
             ))}
           </div>
         </section>
@@ -322,11 +398,11 @@ export default function App() {
             </div>
             <div className="year-ring" style={{ "--progress": `${currentYearProgress}%` }}>
               <div>
-                <strong>{monthNames[game.month - 1].slice(0, 3)}</strong>
+                <strong>W{game.week}</strong>
                 <span>Age {game.age}</span>
               </div>
             </div>
-            <p>Every decision advances the calendar one month. December choices unlock a new birthday.</p>
+            <p>Finish every decision on the weekly calendar to unlock the next week. Week 52 adds a new birthday.</p>
           </section>
 
           <section className="panel memories-card">

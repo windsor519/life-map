@@ -4,6 +4,11 @@ import events from "./data/events.js";
 const STORAGE_KEY = "life-map-game";
 const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const decisionsPerDay = [2, 3, 4, 2, 3, 5, 2];
+const severityConfig = {
+  minor: { label: "Minor", icon: "•" },
+  moderate: { label: "Moderate", icon: "◆" },
+  major: { label: "Major", icon: "✦" }
+};
 const monthNames = [
   "January",
   "February",
@@ -48,25 +53,62 @@ const eventVisuals = {
   "therapy-session": { icon: "🧠", accent: "green", label: "Wellness" },
   "kids-sports": { icon: "⚽", accent: "rose", label: "Parenting" },
   "investment-choice": { icon: "📈", accent: "amber", label: "Money" },
-  "digital-detox": { icon: "📵", accent: "indigo", label: "Wellness" }
+  "digital-detox": { icon: "📵", accent: "indigo", label: "Wellness" },
+  "pop-quiz": { icon: "📝", accent: "blue", label: "School" },
+  "school-supply-list": { icon: "🎒", accent: "green", label: "School" },
+  "parent-teacher-conference": { icon: "🏫", accent: "amber", label: "School" },
+  "field-trip-form": { icon: "🚌", accent: "teal", label: "School" },
+  "bullying-report": { icon: "🛡️", accent: "rose", label: "Major school event" },
+  "honor-roll-invite": { icon: "🏅", accent: "violet", label: "School" },
+  "school-play-audition": { icon: "🎭", accent: "indigo", label: "School" },
+  "scholarship-deadline": { icon: "🎓", accent: "amber", label: "Major school event" },
+  "detention-call": { icon: "📞", accent: "rose", label: "School" },
+  "school-fundraiser": { icon: "🎟️", accent: "teal", label: "School" }
 };
 
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(value)));
+const createEventSeed = () => Math.floor(Math.random() * 1_000_000_000);
+const seededRandom = (...values) => {
+  let hash = 2166136261;
+
+  values.join("|").split("").forEach((character) => {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  });
+
+  return ((hash >>> 0) % 10000) / 10000;
+};
 const getRandomEventId = (excludeId) => {
   const availableEvents = events.filter((event) => event.id !== excludeId);
   const pool = availableEvents.length > 0 ? availableEvents : events;
   return pool[Math.floor(Math.random() * pool.length)].id;
 };
 
-const getWeekSchedule = (week) =>
+const getSeverity = (event) => event.severity ?? "minor";
+const getRandomChoice = (eventSeed, week, dayIndex, decisionIndex, choices) => {
+  const choiceIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex, "choice") * choices.length);
+  return choices[Math.min(choiceIndex, choices.length - 1)];
+};
+const getNextWeekState = (week, age) => {
+  const nextWeek = week === 52 ? 1 : week + 1;
+
+  return {
+    age: week === 52 ? age + 1 : age,
+    month: Math.min(12, Math.ceil(nextWeek / 4.333)),
+    week: nextWeek
+  };
+};
+
+const getWeekSchedule = (week, eventSeed) =>
   dayNames.map((day, dayIndex) => ({
     day,
     decisions: Array.from({ length: decisionsPerDay[dayIndex] }, (_, decisionIndex) => {
-      const eventIndex = ((week - 1) * 11 + dayIndex * 5 + decisionIndex * 2) % events.length;
+      const eventIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex) * events.length);
       const event = events[eventIndex];
       return {
         ...event,
-        key: `${week}-${dayIndex}-${decisionIndex}-${event.id}`,
+        severity: getSeverity(event),
+        key: `${eventSeed}-${week}-${dayIndex}-${decisionIndex}-${event.id}`,
         visual: eventVisuals[event.id] ?? { icon: "✨", accent: "blue", label: "Life" }
       };
     })
@@ -84,6 +126,7 @@ const createDefaultGame = () => ({
   completedDecisions: [],
   memories: [],
   currentEventId: getRandomEventId(),
+  eventSeed: createEventSeed(),
   initialized: false
 });
 
@@ -99,7 +142,8 @@ const normalizeGame = (game) => ({
   month: clamp(Number(game?.month ?? 1), 1, 12),
   week: clamp(Number(game?.week ?? game?.month ?? 1), 1, 52),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
-  memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : []
+  memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
+  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed()
 });
 
 const loadSavedGame = () => {
@@ -182,6 +226,7 @@ export default function App() {
       completedDecisions: [],
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
+      eventSeed: createEventSeed(),
       initialized: true
     });
   };
@@ -196,9 +241,10 @@ export default function App() {
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
   };
 
-  const weekSchedule = useMemo(() => getWeekSchedule(game.week), [game.week]);
+  const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
   const totalWeeklyDecisions = weekSchedule.reduce((total, day) => total + day.decisions.length, 0);
   const completedThisWeek = game.completedDecisions.length;
+  const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
 
   const applyEffects = (baseState, effects) => {
@@ -223,24 +269,58 @@ export default function App() {
         return prevGame;
       }
 
-      const schedule = getWeekSchedule(prevGame.week);
+      const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
       const totalDecisions = schedule.reduce((total, day) => total + day.decisions.length, 0);
       const completedDecisions = [...prevGame.completedDecisions, decision.key];
       const weekComplete = completedDecisions.length >= totalDecisions;
-      const nextWeek = weekComplete ? (prevGame.week === 52 ? 1 : prevGame.week + 1) : prevGame.week;
-      const nextMonth = Math.min(12, Math.ceil(nextWeek / 4.333));
-      const nextAge = weekComplete && prevGame.week === 52 ? prevGame.age + 1 : prevGame.age;
+      const nextDate = weekComplete ? getNextWeekState(prevGame.week, prevGame.age) : { age: prevGame.age, month: prevGame.month, week: prevGame.week };
       const nextState = applyEffects(prevGame, choice.effects);
       const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
 
       return {
         ...nextState,
-        age: nextAge,
-        month: nextMonth,
-        week: nextWeek,
+        ...nextDate,
         completedDecisions: weekComplete ? [] : completedDecisions,
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, `${timestamp}: ${choice.memory}`].slice(-8)
+      };
+    });
+  };
+
+  const handleSimulateWeek = () => {
+    setGame((prevGame) => {
+      const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
+      let nextState = prevGame;
+      const simulatedMemories = [];
+
+      schedule.forEach((day, dayIndex) => {
+        const dayResults = [];
+
+        day.decisions.forEach((decision, decisionIndex) => {
+          if (prevGame.completedDecisions.includes(decision.key)) {
+            return;
+          }
+
+          const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, dayIndex, decisionIndex, decision.choices);
+          nextState = applyEffects(nextState, choice.effects);
+          dayResults.push(`${decision.title}: ${choice.label}`);
+        });
+
+        if (dayResults.length > 0) {
+          simulatedMemories.push(`Week ${prevGame.week}, ${day.day}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
+        }
+      });
+
+      if (simulatedMemories.length === 0) {
+        return prevGame;
+      }
+
+      return {
+        ...nextState,
+        ...getNextWeekState(prevGame.week, prevGame.age),
+        completedDecisions: [],
+        currentEventId: getRandomEventId(prevGame.currentEventId),
+        memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
       };
     });
   };
@@ -262,7 +342,7 @@ export default function App() {
           <div>
             <p className="eyebrow">Life simulator</p>
             <h1>Design a life path worth replaying.</h1>
-            <p className="subtitle">Pick your starting conditions, then watch each monthly choice ripple across money, wellness, relationships, family, and stress.</p>
+            <p className="subtitle">Pick your starting conditions, then face a new random calendar of minor, moderate, and major life events, including school surprises that ripple across money, wellness, relationships, family, and stress.</p>
           </div>
           <div className="life-board" aria-hidden="true">
             <span className="board-node node-money">💸</span>
@@ -320,7 +400,10 @@ export default function App() {
           <p className="eyebrow">Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
           <h1>Weekly Life Map</h1>
         </div>
-        <button className="secondary" onClick={resetGame}>Restart Setup</button>
+        <div className="topbar-actions">
+          <button onClick={handleSimulateWeek}>Simulate Week</button>
+          <button className="secondary" onClick={resetGame}>Restart Setup</button>
+        </div>
       </header>
 
       <section className="stat-grid" aria-label="Current life stats">
@@ -343,11 +426,18 @@ export default function App() {
           <div className="section-heading calendar-heading">
             <div>
               <p className="eyebrow">This week</p>
-              <h2>Choose your daily decisions</h2>
+              <h2>Simulate your week</h2>
             </div>
-            <span>{completedThisWeek}/{totalWeeklyDecisions} done</span>
+            <span>{pendingThisWeek} flow events pending</span>
           </div>
-          <p className="calendar-intro">Each day includes 2–5 decisions, and several decisions have three options so the week feels less binary.</p>
+          <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, then Monday through Sunday will resolve with random choices and random minor, moderate, or major events.</p>
+          <div className="flow-panel">
+            <div>
+              <strong>Default mode: go with the flow</strong>
+              <span>Manual choices are optional; the simulator will randomly handle anything left pending.</span>
+            </div>
+            <button onClick={handleSimulateWeek}>Simulate Week</button>
+          </div>
           <div className="weekly-calendar">
             {weekSchedule.map((day) => (
               <article className="day-column" key={day.day}>
@@ -366,6 +456,10 @@ export default function App() {
                             <small>{decision.visual.label}</small>
                             <h3>{decision.title}</h3>
                           </div>
+                          <span className={`severity-badge severity-${decision.severity}`}>
+                            <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
+                            {severityConfig[decision.severity]?.label ?? decision.severity}
+                          </span>
                         </div>
                         <p>{decision.description}</p>
                         <div className="decision-options">
@@ -402,7 +496,7 @@ export default function App() {
                 <span>Age {game.age}</span>
               </div>
             </div>
-            <p>Finish every decision on the weekly calendar to unlock the next week. Week 52 adds a new birthday.</p>
+            <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday.</p>
           </section>
 
           <section className="panel memories-card">

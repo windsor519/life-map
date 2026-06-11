@@ -243,6 +243,7 @@ input:focus {
 
 .actions,
 .topbar,
+.topbar-actions,
 .section-heading,
 .event-kicker {
   display: flex;
@@ -572,8 +573,10 @@ input:focus {
   }
 
   .topbar,
+  .topbar-actions,
   .actions,
-  .section-heading {
+  .section-heading,
+  .flow-panel {
     align-items: stretch;
     flex-direction: column;
   }
@@ -620,6 +623,42 @@ input:focus {
   color: #b9c6df;
   font-size: 1.04rem;
   line-height: 1.65;
+}
+
+
+.flow-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(147, 197, 253, 0.24);
+  border-radius: 1.25rem;
+  margin: 0 0 1.25rem;
+  background:
+    radial-gradient(circle at 92% 18%, rgba(37, 99, 235, 0.34), transparent 12rem),
+    rgba(255, 255, 255, 0.085);
+  padding: 1rem;
+}
+
+.flow-panel div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.flow-panel strong {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.flow-panel span {
+  color: #b9c6df;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.flow-panel button,
+.topbar-actions button {
+  white-space: nowrap;
 }
 
 .weekly-calendar {
@@ -720,6 +759,38 @@ input:focus {
   border-radius: 0.85rem;
   background: rgba(255, 255, 255, 0.12);
   font-size: 1.25rem;
+}
+
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #e5edff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  padding: 0.28rem 0.5rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.severity-minor {
+  background: rgba(147, 197, 253, 0.16);
+  color: #dbeafe;
+}
+
+.severity-moderate {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fef3c7;
+}
+
+.severity-major {
+  background: rgba(244, 63, 94, 0.22);
+  color: #ffe4e6;
 }
 
 .decision-title h3 {

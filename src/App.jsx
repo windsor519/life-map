@@ -32,6 +32,10 @@ const statConfig = {
   stress: { label: "Stress", icon: "⚡", max: 100, tone: "bad" }
 };
 
+const summaryStatKeys = Object.keys(statConfig);
+const captureStats = (game) =>
+  summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
+
 const eventVisuals = {
   "daughter-recital": { icon: "🎼", accent: "violet", label: "Family moment" },
   "friend-birthday": { icon: "🎂", accent: "rose", label: "Social life" },
@@ -138,6 +142,98 @@ const getWeekSchedule = (week, eventSeed) =>
     })
   }));
 
+const summaryCopy = {
+  chaos: {
+    mood: "🔥",
+    headline: "Your calendar chose violence",
+    joke: "Stress went up so fast it probably needs its own zip code.",
+    award: "Certified Chaos Goblin Week"
+  },
+  broke: {
+    mood: "💸",
+    headline: "Financial oopsie with confidence",
+    joke: "Your wallet is now running on vibes, lint, and one brave receipt.",
+    award: "Most Dramatic Wallet Exit"
+  },
+  glow: {
+    mood: "💪",
+    headline: "Suspiciously responsible behavior",
+    joke: "Health improved. Your couch has filed a missing person report.",
+    award: "Unexpectedly Functional Adult"
+  },
+  romance: {
+    mood: "💞",
+    headline: "Main character relationship arc",
+    joke: "The relationship meter blushed. Extremely unprofessional.",
+    award: "Rom-Com Side Quest Complete"
+  },
+  family: {
+    mood: "🌱",
+    headline: "Family bond power-up",
+    joke: "The kids may remember this fondly, pending snack availability.",
+    award: "Snack-Based Legacy Builder"
+  },
+  legend: {
+    mood: "🏆",
+    headline: "Tiny wins, suspicious vibes",
+    joke: "Nothing exploded, which experts are calling personal growth.",
+    award: "Least Unhinged Week"
+  },
+  survived: {
+    mood: "😵‍💫",
+    headline: "You made it through somehow",
+    joke: "No one knows how, but the week has legally ended.",
+    award: "Emotional Support Calendar Needed"
+  }
+};
+
+const getSummaryTone = (deltas) => {
+  if (deltas.stress >= 12) return "chaos";
+  if (deltas.money <= -500) return "broke";
+  if (deltas.health >= 8) return "glow";
+  if (deltas.marriage >= 8) return "romance";
+  if (deltas.children >= 8) return "family";
+  if (summaryStatKeys.every((key) => deltas[key] >= 0 || key === "stress") && deltas.stress <= 0) return "legend";
+  return "survived";
+};
+
+const getLifeWeather = (deltas) => {
+  if (deltas.stress >= 12) return "Thunderstorms with a chance of overthinking ⚡";
+  if (deltas.money <= -500) return "Financial fog rolling through the wallet district 💸";
+  if (deltas.health >= 8) return "Sunny with gains and suspiciously clean sneakers 💪";
+  if (deltas.marriage >= 8) return "Warm rom-com breeze from the relationship department 💞";
+  if (deltas.children >= 8) return "High-pressure family hugs with snack gusts 🌱";
+  return "Partly chaotic, clearing by next Monday 😵‍💫";
+};
+
+const createWeeklySummary = ({ previousGame, nextState, highlights = [] }) => {
+  const startStats = previousGame.weekStartStats ?? captureStats(previousGame);
+  const endStats = captureStats(nextState);
+  const deltas = summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: endStats[key] - (startStats[key] ?? previousGame[key] ?? 0) }), {});
+  const tone = getSummaryTone(deltas);
+  const copy = summaryCopy[tone];
+
+  return {
+    id: `${previousGame.eventSeed}-${previousGame.week}-${Date.now()}`,
+    week: previousGame.week,
+    age: previousGame.age,
+    deltas,
+    highlights: highlights.slice(-3),
+    weather: getLifeWeather(deltas),
+    ...copy
+  };
+};
+
+const formatSummaryDelta = (key, value) => {
+  const prefix = value > 0 ? "+" : "";
+
+  if (key === "money") {
+    return `${prefix}${value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}`;
+  }
+
+  return `${prefix}${value}`;
+};
+
 const createDefaultGame = () => ({
   age: 40,
   money: 100000,
@@ -151,6 +247,8 @@ const createDefaultGame = () => ({
   memories: [],
   currentEventId: getRandomEventId(),
   eventSeed: createEventSeed(),
+  weekStartStats: null,
+  weeklySummary: null,
   initialized: false
 });
 
@@ -167,7 +265,9 @@ const normalizeGame = (game) => ({
   week: clamp(Number(game?.week ?? game?.month ?? 1), 1, 52),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
-  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed()
+  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
+  weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
+  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
 });
 
 const loadSavedGame = () => {
@@ -238,7 +338,7 @@ export default function App() {
     if (money >= 50000) marriage += 10;
     if (money < 5000) stress += 10;
 
-    setGame({
+    const newGame = {
       age,
       money,
       health: clamp(health),
@@ -251,7 +351,13 @@ export default function App() {
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
+      weeklySummary: null,
       initialized: true
+    };
+
+    setGame({
+      ...newGame,
+      weekStartStats: captureStats(newGame)
     });
   };
 
@@ -301,12 +407,20 @@ export default function App() {
       const nextState = applyEffects(prevGame, choice.effects);
       const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
 
-      return {
+      const updatedGame = {
         ...nextState,
         ...nextDate,
         completedDecisions: weekComplete ? [] : completedDecisions,
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, `${timestamp}: ${choice.memory}`].slice(-8)
+      };
+
+      return {
+        ...updatedGame,
+        weekStartStats: weekComplete ? captureStats(updatedGame) : prevGame.weekStartStats ?? captureStats(prevGame),
+        weeklySummary: weekComplete
+          ? createWeeklySummary({ previousGame: prevGame, nextState, highlights: [`${dayName}: ${decision.title} → ${choice.label}`] })
+          : prevGame.weeklySummary
       };
     });
   };
@@ -316,6 +430,7 @@ export default function App() {
       const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
       let nextState = prevGame;
       const simulatedMemories = [];
+      const summaryHighlights = [];
 
       schedule.forEach((day, dayIndex) => {
         const dayResults = [];
@@ -328,6 +443,7 @@ export default function App() {
           const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, dayIndex, decisionIndex, decision.choices);
           nextState = applyEffects(nextState, choice.effects);
           dayResults.push(`${decision.title}: ${choice.label}`);
+          summaryHighlights.push(`${day.day}: ${decision.title} → ${choice.label}`);
         });
 
         if (dayResults.length > 0) {
@@ -339,12 +455,18 @@ export default function App() {
         return prevGame;
       }
 
-      return {
+      const advancedGame = {
         ...nextState,
         ...getNextWeekState(prevGame.week, prevGame.age),
         completedDecisions: [],
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
+      };
+
+      return {
+        ...advancedGame,
+        weekStartStats: captureStats(advancedGame),
+        weeklySummary: createWeeklySummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
       };
     });
   };
@@ -358,6 +480,19 @@ export default function App() {
       ))}
     </span>
   );
+
+  const renderSummaryDelta = (key, value) => {
+    const config = statConfig[key];
+    const isGoodChange = key === "stress" ? value <= 0 : value >= 0;
+
+    return (
+      <span className={`summary-delta ${isGoodChange ? "positive" : "negative"}`} key={key}>
+        <span aria-hidden="true">{config?.icon}</span>
+        <strong>{config?.label ?? key}</strong>
+        <em>{formatSummaryDelta(key, value)}</em>
+      </span>
+    );
+  };
 
   if (!game.initialized) {
     return (
@@ -530,6 +665,52 @@ export default function App() {
             </div>
             <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday.</p>
           </section>
+
+          {game.weeklySummary ? (
+            <section className="panel weekly-summary-card" aria-live="polite">
+              <div className="summary-confetti" aria-hidden="true">
+                <span>{game.weeklySummary.mood}</span>
+                <span>💸</span>
+                <span>⚡</span>
+                <span>💪</span>
+              </div>
+              <div className="section-heading summary-heading">
+                <div>
+                  <p className="eyebrow">Ridiculous recap</p>
+                  <h2>Week {game.weeklySummary.week}</h2>
+                </div>
+                <span>Age {game.weeklySummary.age}</span>
+              </div>
+              <div className="summary-hero">
+                <span className="summary-mascot" aria-hidden="true">{game.weeklySummary.mood}</span>
+                <div>
+                  <h3>{game.weeklySummary.headline}</h3>
+                  <p>{game.weeklySummary.joke}</p>
+                </div>
+              </div>
+              <div className="summary-weather">
+                <span>Life weather</span>
+                <strong>{game.weeklySummary.weather}</strong>
+              </div>
+              <div className="summary-deltas" aria-label="Weekly stat changes">
+                {summaryStatKeys.map((key) => renderSummaryDelta(key, game.weeklySummary.deltas[key] ?? 0))}
+              </div>
+              <div className="summary-award">
+                <span aria-hidden="true">🏅</span>
+                <div>
+                  <small>Fake award</small>
+                  <strong>{game.weeklySummary.award}</strong>
+                </div>
+              </div>
+              {(game.weeklySummary.highlights ?? []).length > 0 ? (
+                <ul className="summary-highlights">
+                  {(game.weeklySummary.highlights ?? []).map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className="panel memories-card">
             <div className="section-heading">

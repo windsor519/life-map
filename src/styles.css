@@ -78,7 +78,7 @@ input:focus {
   width: 90vw;
   max-width: none;
   margin: 0 auto;
-  padding: 2rem 0 3rem;
+  padding: 2rem 0 14rem;
 }
 
 .setup-shell {
@@ -275,6 +275,39 @@ input:focus {
   letter-spacing: -0.08em;
 }
 
+.bottom-turn-hud {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 88% 24%, rgba(255, 122, 89, 0.22), transparent 18rem),
+    linear-gradient(180deg, rgba(9, 11, 26, 0.58), rgba(9, 11, 26, 0.94));
+  box-shadow: 0 -24px 70px rgba(0, 0, 0, 0.42);
+  padding: 0.9rem max(5vw, 1rem);
+  backdrop-filter: blur(22px);
+}
+
+.bottom-stat-strip {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.bottom-stat-strip .stat-grid {
+  display: flex;
+  min-width: min-content;
+  gap: 0.75rem;
+  margin: 0;
+}
+
 .stat-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-bottom: 1rem;
@@ -283,6 +316,27 @@ input:focus {
 .stat-card {
   min-height: 150px;
   padding: 1rem;
+}
+
+.bottom-stat-strip .stat-card {
+  flex: 1 0 clamp(150px, 15vw, 220px);
+  min-height: 126px;
+  padding: 0.85rem;
+}
+
+.next-turn-button {
+  position: sticky;
+  right: max(5vw, 1rem);
+  align-self: stretch;
+  flex: 0 0 auto;
+  min-width: clamp(190px, 18vw, 260px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 1.35rem;
+  box-shadow:
+    0 24px 70px rgba(255, 122, 89, 0.34),
+    0 18px 48px rgba(37, 99, 235, 0.26);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  letter-spacing: -0.02em;
 }
 
 .stat-card.severity-warning {
@@ -633,6 +687,7 @@ input:focus {
   .app-shell {
     width: calc(100% - 1rem);
     padding-top: 0.5rem;
+    padding-bottom: 18rem;
   }
 
   .setup-shell,
@@ -655,6 +710,40 @@ input:focus {
   .flow-panel {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .bottom-turn-hud {
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .bottom-stat-strip .stat-card {
+    flex-basis: 132px;
+    min-height: 112px;
+    padding: 0.72rem;
+  }
+
+  .bottom-stat-strip .stat-icon {
+    width: 2.1rem;
+    height: 2.1rem;
+    margin-bottom: 0.55rem;
+    font-size: 1.1rem;
+  }
+
+  .bottom-stat-strip .stat-card strong {
+    font-size: 1.08rem;
+  }
+
+  .bottom-stat-strip .meter {
+    margin-top: 0.7rem;
+  }
+
+  .next-turn-button {
+    right: 0.5rem;
+    min-width: 132px;
+    max-width: 38vw;
+    padding: 0.75rem 0.85rem;
   }
 
   .stat-card,
@@ -1962,6 +2051,10 @@ input:focus {
   .topbar-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .bottom-turn-hud {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
   }
 
   .form-grid,

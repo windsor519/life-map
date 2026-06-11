@@ -81,6 +81,41 @@ const createDefaultLegacy = () => ({
   lastRun: null
 });
 
+
+const createEmptyFamily = () => ({
+  grandparents: "",
+  greatGrandparents: "",
+  spouse: "",
+  kids: ""
+});
+const familyFields = {
+  grandparents: "Grandparents",
+  greatGrandparents: "Great-grandparents",
+  spouse: "Spouse / partner",
+  kids: "Kids"
+};
+const splitFamilyNames = (value) =>
+  String(value ?? "")
+    .split(/[\n,]+/)
+    .map((name) => name.trim())
+    .filter(Boolean);
+const countFamilyNames = (value) => splitFamilyNames(value).length;
+const normalizeFamily = (family) => ({
+  ...createEmptyFamily(),
+  ...(family && typeof family === "object" ? family : {})
+});
+const getFamilySummary = (family) => {
+  const normalizedFamily = normalizeFamily(family);
+  const entries = Object.entries(familyFields)
+    .map(([key, label]) => {
+      const names = splitFamilyNames(normalizedFamily[key]);
+      return names.length ? `${label}: ${names.join(", ")}` : null;
+    })
+    .filter(Boolean);
+
+  return entries.length ? entries.join(" · ") : "No family entered yet";
+};
+
 const getCarryRate = (runs) => Math.max(0.08, 0.25 - runs * 0.025);
 const getDifficultyMultiplier = (runs) => Number((1 + runs * 0.12).toFixed(2));
 const getRunNumber = (legacy) => (legacy?.runs ?? 0) + 1;
@@ -683,6 +718,7 @@ const createDefaultGame = () => ({
   gameOverReason: null,
   legacy: createDefaultLegacy(),
   character: null,
+  family: createEmptyFamily(),
   initialized: false
 });
 
@@ -705,7 +741,8 @@ const normalizeGame = (game) => ({
   gameOver: Boolean(game?.gameOver),
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
   legacy: normalizeLegacy(game?.legacy),
-  character: game?.character && typeof game.character === "object" ? game.character : null
+  character: game?.character && typeof game.character === "object" ? game.character : null,
+  family: normalizeFamily(game?.family)
 });
 
 const loadSavedGame = () => {
@@ -731,9 +768,9 @@ export default function App() {
     stableJob: "no",
     social: "weak"
   });
+  const [familyInput, setFamilyInput] = useState(() => normalizeFamily(game.family));
   const [activeDecisionContext, setActiveDecisionContext] = useState(null);
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
-  const [characterOptions, setCharacterOptions] = useState(() => generateCharacterOptions());
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -839,10 +876,14 @@ export default function App() {
     event?.preventDefault();
     const age = clamp(parseInt(startAge, 10) || 20, 12, 100);
     const money = Math.max(0, Math.round(parseInt(startMoney, 10) || 0));
+    const family = normalizeFamily(familyInput);
+    const kidsCount = countFamilyNames(family.kids);
+    const hasSpouse = countFamilyNames(family.spouse) > 0;
+    const extendedFamilyCount = countFamilyNames(family.grandparents) + countFamilyNames(family.greatGrandparents);
 
     let health = 70;
-    let marriage = 40;
-    let children = 20;
+    let marriage = hasSpouse ? 60 : 40;
+    let children = kidsCount > 0 ? 35 + kidsCount * 12 : 10;
     let stress = 30;
 
     if (quiz.exercise === "regularly") {
@@ -869,6 +910,10 @@ export default function App() {
       stress += 5;
     }
 
+    if (hasSpouse) marriage += 10;
+    if (kidsCount > 0) stress += Math.min(12, kidsCount * 3);
+    if (extendedFamilyCount > 0) children += Math.min(12, extendedFamilyCount * 2);
+
     if (age >= 25 && age <= 40) marriage += 10;
     if (money >= 50000) marriage += 10;
     if (money < 5000) stress += 10;
@@ -888,7 +933,8 @@ export default function App() {
       week: 1,
       completedDecisions: [],
       selectedChoices: {},
-      memories: ["You started a new life chapter."],
+      memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
+      family,
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
       weeklySummary: null,
@@ -916,18 +962,8 @@ export default function App() {
     setGame(createDefaultGame());
     setStartAge(25);
     setStartMoney(10000);
+    setFamilyInput(createEmptyFamily());
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
-    setCharacterOptions(generateCharacterOptions());
-  };
-
-  const rerollCharacters = () => {
-    setCharacterOptions(generateCharacterOptions());
-  };
-
-  const startProfileGame = (profile) => {
-    setSimulationState(createIdleSimulationState());
-    setGame(createGameFromProfile(profile));
-    startZenMusic();
   };
 
   const prepareNewGamePlus = () => {
@@ -935,6 +971,7 @@ export default function App() {
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setStartMoney(10000);
+    setFamilyInput(createEmptyFamily());
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
@@ -1395,58 +1432,34 @@ export default function App() {
         </section>
 
         <form className="panel setup-form" onSubmit={startNewGame}>
-          <section className="randomizer-panel" aria-label="Randomized character options">
+          <section className="family-panel" aria-label="Family setup">
             <div className="randomizer-heading">
               <div>
-                <p className="eyebrow">Quick start</p>
-                <h2>Randomize 3 balanced lives</h2>
-                <p>Each roll gets a perk and a drawback, then the budget-balancer trims anything too overpowered.</p>
+                <p className="eyebrow">Family first</p>
+                <h2>Enter your family</h2>
+                <p>No premade characters. Start by naming the people in your life—grandparents, great-grandparents if you have them, spouse or partner, and kids.</p>
               </div>
-              <button type="button" className="secondary" onClick={rerollCharacters}>Randomize again</button>
             </div>
 
-            <div className="character-options">
-              {characterOptions.map((profile) => (
-                <article className="character-card" key={profile.id}>
-                  <div className="character-card-header">
-                    <span>{profile.vibe}</span>
-                    <strong>{profile.title}</strong>
-                    <p>{profile.description}</p>
-                  </div>
-
-                  <div className="trait-row" aria-label={`${profile.title} traits`}>
-                    {profile.traits.map((trait) => <span key={trait}>{trait}</span>)}
-                  </div>
-
-                  <div className="character-stats">
-                    <span>Age <strong>{profile.age}</strong></span>
-                    <span>Money <strong>{statConfig.money.formatter(profile.money)}</strong></span>
-                    <span>Health <strong>{profile.health}</strong></span>
-                    <span>Relationship <strong>{profile.marriage}</strong></span>
-                    <span>Family <strong>{profile.children}</strong></span>
-                    <span>Stress <strong>{profile.stress}</strong></span>
-                  </div>
-
-                  <div className="talent-box">
-                    <span aria-hidden="true">{profile.talent.icon}</span>
-                    <div>
-                      <strong>{profile.talent.name}</strong>
-                      <p>{profile.talent.description}</p>
-                    </div>
-                  </div>
-
-                  <div className="drawback-box">
-                    <strong>Drawback: {profile.drawback.name}</strong>
-                    <p>{profile.drawback.description}</p>
-                  </div>
-
-                  <button type="button" onClick={() => startProfileGame(profile)}>Choose this life</button>
-                </article>
-              ))}
+            <div className="family-grid">
+              <label>
+                <span>Grandparents</span>
+                <textarea value={familyInput.grandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, grandparents: event.target.value }))} placeholder="Example: Nana Rose, Grandpa Lee" rows={3} />
+              </label>
+              <label>
+                <span>Great-grandparents (if any)</span>
+                <textarea value={familyInput.greatGrandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, greatGrandparents: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
+              </label>
+              <label>
+                <span>Spouse / partner</span>
+                <input type="text" value={familyInput.spouse} onChange={(event) => setFamilyInput((family) => ({ ...family, spouse: event.target.value }))} placeholder="Optional" />
+              </label>
+              <label>
+                <span>Kids</span>
+                <textarea value={familyInput.kids} onChange={(event) => setFamilyInput((family) => ({ ...family, kids: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
+              </label>
             </div>
           </section>
-
-          <div className="manual-divider"><span>or build manually</span></div>
 
           <div className="form-grid">
             <label>
@@ -1507,15 +1520,13 @@ export default function App() {
         <div>
           <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · {activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>
           <h1>Seasonal Life Map</h1>
-          {game.character ? (
-            <div className="active-character">
-              <span>{game.character.talent?.icon}</span>
-              <div>
-                <strong>{game.character.title}</strong>
-                <small>{game.character.talent?.name}: {game.character.talent?.description}</small>
-              </div>
+          <div className="active-character">
+            <span>👨‍👩‍👧‍👦</span>
+            <div>
+              <strong>Your family</strong>
+              <small>{getFamilySummary(game.family)}</small>
             </div>
-          ) : null}
+          </div>
         </div>
         <div className="topbar-actions">
           <button className="secondary music-toggle" onClick={toggleZenMusic}>{musicPlaying ? "Pause Zen" : "Play Zen"}</button>

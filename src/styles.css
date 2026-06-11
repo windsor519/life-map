@@ -1474,3 +1474,217 @@ input:focus {
     grid-template-columns: repeat(7, minmax(210px, 78vw));
   }
 }
+
+.randomizer-panel {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid rgba(147, 197, 253, 0.24);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 0 0, rgba(124, 58, 237, 0.3), transparent 12rem),
+    rgba(15, 23, 42, 0.28);
+  padding: 1rem;
+}
+
+.randomizer-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.randomizer-heading h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
+  letter-spacing: -0.05em;
+}
+
+.randomizer-heading p {
+  max-width: 42rem;
+  margin: 0.4rem 0 0;
+  color: #c8d3e9;
+  line-height: 1.55;
+}
+
+.character-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.character-card {
+  display: grid;
+  gap: 0.8rem;
+  align-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
+  padding: 0.95rem;
+}
+
+.character-card-header span {
+  display: inline-flex;
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  border-radius: 999px;
+  color: #bae6fd;
+  background: rgba(14, 165, 233, 0.14);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  padding: 0.22rem 0.48rem;
+  text-transform: uppercase;
+}
+
+.character-card-header strong {
+  display: block;
+  margin-top: 0.55rem;
+  color: #fff;
+  font-size: 1.15rem;
+  letter-spacing: -0.04em;
+}
+
+.character-card-header p,
+.talent-box p,
+.drawback-box p {
+  margin: 0.28rem 0 0;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.trait-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.trait-row span {
+  border-radius: 999px;
+  color: #ede9fe;
+  background: rgba(124, 58, 237, 0.28);
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.24rem 0.5rem;
+}
+
+.character-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.character-stats span {
+  display: grid;
+  gap: 0.12rem;
+  border-radius: 0.75rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.66rem;
+  font-weight: 850;
+  padding: 0.48rem;
+  text-transform: uppercase;
+}
+
+.character-stats strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+}
+
+.talent-box,
+.drawback-box,
+.active-character {
+  display: flex;
+  gap: 0.65rem;
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  border-radius: 0.95rem;
+  background: rgba(6, 78, 59, 0.24);
+  padding: 0.7rem;
+}
+
+.talent-box > span,
+.active-character > span {
+  display: grid;
+  flex: 0 0 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.3rem;
+}
+
+.talent-box strong,
+.drawback-box strong,
+.active-character strong {
+  color: #fff;
+}
+
+.drawback-box {
+  display: grid;
+  border-color: rgba(251, 113, 133, 0.3);
+  background: rgba(127, 29, 29, 0.18);
+}
+
+.manual-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.manual-divider::before,
+.manual-divider::after {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.14);
+  content: "";
+}
+
+.active-character {
+  max-width: 44rem;
+  margin-top: 0.85rem;
+  align-items: center;
+}
+
+.active-character small {
+  display: block;
+  margin-top: 0.12rem;
+  color: #d1fae5;
+  line-height: 1.35;
+}
+
+@media (max-width: 1180px) {
+  .setup-shell,
+  .character-options {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 720px) {
+  .randomizer-heading,
+  .actions,
+  .topbar,
+  .topbar-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-grid,
+  .character-stats {
+    grid-template-columns: 1fr;
+  }
+}

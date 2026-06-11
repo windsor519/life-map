@@ -1,33 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
+import {
+  WEEKS_PER_YEAR,
+  getNextSeasonState,
+  getSeasonName,
+  getSeasonNumber,
+  getSeasonSchedule,
+  scaleEffects
+} from "./seasonModel.js";
 
 const STORAGE_KEY = "life-map-game";
-const seasons = ["Winter", "Spring", "Summer", "Fall"];
-const WEEKS_PER_SEASON = 13;
-const WEEKS_PER_YEAR = 52;
-const seasonDecisionPlan = [
-  {
-    label: "Week 1 sample",
-    description: "Pick a few early-season moves. These routine decisions are extrapolated across the quarter.",
-    decisionCount: 3,
-    effectMultiplier: 4,
-    eventTypes: ["minor", "moderate"]
-  },
-  {
-    label: "Week 2 sample",
-    description: "Make one more representative week of choices before the sim projects the rest of the season.",
-    decisionCount: 3,
-    effectMultiplier: 4,
-    eventTypes: ["minor", "moderate"]
-  },
-  {
-    label: "Seasonal event",
-    description: "One-off milestones and curveballs happen occasionally, not every day.",
-    decisionCount: 2,
-    effectMultiplier: 1,
-    eventTypes: ["moderate", "major"]
-  }
-];
 const severityConfig = {
   minor: { label: "Minor", icon: "·" },
   moderate: { label: "Moderate", icon: "◆" },
@@ -141,53 +123,6 @@ const getRandomChoice = (eventSeed, week, periodIndex, decisionIndex, choices) =
   const choiceIndex = Math.floor(seededRandom(eventSeed, week, periodIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
 };
-const getSeasonNumber = (week) => Math.min(seasons.length, Math.max(1, Math.ceil(week / WEEKS_PER_SEASON)));
-const getSeasonName = (week) => seasons[getSeasonNumber(week) - 1];
-const getNextSeasonState = (week, age) => {
-  const currentSeason = getSeasonNumber(week);
-  const nextWeek = currentSeason === seasons.length ? 1 : currentSeason * WEEKS_PER_SEASON + 1;
-
-  return {
-    age: currentSeason === seasons.length ? age + 1 : age,
-    month: Math.min(12, Math.ceil(nextWeek / 4.333)),
-    week: nextWeek
-  };
-};
-
-const scaleEffects = (effects, multiplier = 1) =>
-  Object.fromEntries(Object.entries(effects).map(([key, value]) => [key, Math.round(value * multiplier)]));
-
-const getSeasonEvents = (plan, eventSeed, week, planIndex, usedEventIds) => {
-  const matchingEvents = events.filter((event) => plan.eventTypes.includes(getSeverity(event)));
-  const fallbackPool = matchingEvents.length > 0 ? matchingEvents : events;
-
-  return Array.from({ length: plan.decisionCount }, (_, decisionIndex) => {
-    const availableEvents = fallbackPool.filter((event) => !usedEventIds.has(event.id));
-    const eventPool = availableEvents.length > 0 ? availableEvents : fallbackPool;
-    const eventIndex = Math.floor(seededRandom(eventSeed, week, planIndex, decisionIndex) * eventPool.length);
-    const event = eventPool[Math.min(eventIndex, eventPool.length - 1)];
-
-    usedEventIds.add(event.id);
-
-    return {
-      ...event,
-      severity: getSeverity(event),
-      effectMultiplier: plan.effectMultiplier,
-      key: `${eventSeed}-${week}-${planIndex}-${decisionIndex}-${event.id}`,
-      visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
-    };
-  });
-};
-
-const getSeasonSchedule = (week, eventSeed) => {
-  const usedEventIds = new Set();
-
-  return seasonDecisionPlan.map((plan, planIndex) => ({
-    ...plan,
-    decisions: getSeasonEvents(plan, eventSeed, week, planIndex, usedEventIds)
-  }));
-};
-
 const summaryCopy = {
   chaos: {
     mood: "🔥",
@@ -523,7 +458,17 @@ export default function App() {
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
   };
 
-  const seasonSchedule = useMemo(() => getSeasonSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
+  const seasonSchedule = useMemo(
+    () => getSeasonSchedule({
+      eventSeed: game.eventSeed,
+      events,
+      eventVisuals,
+      getSeverity,
+      seededRandom,
+      week: game.week
+    }),
+    [game.eventSeed, game.week]
+  );
   const totalSeasonDecisions = seasonSchedule.reduce((total, period) => total + period.decisions.length, 0);
   const selectedChoices = game.selectedChoices ?? {};
   const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
@@ -619,7 +564,14 @@ export default function App() {
   const handleSimulateSeason = () => {
     setExpandedDecisionKey(null);
     setGame((prevGame) => {
-      const schedule = getSeasonSchedule(prevGame.week, prevGame.eventSeed);
+      const schedule = getSeasonSchedule({
+        eventSeed: prevGame.eventSeed,
+        events,
+        eventVisuals,
+        getSeverity,
+        seededRandom,
+        week: prevGame.week
+      });
       let nextState = prevGame;
       const simulatedMemories = [];
       const summaryHighlights = [];

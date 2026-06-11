@@ -33,8 +33,8 @@ const monthNames = [
 const seasonConfig = [
   { id: "spring", label: "Spring", icon: "🌸", months: [1, 2, 3], palette: "Bloom", description: "Fresh starts, healthier routines, and tiny brave resets." },
   { id: "summer", label: "Summer", icon: "☀️", months: [4, 5, 6], palette: "Sunlit", description: "High-energy plans, family logistics, and social heat." },
-  { id: "fall", label: "Fall", icon: "🍂", months: [7, 8, 9], palette: "Harvest", description: "Back-to-rhythm choices, money checks, and cozy priorities." },
-  { id: "winter", label: "Winter", icon: "❄️", months: [10, 11, 12], palette: "Frost", description: "Recovery, reflection, surprise bills, and warm connections." }
+  { id: "fall", label: "Fall", icon: "🍂", months: [7, 8, 9], palette: "Harvest", description: "Back-to-rhythm choices, and cozy priorities." },
+  { id: "winter", label: "Winter", icon: "❄️", months: [10, 11, 12], palette: "Frost", description: "Recovery, reflection, surprise obligations, and warm connections." }
 ];
 
 const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
@@ -43,14 +43,6 @@ const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => sea
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
 const statConfig = {
-  money: {
-    label: "Money",
-    icon: "💸",
-    formatter: (value) => value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
-    accent: "#fbbf24",
-    glow: "rgba(251, 191, 36, 0.38)",
-    signal: "Runway"
-  },
   health: { label: "Health", icon: "💪", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Vitality" },
   marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Connection" },
   children: { label: "Family bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Home base" },
@@ -65,8 +57,7 @@ const legacySkillConfig = {
   grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
   wellness: { label: "Wellness", icon: "🌿", description: "Carries forward healthier habits after a bad ending." },
   bonds: { label: "Bonds", icon: "💞", description: "Keeps a little relationship wisdom between lives." },
-  parenting: { label: "Parenting", icon: "🧸", description: "Saves family lessons for the next run." },
-  hustle: { label: "Hustle", icon: "💼", description: "Banks a scaled-down money mindset for new game plus." }
+  parenting: { label: "Parenting", icon: "🧸", description: "Saves family lessons for the next run." }
 };
 
 const createEmptyStats = () => Object.fromEntries(summaryStatKeys.map((key) => [key, 0]));
@@ -84,15 +75,19 @@ const createDefaultLegacy = () => ({
 
 const createEmptyFamily = () => ({
   grandparents: "",
+  grandparentsAges: "",
   greatGrandparents: "",
+  greatGrandparentsAges: "",
   spouse: "",
-  kids: ""
+  spouseAge: "",
+  kids: "",
+  kidsAges: ""
 });
 const familyFields = {
-  grandparents: "Grandparents",
-  greatGrandparents: "Great-grandparents",
-  spouse: "Spouse / partner",
-  kids: "Kids"
+  grandparents: { label: "Grandparents", ageKey: "grandparentsAges" },
+  greatGrandparents: { label: "Great-grandparents", ageKey: "greatGrandparentsAges" },
+  spouse: { label: "Spouse / partner", ageKey: "spouseAge" },
+  kids: { label: "Kids", ageKey: "kidsAges" }
 };
 const splitFamilyNames = (value) =>
   String(value ?? "")
@@ -107,13 +102,77 @@ const normalizeFamily = (family) => ({
 const getFamilySummary = (family) => {
   const normalizedFamily = normalizeFamily(family);
   const entries = Object.entries(familyFields)
-    .map(([key, label]) => {
+    .map(([key, field]) => {
       const names = splitFamilyNames(normalizedFamily[key]);
-      return names.length ? `${label}: ${names.join(", ")}` : null;
+      const ages = splitFamilyNames(normalizedFamily[field.ageKey]);
+      const people = names.map((name, index) => ages[index] ? `${name} (${ages[index]})` : name);
+      return people.length ? `${field.label}: ${people.join(", ")}` : null;
     })
     .filter(Boolean);
 
   return entries.length ? entries.join(" · ") : "No family entered yet";
+};
+
+const EVENT_PROMPT_GUIDE = `Create 3-5 Life Map custom events for this family. Return ONLY a JSON array.
+Each event must use this shape:
+[
+  {
+    "id": "unique-kebab-case-id",
+    "title": "Short event title",
+    "category": "Family / Health / Relationship / Community / School / Work",
+    "description": "A specific situation using the player's family names and ages.",
+    "severity": "minor | moderate | major",
+    "icon": "emoji",
+    "accent": "blue | green | rose | amber | teal | violet | indigo",
+    "tags": ["general"],
+    "choices": [
+      {
+        "label": "Choice text",
+        "effects": { "health": 0, "marriage": 0, "children": 0, "stress": 0 },
+        "memory": "Past-tense memory of what happened."
+      }
+    ]
+  }
+]
+Rules: do not include money, debt, budgets, prices, or currency. Use only health, marriage, children, and stress effects between -20 and 20. Make each choice emotionally distinct.`;
+
+const allowedEffectKeys = new Set(summaryStatKeys);
+const sanitizeEffects = (effects) => Object.fromEntries(
+  Object.entries(effects ?? {})
+    .filter(([key, value]) => allowedEffectKeys.has(key) && Number.isFinite(Number(value)))
+    .map(([key, value]) => [key, Math.round(Number(value))])
+);
+const normalizeCustomEvents = (input) => {
+  if (!input.trim()) {
+    return [];
+  }
+
+  const parsed = JSON.parse(input);
+  const records = Array.isArray(parsed) ? parsed : [parsed];
+
+  return records.map((event, index) => {
+    if (!event || typeof event !== "object") {
+      throw new Error(`Custom event ${index + 1} must be an object.`);
+    }
+
+    const choices = Array.isArray(event.choices) ? event.choices : [];
+    if (!event.title || !event.description || choices.length === 0) {
+      throw new Error(`Custom event ${index + 1} needs title, description, and at least one choice.`);
+    }
+
+    return {
+      ...event,
+      id: event.id || `custom-event-${index + 1}`,
+      category: event.category || "Custom",
+      severity: ["minor", "moderate", "major"].includes(event.severity) ? event.severity : "minor",
+      tags: Array.isArray(event.tags) && event.tags.length > 0 ? event.tags : ["general"],
+      choices: choices.map((choice, choiceIndex) => ({
+        label: choice?.label || `Choice ${choiceIndex + 1}`,
+        effects: sanitizeEffects(choice?.effects),
+        memory: choice?.memory || `You chose ${choice?.label || `choice ${choiceIndex + 1}`}.`
+      }))
+    };
+  });
 };
 
 const getCarryRate = (runs) => Math.max(0.08, 0.25 - runs * 0.025);
@@ -166,7 +225,7 @@ const eventVisuals = {
   "family-call": { icon: "☎️", accent: "blue", label: "Family" },
   "therapy-session": { icon: "🧠", accent: "green", label: "Wellness" },
   "kids-sports": { icon: "⚽", accent: "rose", label: "Parenting" },
-  "investment-choice": { icon: "📈", accent: "amber", label: "Money" },
+  "investment-choice": { icon: "📈", accent: "amber", label: "Planning" },
   "digital-detox": { icon: "📵", accent: "indigo", label: "Wellness" },
   "pop-quiz": { icon: "📝", accent: "blue", label: "School" },
   "school-supply-list": { icon: "🎒", accent: "green", label: "School" },
@@ -219,11 +278,15 @@ const seededRandom = (...values) => {
 
   return ((hash >>> 0) % 10000) / 10000;
 };
-const getRandomEventId = (excludeId) => {
-  const availableEvents = events.filter((event) => event.id !== excludeId);
-  const pool = availableEvents.length > 0 ? availableEvents : events;
+const getRandomEventId = (excludeId, eventList = events) => {
+  const availableEvents = eventList.filter((event) => event.id !== excludeId);
+  const pool = availableEvents.length > 0 ? availableEvents : eventList;
   return pool[Math.floor(Math.random() * pool.length)].id;
 };
+
+
+const excludedMoneyEventIds = new Set(["grocery-budget", "side-hustle", "investment-choice", "scholarship-deadline", "school-fundraiser"]);
+const isMoneyFreeEvent = (event) => !excludedMoneyEventIds.has(event.id) && String(event.category ?? "").toLowerCase() !== "money";
 
 const getAgePriorityTags = (age) => {
   if (age >= 35 && age <= 45) {
@@ -232,9 +295,9 @@ const getAgePriorityTags = (age) => {
   return ["general"];
 };
 
-const getAgeRelevantEvents = (age) => {
+const getAgeRelevantEvents = (age, eventList = events) => {
   const priorityTags = getAgePriorityTags(age);
-  const scheduledEvents = events.filter((event) => !event.surprise);
+  const scheduledEvents = eventList.filter((event) => !event.surprise && isMoneyFreeEvent(event));
   const relevantEvents = scheduledEvents.filter((event) => {
     const tags = event.tags ?? ["general"];
     return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
@@ -285,7 +348,7 @@ const getNextSeasonState = (month, age) => {
 };
 
 const UNEXPECTED_EVENT_CHANCE = 0.28;
-const surpriseEvents = unexpectedEventRecords.map((event) => ({
+const surpriseEvents = unexpectedEventRecords.filter(isMoneyFreeEvent).map((event) => ({
   ...event,
   severity: getSeverity(event),
   visual: { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Unexpected" }
@@ -310,8 +373,8 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getMonthSchedule = (month, year, eventSeed, age) => {
-  const eventPool = getAgeRelevantEvents(age);
+const getMonthSchedule = (month, year, eventSeed, age, eventList = events) => {
+  const eventPool = getAgeRelevantEvents(age, eventList);
   const daysInMonth = getMonthLength(month, year);
 
   return Array.from({ length: daysInMonth }, (_, index) => {
@@ -339,12 +402,6 @@ const summaryCopy = {
     headline: "Your calendar chose violence",
     joke: "Stress went up so fast it probably needs its own zip code.",
     award: "Certified Chaos Goblin Week"
-  },
-  broke: {
-    mood: "💸",
-    headline: "Financial oopsie with confidence",
-    joke: "Your wallet is now running on vibes, lint, and one brave receipt.",
-    award: "Most Dramatic Wallet Exit"
   },
   glow: {
     mood: "💪",
@@ -380,7 +437,6 @@ const summaryCopy = {
 
 const getSummaryTone = (deltas) => {
   if (deltas.stress >= 12) return "chaos";
-  if (deltas.money <= -500) return "broke";
   if (deltas.health >= 8) return "glow";
   if (deltas.marriage >= 8) return "romance";
   if (deltas.children >= 8) return "family";
@@ -390,7 +446,6 @@ const getSummaryTone = (deltas) => {
 
 const getLifeWeather = (deltas) => {
   if (deltas.stress >= 12) return "Thunderstorms with a chance of overthinking ⚡";
-  if (deltas.money <= -500) return "Financial fog rolling through the wallet district 💸";
   if (deltas.health >= 8) return "Sunny with gains and suspiciously clean sneakers 💪";
   if (deltas.marriage >= 8) return "Warm rom-com breeze from the relationship department 💞";
   if (deltas.children >= 8) return "High-pressure family hugs with snack gusts 🌱";
@@ -416,13 +471,8 @@ const createSeasonalSummary = ({ previousGame, nextState, highlights = [] }) => 
   };
 };
 
-const formatSummaryDelta = (key, value) => {
+const formatSummaryDelta = (_key, value) => {
   const prefix = value > 0 ? "+" : "";
-
-  if (key === "money") {
-    return `${prefix}${value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}`;
-  }
-
   return `${prefix}${value}`;
 };
 
@@ -431,7 +481,6 @@ const getGameOverReason = (game) => {
   if (game.marriage <= 0) return "The relationship meter bottomed out. The couch has entered witness protection.";
   if (game.children <= 0) return "Family bond hit zero. The snack-based legacy needs a reboot.";
   if (game.stress >= 100) return "Stress hit 100. The calendar became sentient and demanded a rematch.";
-  if (game.money <= -10000) return "Debt got too deep. Your wallet rage-quit the timeline.";
   return null;
 };
 
@@ -439,7 +488,6 @@ const getLegacySkillBonuses = (legacy) => {
   const skills = legacy?.skills ?? createEmptySkills();
 
   return {
-    money: Math.min(20000, (skills.hustle ?? 0) * 250),
     health: Math.min(20, Math.floor((skills.wellness ?? 0) / 2)),
     marriage: Math.min(20, Math.floor((skills.bonds ?? 0) / 2)),
     children: Math.min(20, Math.floor((skills.parenting ?? 0) / 2)),
@@ -459,7 +507,6 @@ const buildNextLegacy = (legacy, finalGame) => {
   const runs = currentLegacy.runs + 1;
   const carryRate = getCarryRate(runs);
   const carriedStats = {
-    money: Math.max(0, Math.round((finalGame.money ?? 0) * carryRate * 0.12)),
     health: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate)),
     marriage: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate)),
     children: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate)),
@@ -469,8 +516,7 @@ const buildNextLegacy = (legacy, finalGame) => {
     grit: Math.max(1, Math.round((100 - Math.min(finalGame.stress ?? 100, 100)) * carryRate * 0.2)),
     wellness: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate * 0.18)),
     bonds: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate * 0.18)),
-    parenting: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate * 0.18)),
-    hustle: Math.max(0, Math.round(Math.max(finalGame.money ?? 0, 0) / 10000 * carryRate))
+    parenting: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate * 0.18))
   };
 
   return {
@@ -495,7 +541,6 @@ const applyLegacyBonuses = (baseStats, legacy) => {
 
   return {
     ...baseStats,
-    money: Math.max(0, Math.round(baseStats.money + (legacyBonuses.money ?? 0))),
     health: clamp(baseStats.health + (legacyBonuses.health ?? 0)),
     marriage: clamp(baseStats.marriage + (legacyBonuses.marriage ?? 0)),
     children: clamp(baseStats.children + (legacyBonuses.children ?? 0)),
@@ -504,204 +549,15 @@ const applyLegacyBonuses = (baseStats, legacy) => {
 };
 
 const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
-  Object.fromEntries(Object.entries(effects).map(([key, value]) => {
+  Object.fromEntries(Object.entries(sanitizeEffects(effects)).map(([key, value]) => {
     const isBad = key === "stress" ? value > 0 : value < 0;
     const multiplier = isBad ? difficulty : Math.max(0.5, 1 - (difficulty - 1) * 0.35);
     return [key, Math.round(value * multiplier)];
   }));
 
 
-const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-const characterArchetypes = [
-  {
-    title: "The Fragile Genius",
-    description: "Smart but weak: great plans, questionable knees.",
-    vibe: "Glass cannon",
-    ageRange: [35, 45],
-    moneyRange: [8000, 28000],
-    stats: { health: -18, marriage: 4, children: -2, stress: 12 },
-    traits: ["Smart", "Focused", "Weak"],
-    perkTags: ["money", "career"],
-    drawback: { name: "Glass Constitution", description: "Health starts low, so reckless wellness choices hurt more." }
-  },
-  {
-    title: "The Iron Loner",
-    description: "Strong but antisocial: can move a couch, cannot text back.",
-    vibe: "Tank build",
-    ageRange: [35, 45],
-    moneyRange: [5000, 22000],
-    stats: { health: 22, marriage: -20, children: -12, stress: -4 },
-    traits: ["Strong", "Disciplined", "Antisocial"],
-    perkTags: ["stress", "health"],
-    drawback: { name: "Unread Messages", description: "Relationship and family stats start fragile." }
-  },
-  {
-    title: "The Golden Burnout",
-    description: "Rich but cooked: impressive account balance, haunted calendar.",
-    vibe: "High risk",
-    ageRange: [35, 45],
-    moneyRange: [65000, 120000],
-    stats: { health: -10, marriage: -12, children: -8, stress: 28 },
-    traits: ["Wealthy", "Overworked", "Anxious"],
-    perkTags: ["money"],
-    drawback: { name: "Always On", description: "Stress starts high enough to become its own side quest." }
-  },
-  {
-    title: "The Social Meteor",
-    description: "Charismatic and chaotic: beloved by everyone, including trouble.",
-    vibe: "Blessed mess",
-    ageRange: [35, 45],
-    moneyRange: [3000, 18000],
-    stats: { health: 2, marriage: 24, children: 18, stress: 14 },
-    traits: ["Charismatic", "Impulsive", "Connected"],
-    perkTags: ["social", "family"],
-    drawback: { name: "Calendar Avalanche", description: "The social life is strong; the recovery time is not." }
-  },
-  {
-    title: "The Lucky Mess",
-    description: "A walking dice roll with suspiciously good timing.",
-    vibe: "Chaos build",
-    ageRange: [35, 45],
-    moneyRange: [1000, 35000],
-    stats: { health: -4, marriage: 2, children: 4, stress: 10 },
-    traits: ["Lucky", "Messy", "Adaptable"],
-    perkTags: ["luck"],
-    drawback: { name: "No Plan, Just Vibes", description: "Balanced stats, but stress starts slightly spicy." }
-  },
-  {
-    title: "The Family Glue",
-    description: "Emotionally available, financially improvising.",
-    vibe: "Heart build",
-    ageRange: [35, 45],
-    moneyRange: [2500, 26000],
-    stats: { health: 0, marriage: 18, children: 26, stress: 8 },
-    traits: ["Nurturing", "Patient", "Broke-ish"],
-    perkTags: ["family", "social"],
-    drawback: { name: "Soft Wallet", description: "Low money makes generosity a tactical problem." }
-  }
-];
-
-const talentPool = [
-  { id: "pattern-vision", name: "Pattern Vision", icon: "🧠", tag: "money", cost: 18, description: "Negative money hits are softened by 20%." },
-  { id: "stress-armor", name: "Stress Armor", icon: "🛡️", tag: "stress", cost: 16, description: "Stress increases are reduced by 25%." },
-  { id: "iron-routine", name: "Iron Routine", icon: "🏋️", tag: "health", cost: 14, description: "Positive health gains receive a small bonus." },
-  { id: "npc-whisperer", name: "NPC Whisperer", icon: "🗣️", tag: "social", cost: 16, description: "Relationship gains get a small boost." },
-  { id: "family-glue", name: "Family Glue", icon: "🌱", tag: "family", cost: 16, description: "Family bond gains get a small boost." },
-  { id: "goblin-luck", name: "Goblin Luck", icon: "🎲", tag: "luck", cost: 18, description: "Very bad single-stat losses are softened a little." }
-];
-
-const balanceCharacter = (profile, talentCost) => {
-  const statScore =
-    (profile.money - 20000) / 2500 +
-    (profile.health - 60) * 0.9 +
-    (profile.marriage - 45) * 0.75 +
-    (profile.children - 30) * 0.65 -
-    (profile.stress - 35) * 0.9 +
-    talentCost;
-
-  let adjustment = Math.round(statScore);
-  const balancedProfile = { ...profile };
-
-  while (adjustment > 8) {
-    if (balancedProfile.money > 12000) {
-      balancedProfile.money -= 2500;
-    } else if (balancedProfile.stress < 72) {
-      balancedProfile.stress += 4;
-    } else {
-      balancedProfile.health -= 3;
-    }
-    adjustment -= 6;
-  }
-
-  while (adjustment < -8) {
-    if (balancedProfile.stress > 24) {
-      balancedProfile.stress -= 4;
-    } else if (balancedProfile.money < 45000) {
-      balancedProfile.money += 2500;
-    } else {
-      balancedProfile.health += 3;
-    }
-    adjustment += 6;
-  }
-
-  return {
-    ...balancedProfile,
-    money: Math.max(500, Math.round(balancedProfile.money)),
-    health: clamp(balancedProfile.health),
-    marriage: clamp(balancedProfile.marriage),
-    children: clamp(balancedProfile.children),
-    stress: clamp(balancedProfile.stress),
-    balanceScore: adjustment
-  };
-};
-
-const generateCharacterOptions = (count = 3) => {
-  const shuffledArchetypes = [...characterArchetypes].sort(() => Math.random() - 0.5);
-
-  return shuffledArchetypes.slice(0, count).map((archetype, index) => {
-    const matchingTalents = talentPool.filter((talent) => archetype.perkTags.includes(talent.tag));
-    const talent = matchingTalents[randomBetween(0, matchingTalents.length - 1)] ?? talentPool[index % talentPool.length];
-    const [minAge, maxAge] = archetype.ageRange;
-    const [minMoney, maxMoney] = archetype.moneyRange;
-    const profile = balanceCharacter(
-      {
-        id: `${archetype.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}-${index}`,
-        title: archetype.title,
-        description: archetype.description,
-        vibe: archetype.vibe,
-        age: randomBetween(minAge, maxAge),
-        money: randomBetween(minMoney, maxMoney),
-        health: 62 + archetype.stats.health + randomBetween(-5, 5),
-        marriage: 45 + archetype.stats.marriage + randomBetween(-6, 6),
-        children: 30 + archetype.stats.children + randomBetween(-6, 6),
-        stress: 35 + archetype.stats.stress + randomBetween(-5, 5),
-        traits: archetype.traits,
-        talent,
-        drawback: archetype.drawback
-      },
-      talent.cost
-    );
-
-    return profile;
-  });
-};
-
-const createGameFromProfile = (profile) => {
-  const newGame = {
-    age: profile.age,
-    money: profile.money,
-    health: clamp(profile.health),
-    marriage: clamp(profile.marriage),
-    children: clamp(profile.children),
-    stress: clamp(profile.stress),
-    character: {
-      title: profile.title,
-      description: profile.description,
-      vibe: profile.vibe,
-      traits: profile.traits,
-      talent: profile.talent,
-      drawback: profile.drawback
-    },
-    month: 1,
-    completedDecisions: [],
-    selectedChoices: {},
-    memories: [`You started as ${profile.title}: ${profile.description}`],
-    currentEventId: getRandomEventId(),
-    eventSeed: createEventSeed(),
-    weeklySummary: null,
-    initialized: true
-  };
-
-  return {
-    ...newGame,
-    weekStartStats: captureStats(newGame)
-  };
-};
-
 const createDefaultGame = () => ({
   age: 38,
-  money: 100000,
   health: 80,
   marriage: 75,
   children: 35,
@@ -710,7 +566,7 @@ const createDefaultGame = () => ({
   completedDecisions: [],
   selectedChoices: {},
   memories: [],
-  currentEventId: getRandomEventId(),
+  currentEventId: getRandomEventId(undefined, events.filter(isMoneyFreeEvent)),
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
@@ -719,13 +575,13 @@ const createDefaultGame = () => ({
   legacy: createDefaultLegacy(),
   character: null,
   family: createEmptyFamily(),
+  customEvents: [],
   initialized: false
 });
 
 const normalizeGame = (game) => ({
   ...createDefaultGame(),
   ...game,
-  money: Math.round(Number(game?.money ?? 0)),
   age: clamp(Number(game?.age ?? 25), 12, 100),
   health: clamp(Number(game?.health ?? 70)),
   marriage: clamp(Number(game?.marriage ?? 40)),
@@ -742,7 +598,8 @@ const normalizeGame = (game) => ({
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
   legacy: normalizeLegacy(game?.legacy),
   character: game?.character && typeof game.character === "object" ? game.character : null,
-  family: normalizeFamily(game?.family)
+  family: normalizeFamily(game?.family),
+  customEvents: Array.isArray(game?.customEvents) ? game.customEvents.map((event) => ({ ...event, choices: (event.choices ?? []).map((choice) => ({ ...choice, effects: sanitizeEffects(choice.effects) })) })) : []
 });
 
 const loadSavedGame = () => {
@@ -762,13 +619,14 @@ const loadSavedGame = () => {
 export default function App() {
   const [game, setGame] = useState(loadSavedGame);
   const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
-  const [startMoney, setStartMoney] = useState(game.initialized ? game.money : 10000);
   const [quiz, setQuiz] = useState({
     exercise: "sometimes",
     stableJob: "no",
     social: "weak"
   });
   const [familyInput, setFamilyInput] = useState(() => normalizeFamily(game.family));
+  const [customEventsText, setCustomEventsText] = useState("");
+  const [customEventError, setCustomEventError] = useState("");
   const [activeDecisionContext, setActiveDecisionContext] = useState(null);
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -875,7 +733,16 @@ export default function App() {
   const startNewGame = (event) => {
     event?.preventDefault();
     const age = clamp(parseInt(startAge, 10) || 20, 12, 100);
-    const money = Math.max(0, Math.round(parseInt(startMoney, 10) || 0));
+    let customEvents = [];
+
+    try {
+      customEvents = normalizeCustomEvents(customEventsText);
+      setCustomEventError("");
+    } catch (error) {
+      setCustomEventError(error.message);
+      return;
+    }
+
     const family = normalizeFamily(familyInput);
     const kidsCount = countFamilyNames(family.kids);
     const hasSpouse = countFamilyNames(family.spouse) > 0;
@@ -915,11 +782,8 @@ export default function App() {
     if (extendedFamilyCount > 0) children += Math.min(12, extendedFamilyCount * 2);
 
     if (age >= 25 && age <= 40) marriage += 10;
-    if (money >= 50000) marriage += 10;
-    if (money < 5000) stress += 10;
 
     const baseStats = applyLegacyBonuses({
-      money,
       health: clamp(health),
       marriage: clamp(marriage),
       children: clamp(children),
@@ -935,7 +799,8 @@ export default function App() {
       selectedChoices: {},
       memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
       family,
-      currentEventId: getRandomEventId(),
+      customEvents,
+      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter(isMoneyFreeEvent)),
       eventSeed: createEventSeed(),
       weeklySummary: null,
       gameOver: false,
@@ -961,8 +826,9 @@ export default function App() {
     setSimulationState(createIdleSimulationState());
     setGame(createDefaultGame());
     setStartAge(25);
-    setStartMoney(10000);
     setFamilyInput(createEmptyFamily());
+    setCustomEventsText("");
+    setCustomEventError("");
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
   };
 
@@ -970,18 +836,20 @@ export default function App() {
     setActiveDecisionContext(null);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
-    setStartMoney(10000);
     setFamilyInput(createEmptyFamily());
+    setCustomEventsText("");
+    setCustomEventError("");
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
+  const playableEvents = useMemo(() => [...events, ...(Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents]);
   const activeSeason = getSeasonForMonth(game.month);
   const activeSeasonIndex = getSeasonIndexForMonth(game.month);
   const seasonSchedule = useMemo(
-    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age)),
-    [activeSeason, game.eventSeed, game.age, currentCalendarYear]
+    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents)),
+    [activeSeason, game.eventSeed, game.age, currentCalendarYear, playableEvents]
   );
   const seasonDecisions = useMemo(
     () => seasonSchedule.flatMap((day) => day.decisions.map((decision, decisionIndex) => ({ ...decision, day, decisionIndex }))),
@@ -1026,10 +894,6 @@ export default function App() {
     const talentId = baseState.character?.talent?.id;
     const nextEffects = { ...effects };
 
-    if (talentId === "pattern-vision" && nextEffects.money < 0) {
-      nextEffects.money = Math.round(nextEffects.money * 0.8);
-    }
-
     if (talentId === "stress-armor" && nextEffects.stress > 0) {
       nextEffects.stress = Math.ceil(nextEffects.stress * 0.75);
     }
@@ -1048,12 +912,8 @@ export default function App() {
 
     if (talentId === "goblin-luck") {
       Object.entries(nextEffects).forEach(([key, value]) => {
-        if (key !== "money" && value <= -8) {
+        if (value <= -8) {
           nextEffects[key] = value + 2;
-        }
-
-        if (key === "money" && value <= -500) {
-          nextEffects.money = Math.round(value * 0.88);
         }
       });
     }
@@ -1063,13 +923,12 @@ export default function App() {
 
   const applyEffects = (baseState, effects) => {
     const next = { ...baseState };
-    Object.entries(effects).forEach(([key, value]) => {
+    Object.entries(sanitizeEffects(effects)).forEach(([key, value]) => {
       next[key] = (next[key] ?? 0) + value;
     });
 
     return {
       ...next,
-      money: Math.round(next.money),
       health: clamp(next.health),
       marriage: clamp(next.marriage),
       children: clamp(next.children),
@@ -1114,7 +973,7 @@ export default function App() {
         ...nextState,
         completedDecisions,
         selectedChoices,
-        currentEventId: getRandomEventId(prevGame.currentEventId),
+        currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
         memories: [...prevGame.memories, `${timestamp}: ${memoryAction}`].slice(-8)
       };
 
@@ -1137,7 +996,7 @@ export default function App() {
       ...getNextSeasonState(prevGame.month, prevGame.age),
       completedDecisions: [],
       selectedChoices: {},
-      currentEventId: getRandomEventId(prevGame.currentEventId),
+      currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
       memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     }));
   };
@@ -1149,7 +1008,7 @@ export default function App() {
 
     setActiveDecisionContext(null);
 
-    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age));
+    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents));
     let nextState = game;
     const steps = [];
     const simulatedMemories = [];
@@ -1239,7 +1098,7 @@ export default function App() {
       ...getNextSeasonState(game.month, game.age),
       completedDecisions: [],
       selectedChoices: {},
-      currentEventId: getRandomEventId(game.currentEventId),
+      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
     };
     const monthlySummary = createSeasonalSummary({ previousGame: game, nextState, highlights: summaryHighlights });
@@ -1423,7 +1282,6 @@ export default function App() {
             <p className="subtitle">With kids, aging grandparents, and hard choices—can you make it through?</p>
           </div>
           <div className="life-board" aria-hidden="true">
-            <span className="board-node node-money">💸</span>
             <span className="board-node node-heart">💞</span>
             <span className="board-node node-health">💪</span>
             <span className="board-node node-family">🌱</span>
@@ -1447,16 +1305,32 @@ export default function App() {
                 <textarea value={familyInput.grandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, grandparents: event.target.value }))} placeholder="Example: Nana Rose, Grandpa Lee" rows={3} />
               </label>
               <label>
+                <span>Grandparents ages</span>
+                <textarea value={familyInput.grandparentsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, grandparentsAges: event.target.value }))} placeholder="Example: 72, 74" rows={3} />
+              </label>
+              <label>
                 <span>Great-grandparents (if any)</span>
                 <textarea value={familyInput.greatGrandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, greatGrandparents: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
+              </label>
+              <label>
+                <span>Great-grandparents ages</span>
+                <textarea value={familyInput.greatGrandparentsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, greatGrandparentsAges: event.target.value }))} placeholder="Optional ages, same order" rows={3} />
               </label>
               <label>
                 <span>Spouse / partner</span>
                 <input type="text" value={familyInput.spouse} onChange={(event) => setFamilyInput((family) => ({ ...family, spouse: event.target.value }))} placeholder="Optional" />
               </label>
               <label>
+                <span>Spouse / partner age</span>
+                <input type="text" value={familyInput.spouseAge} onChange={(event) => setFamilyInput((family) => ({ ...family, spouseAge: event.target.value }))} placeholder="Optional age" />
+              </label>
+              <label>
                 <span>Kids</span>
                 <textarea value={familyInput.kids} onChange={(event) => setFamilyInput((family) => ({ ...family, kids: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
+              </label>
+              <label>
+                <span>Kids ages</span>
+                <textarea value={familyInput.kidsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, kidsAges: event.target.value }))} placeholder="Optional ages, same order" rows={3} />
               </label>
             </div>
           </section>
@@ -1466,11 +1340,28 @@ export default function App() {
               <span>Starting age</span>
               <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} />
             </label>
-            <label>
-              <span>Starting money</span>
-              <input type="number" value={startMoney} onChange={(event) => setStartMoney(event.target.value)} min={0} />
-            </label>
           </div>
+
+          <section className="custom-events-panel" aria-label="Custom events setup">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Custom events</p>
+                <h2>Add AI-made events</h2>
+              </div>
+              <span>{customEventsText.trim() ? "Ready to import" : "Optional"}</span>
+            </div>
+            <p>Paste JSON events from an AI assistant to personalize the season around your family. Money effects are ignored so the game stays focused on relationships, health, family, and stress.</p>
+            <label>
+              <span>Custom events JSON</span>
+              <textarea value={customEventsText} onChange={(event) => setCustomEventsText(event.target.value)} placeholder='[{"id":"teen-driving-lesson","title":"Driving Lesson Nerves","description":"Your teen asks for practice before a big milestone.","severity":"moderate","icon":"🚗","accent":"teal","tags":["general"],"choices":[{"label":"Practice patiently","effects":{"children":8,"stress":4},"memory":"You practiced driving patiently."}]}]' rows={8} />
+            </label>
+            {customEventError ? <p className="form-error" role="alert">{customEventError}</p> : null}
+            <details className="prompt-guide">
+              <summary>Prompt guide for AI</summary>
+              <p>Copy this prompt into an AI assistant, then paste the JSON result above.</p>
+              <textarea readOnly value={`${EVENT_PROMPT_GUIDE}\n\nPlayer family: ${getFamilySummary(familyInput)}\nPlayer age: ${startAge}`} rows={12} />
+            </details>
+          </section>
 
           <fieldset>
             <legend>How often do you exercise?</legend>
@@ -1544,7 +1435,6 @@ export default function App() {
               const severity = getStatSeverity(value, config);
               const alert = severityCopy[severity];
               const ringFill = config.max ? `${normalizedValue * 3.6}deg` : "360deg";
-              const moneyStatus = key === "money" ? (value < 0 ? "Debt" : value < 2500 ? "Tight" : "Funded") : null;
 
               return (
                 <article
@@ -1566,13 +1456,9 @@ export default function App() {
                       {alert.label}
                     </div>
                   ) : null}
-                  {percentage ? (
-                    <div className={`meter ${config.tone}`} aria-hidden="true">
-                      <span style={{ width: percentage }} />
-                    </div>
-                  ) : (
-                    <div className="money-chip" aria-hidden="true">{moneyStatus}</div>
-                  )}
+                  <div className={`meter ${config.tone}`} aria-hidden="true">
+                    <span style={{ width: percentage }} />
+                  </div>
                 </article>
               );
             })}
@@ -1760,7 +1646,6 @@ export default function App() {
           >
             <div className="summary-confetti" aria-hidden="true">
               <span>{activeMonthlySummary.mood}</span>
-              <span>💸</span>
               <span>⚡</span>
               <span>💪</span>
             </div>

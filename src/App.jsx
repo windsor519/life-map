@@ -295,6 +295,7 @@ export default function App() {
     stableJob: "no",
     social: "weak"
   });
+  const [expandedDecisionKey, setExpandedDecisionKey] = useState(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -416,6 +417,7 @@ export default function App() {
         }
       };
       const completedDecisions = Object.keys(selectedChoices);
+      const weekComplete = completedDecisions.length >= totalWeeklyDecisions;
       const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
       const memoryAction = previousSelection ? `changed ${decision.title} from ${previousSelection.label} to ${choice.label}` : choice.memory;
 
@@ -438,6 +440,7 @@ export default function App() {
   };
 
   const handleAdvanceWeek = () => {
+    setExpandedDecisionKey(null);
     setGame((prevGame) => ({
       ...prevGame,
       ...getNextWeekState(prevGame.week, prevGame.age),
@@ -449,6 +452,7 @@ export default function App() {
   };
 
   const handleSimulateWeek = () => {
+    setExpandedDecisionKey(null);
     setGame((prevGame) => {
       const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
       let nextState = prevGame;
@@ -624,7 +628,7 @@ export default function App() {
             </div>
             <span>{pendingThisWeek} random decisions left</span>
           </div>
-          <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, then Monday through Sunday will resolve with random choices and random minor, moderate, or major events.</p>
+          <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, or click a compact decision card to expand it and choose your own outcome.</p>
           <div className="flow-panel">
             <div>
               <strong>{pendingThisWeek === 0 ? "Weekly plan ready" : "Default mode: go with the flow"}</strong>
@@ -648,46 +652,65 @@ export default function App() {
                     const selectedChoice = selectedChoices[decision.key];
                     const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
                     const completed = Boolean(selectedChoice) || lockedLegacyChoice;
+                    const isExpanded = expandedDecisionKey === decision.key;
                     return (
-                      <section className={`decision-card accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
-                        <div className="decision-title">
-                          <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
-                          <div>
-                            <small>{decision.visual.label}</small>
-                            <h3>{decision.title}</h3>
-                          </div>
-                          <span className={`severity-badge severity-${decision.severity}`}>
-                            <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
-                            {severityConfig[decision.severity]?.label ?? decision.severity}
+                      <section className={`decision-card accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
+                        <button
+                          className="decision-toggle"
+                          type="button"
+                          aria-expanded={isExpanded}
+                          onClick={() => setExpandedDecisionKey(isExpanded ? null : decision.key)}
+                        >
+                          <span className="decision-title">
+                            <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
+                            <span>
+                              <small>{decision.visual.label}</small>
+                              <h3>{decision.title}</h3>
+                            </span>
                           </span>
-                        </div>
-                        <p>{decision.description}</p>
-                        {selectedChoice ? (
-                          <div className="selected-summary" aria-live="polite">
-                            <span>Selected</span>
-                            <strong>{selectedChoice.label}</strong>
-                            <small>Click another option below to change this decision.</small>
+                          <span className="decision-status">
+                            {selectedChoice ? <span className="selected-pill">Picked</span> : null}
+                            <span className={`severity-badge severity-${decision.severity}`}>
+                              <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
+                              {severityConfig[decision.severity]?.label ?? decision.severity}
+                            </span>
+                            <span className="expand-cue" aria-hidden="true">{isExpanded ? "−" : "+"}</span>
+                          </span>
+                        </button>
+                        {isExpanded ? (
+                          <div className="decision-details">
+                            <p>{decision.description}</p>
+                            {selectedChoice ? (
+                              <div className="selected-summary" aria-live="polite">
+                                <span>Selected</span>
+                                <strong>{selectedChoice.label}</strong>
+                                <small>Pick another option below to change this decision.</small>
+                              </div>
+                            ) : null}
+                            <div className="decision-options">
+                              {decision.choices.map((choice) => {
+                                const isSelected = selectedChoice?.label === choice.label;
+                                return (
+                                  <button
+                                    className={`option-button ${isSelected ? "selected" : ""}`}
+                                    disabled={lockedLegacyChoice}
+                                    key={choice.label}
+                                    onClick={() => {
+                                      handleChoice(choice, decision, day.day);
+                                      setExpandedDecisionKey(null);
+                                    }}
+                                  >
+                                    <span className="choice-label-row">
+                                      <strong>{choice.label}</strong>
+                                      {isSelected ? <span className="selected-pill">Selected</span> : null}
+                                    </span>
+                                    {renderEffectPreview(choice.effects)}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
                         ) : null}
-                        <div className="decision-options">
-                          {decision.choices.map((choice) => {
-                            const isSelected = selectedChoice?.label === choice.label;
-                            return (
-                              <button
-                                className={`option-button ${isSelected ? "selected" : ""}`}
-                                disabled={lockedLegacyChoice}
-                                key={choice.label}
-                                onClick={() => handleChoice(choice, decision, day.day)}
-                              >
-                                <span className="choice-label-row">
-                                  <strong>{choice.label}</strong>
-                                  {isSelected ? <span className="selected-pill">Selected</span> : null}
-                                </span>
-                                {renderEffectPreview(choice.effects)}
-                              </button>
-                            );
-                          })}
-                        </div>
                       </section>
                     );
                   })}

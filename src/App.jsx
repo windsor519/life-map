@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 
 const STORAGE_KEY = "life-map-game";
 const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const decisionsPerDay = [2, 3, 4, 2, 3, 5, 2];
 const severityConfig = {
-  minor: { label: "Minor", icon: "•" },
+  minor: { label: "Minor", icon: "·" },
   moderate: { label: "Moderate", icon: "◆" },
-  major: { label: "Major", icon: "✦" }
+  major: { label: "Major", icon: "⚠" }
 };
 const monthNames = [
   "January",
@@ -137,7 +137,7 @@ const getWeekSchedule = (week, eventSeed) =>
         ...event,
         severity: getSeverity(event),
         key: `${eventSeed}-${week}-${dayIndex}-${decisionIndex}-${event.id}`,
-        visual: eventVisuals[event.id] ?? { icon: "✨", accent: "blue", label: "Life" }
+        visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
       };
     })
   }));
@@ -296,12 +296,106 @@ export default function App() {
     social: "weak"
   });
   const [expandedDecisionKey, setExpandedDecisionKey] = useState(null);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(game));
     }
   }, [game]);
+
+  useEffect(() => () => stopZenMusic(false), []);
+
+  const stopZenMusic = (updateState = true) => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    window.clearInterval(audio.chimeTimer);
+    audio.nodes.forEach((node) => {
+      node.stop?.();
+      node.disconnect();
+    });
+    audio.context.close();
+    audioRef.current = null;
+
+    if (updateState) {
+      setMusicPlaying(false);
+    }
+  };
+
+  const startZenMusic = () => {
+    if (typeof window === "undefined" || audioRef.current) {
+      return;
+    }
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) {
+      return;
+    }
+
+    const context = new AudioContext();
+    const master = context.createGain();
+    const padGain = context.createGain();
+    const nodes = [];
+    const padFrequencies = [174, 261.63, 329.63, 392];
+
+    master.gain.value = 0.05;
+    padGain.gain.value = 0.18;
+    padGain.connect(master);
+    master.connect(context.destination);
+
+    padFrequencies.forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const voiceGain = context.createGain();
+
+      oscillator.type = index % 2 === 0 ? "sine" : "triangle";
+      oscillator.frequency.value = frequency;
+      voiceGain.gain.value = index === 0 ? 0.2 : 0.08;
+      oscillator.connect(voiceGain);
+      voiceGain.connect(padGain);
+      oscillator.start();
+      nodes.push(oscillator, voiceGain);
+    });
+
+    const playChime = () => {
+      const now = context.currentTime;
+      const oscillator = context.createOscillator();
+      const chimeGain = context.createGain();
+      const frequencies = [523.25, 587.33, 659.25, 783.99, 880];
+      const frequency = frequencies[Math.floor(Math.random() * frequencies.length)];
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, now);
+      chimeGain.gain.setValueAtTime(0, now);
+      chimeGain.gain.linearRampToValueAtTime(0.18, now + 0.08);
+      chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+      oscillator.connect(chimeGain);
+      chimeGain.connect(master);
+      oscillator.start(now);
+      oscillator.stop(now + 3);
+    };
+
+    const chimeTimer = window.setInterval(playChime, 5400);
+    playChime();
+
+    audioRef.current = { chimeTimer, context, nodes };
+    setMusicPlaying(true);
+  };
+
+  const toggleZenMusic = () => {
+    if (musicPlaying) {
+      stopZenMusic();
+      return;
+    }
+
+    startZenMusic();
+  };
+
 
   const startNewGame = (event) => {
     event?.preventDefault();
@@ -363,12 +457,14 @@ export default function App() {
       ...newGame,
       weekStartStats: captureStats(newGame)
     });
+    startZenMusic();
   };
 
   const resetGame = () => {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(STORAGE_KEY);
     }
+    stopZenMusic();
     setGame(createDefaultGame());
     setStartAge(25);
     setStartMoney(10000);
@@ -528,7 +624,7 @@ export default function App() {
           <div>
             <p className="eyebrow">Life simulator</p>
             <h1>Design a life path worth replaying.</h1>
-            <p className="subtitle">Pick your starting conditions, then face a new random calendar of minor, moderate, and major life events, including school surprises that ripple across money, wellness, relationships, family, and stress.</p>
+            <p className="subtitle">Improve your life one week at a time.</p>
           </div>
           <div className="life-board" aria-hidden="true">
             <span className="board-node node-money">💸</span>
@@ -592,6 +688,7 @@ export default function App() {
           ) : (
             <button onClick={handleSimulateWeek}>Simulate Week</button>
           )}
+          <button className="secondary music-toggle" onClick={toggleZenMusic}>{musicPlaying ? "Pause Zen" : "Play Zen"}</button>
           <button className="secondary" onClick={resetGame}>Restart Setup</button>
         </div>
       </header>
@@ -654,7 +751,7 @@ export default function App() {
                     const completed = Boolean(selectedChoice) || lockedLegacyChoice;
                     const isExpanded = expandedDecisionKey === decision.key;
                     return (
-                      <section className={`decision-card accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
+                      <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
                         <button
                           className="decision-toggle"
                           type="button"

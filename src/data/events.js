@@ -190,11 +190,44 @@ const baseEvents = [
   {
     id: "investment-choice",
     title: "Investment Choice",
-    description: "You have a chance to move extra cash into savings or spend it now.",
+    description: "You have a chance to move extra cash into a TFSA, keep it liquid, or spend it now.",
     choices: [
-      { label: "Invest extra", effects: { money: 260, stress: 2 }, memory: "You moved extra cash toward future savings." },
+      { label: "Fill TFSA room", effects: { money: -900, tfsaBalance: 900, stress: 2 }, memory: "You moved extra cash into your TFSA for long-term compounding." },
       { label: "Buy something fun", effects: { money: -220, stress: -5, marriage: 2 }, memory: "You spent extra cash on a fun purchase." },
       { label: "Emergency fund", effects: { money: 120, stress: -4 }, memory: "You strengthened the emergency fund." }
+    ]
+  },
+  {
+    id: "inflation-check",
+    title: "Inflation Check",
+    severity: "moderate",
+    description: "Groceries, gas, and rent are creeping up in this 2–3% inflation scenario.",
+    choices: [
+      { label: "Reprice budget", effects: { money: 120, stress: 2 }, memory: "You adjusted the budget before inflation quietly ate the surplus." },
+      { label: "Coupon sprint", effects: { money: 70, stress: 4, health: -1 }, memory: "You squeezed the weekly budget with a coupon sprint." },
+      { label: "Ignore it", effects: { money: -180, stress: 5 }, memory: "You ignored inflation and felt it at checkout." }
+    ]
+  },
+  {
+    id: "tfsa-contribution",
+    title: "TFSA Contribution Room",
+    severity: "minor",
+    description: "A fresh contribution window opens, and future-you is staring through the glass.",
+    choices: [
+      { label: "Automate contribution", effects: { money: -700, tfsaBalance: 700, stress: -2 }, memory: "You automated a TFSA contribution and removed the decision fatigue." },
+      { label: "Small starter deposit", effects: { money: -250, tfsaBalance: 250, stress: -1 }, memory: "You made a small TFSA deposit to keep momentum alive." },
+      { label: "Wait for payday", effects: { stress: 2 }, memory: "You left TFSA room unused until cash flow improved." }
+    ]
+  },
+  {
+    id: "market-correction",
+    title: "Market Correction Headlines",
+    severity: "major",
+    description: "Markets flash red as a normal 10–20% correction tests your investing plan.",
+    choices: [
+      { label: "Rebalance calmly", effects: { stress: -3, health: 1 }, memory: "You rebalanced through a correction instead of panic selling." },
+      { label: "Panic sell", effects: { money: -650, stress: 7 }, memory: "You panic sold during a market correction." },
+      { label: "Stop checking", effects: { stress: -5, marriage: 2 }, memory: "You stopped doom-refreshing the market app." }
     ]
   },
   {

@@ -24,8 +24,11 @@ const monthNames = [
   "December"
 ];
 
+const currencyFormatter = (value) => value.toLocaleString("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
+
 const statConfig = {
-  money: { label: "Money", icon: "💸", formatter: (value) => value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }) },
+  money: { label: "Cash", icon: "💸", formatter: currencyFormatter },
+  tfsaBalance: { label: "TFSA", icon: "🍁", formatter: currencyFormatter },
   health: { label: "Health", icon: "💪", max: 100, tone: "good" },
   marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good" },
   children: { label: "Family bond", icon: "🌱", max: 100, tone: "good" },
@@ -57,6 +60,9 @@ const eventVisuals = {
   "therapy-session": { icon: "🧠", accent: "green", label: "Wellness" },
   "kids-sports": { icon: "⚽", accent: "rose", label: "Parenting" },
   "investment-choice": { icon: "📈", accent: "amber", label: "Money" },
+  "inflation-check": { icon: "🏷️", accent: "rose", label: "Economy" },
+  "tfsa-contribution": { icon: "🍁", accent: "green", label: "Investing" },
+  "market-correction": { icon: "📉", accent: "amber", label: "Market cycle" },
   "digital-detox": { icon: "📵", accent: "indigo", label: "Wellness" },
   "pop-quiz": { icon: "📝", accent: "blue", label: "School" },
   "school-supply-list": { icon: "🎒", accent: "green", label: "School" },
@@ -116,6 +122,142 @@ const getSeverity = (event) => event.severity ?? "minor";
 const getRandomChoice = (eventSeed, week, dayIndex, decisionIndex, choices) => {
   const choiceIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
+};
+
+const ECONOMY = {
+  annualTfsaLimit: 7000,
+  baseMarketReturn: 0.07,
+  baselineAnnualSpending: 42000,
+  inflationScenarioMin: 0.02,
+  inflationScenarioMax: 0.03,
+  correctionDrawdownMin: 0.1,
+  correctionDrawdownMax: 0.2,
+  crashDrawdownMin: 0.3,
+  crashDrawdownMax: 0.5,
+  weeksPerMonth: 4.333
+};
+
+const economyTheoryNotes = [
+  "Canada targets 2% CPI inflation at the midpoint of a 1–3% control range; this game stress-tests 2–3% inflation.",
+  "The TFSA room value is a gameplay default based on the current $7,000 annual limit, not tax advice.",
+  "Correction and crash timing is a scenario assumption. A correction is commonly a 10%+ drop, while crashes/bear markets vary by cycle."
+];
+
+const createEconomyPlan = (eventSeed) => {
+  const correctionEveryMonths = 12 + Math.round(seededRandom(eventSeed, "correction-interval") * 16);
+  const crashEveryYears = 15 + Math.round(seededRandom(eventSeed, "crash-interval") * 5);
+
+  return {
+    inflationRate: ECONOMY.inflationScenarioMin + seededRandom(eventSeed, "inflation") * (ECONOMY.inflationScenarioMax - ECONOMY.inflationScenarioMin),
+    tfsaRoom: ECONOMY.annualTfsaLimit,
+    tfsaBalance: 0,
+    correctionEveryMonths,
+    correctionStartWeek: Math.round(correctionEveryMonths * ECONOMY.weeksPerMonth),
+    correctionDurationWeeks: 6 + Math.round(seededRandom(eventSeed, "correction-duration") * 8),
+    correctionDrawdown: ECONOMY.correctionDrawdownMin + seededRandom(eventSeed, "correction-depth") * (ECONOMY.correctionDrawdownMax - ECONOMY.correctionDrawdownMin),
+    crashEveryYears,
+    crashStartWeek: crashEveryYears * 52,
+    crashDurationWeeks: Math.round((16 + seededRandom(eventSeed, "crash-duration") * 16) * ECONOMY.weeksPerMonth),
+    crashDrawdown: ECONOMY.crashDrawdownMin + seededRandom(eventSeed, "crash-depth") * (ECONOMY.crashDrawdownMax - ECONOMY.crashDrawdownMin)
+  };
+};
+
+const normalizeEconomy = (economy, eventSeed) => {
+  const defaults = createEconomyPlan(eventSeed);
+
+  return {
+    ...defaults,
+    ...(economy && typeof economy === "object" ? economy : {}),
+    inflationRate: Number.isFinite(Number(economy?.inflationRate)) ? Number(economy.inflationRate) : defaults.inflationRate,
+    tfsaRoom: Math.max(0, Math.round(Number(economy?.tfsaRoom ?? defaults.tfsaRoom))),
+    tfsaBalance: Math.max(0, Math.round(Number(economy?.tfsaBalance ?? defaults.tfsaBalance)))
+  };
+};
+
+const formatPercent = (value) => `${(value * 100).toFixed(1)}%`;
+
+const getMarketCycle = (economy, elapsedWeeks = 0) => {
+  const crashIntervalWeeks = Math.max(1, Math.round(economy.crashEveryYears * 52));
+  const correctionIntervalWeeks = Math.max(1, Math.round(economy.correctionEveryMonths * ECONOMY.weeksPerMonth));
+  const crashStartWeek = Number(economy.crashStartWeek ?? crashIntervalWeeks);
+  const crashWeek = (elapsedWeeks - crashStartWeek) % crashIntervalWeeks;
+
+  if (elapsedWeeks >= crashStartWeek && crashWeek >= 0 && crashWeek < economy.crashDurationWeeks) {
+    return {
+      label: "Crash",
+      tone: "danger",
+      drawdown: economy.crashDrawdown,
+      durationWeeks: economy.crashDurationWeeks,
+      weeklyReturn: -(economy.crashDrawdown / economy.crashDurationWeeks),
+      detail: `${formatPercent(economy.crashDrawdown)} crash over ${Math.round(economy.crashDurationWeeks / ECONOMY.weeksPerMonth)} months`
+    };
+  }
+
+  const correctionStartWeek = Number(economy.correctionStartWeek ?? correctionIntervalWeeks);
+  const correctionWeek = (elapsedWeeks - correctionStartWeek) % correctionIntervalWeeks;
+
+  if (elapsedWeeks >= correctionStartWeek && correctionWeek >= 0 && correctionWeek < economy.correctionDurationWeeks) {
+    return {
+      label: "Correction",
+      tone: "warning",
+      drawdown: economy.correctionDrawdown,
+      durationWeeks: economy.correctionDurationWeeks,
+      weeklyReturn: -(economy.correctionDrawdown / economy.correctionDurationWeeks),
+      detail: `${formatPercent(economy.correctionDrawdown)} correction window`
+    };
+  }
+
+  return {
+    label: "Expansion",
+    tone: "good",
+    drawdown: 0,
+    durationWeeks: 0,
+    weeklyReturn: ECONOMY.baseMarketReturn / 52,
+    detail: `${formatPercent(ECONOMY.baseMarketReturn)} long-run market drift`
+  };
+};
+
+const getEconomyPulse = (game) => {
+  const economy = normalizeEconomy(game.economy, game.eventSeed);
+  const elapsedWeeks = Number(game.elapsedWeeks ?? 0);
+  const inflationDrag = Math.round((ECONOMY.baselineAnnualSpending * economy.inflationRate) / 52);
+  const market = getMarketCycle(economy, elapsedWeeks);
+  const tfsaReturn = Math.round((game.tfsaBalance ?? economy.tfsaBalance ?? 0) * market.weeklyReturn);
+
+  return { economy, inflationDrag, market, tfsaReturn };
+};
+
+const advanceEconomy = (previousGame, advancedGame) => {
+  const pulse = getEconomyPulse(previousGame);
+  const startsNewTaxYear = previousGame.week === 52;
+  const nextInflationRate = startsNewTaxYear
+    ? ECONOMY.inflationScenarioMin + seededRandom(previousGame.eventSeed, previousGame.age + 1, "inflation") * (ECONOMY.inflationScenarioMax - ECONOMY.inflationScenarioMin)
+    : pulse.economy.inflationRate;
+  const nextTfsaRoom = (advancedGame.economy?.tfsaRoom ?? pulse.economy.tfsaRoom) + (startsNewTaxYear ? ECONOMY.annualTfsaLimit : 0);
+  const nextTfsaBalance = Math.max(0, Math.round((advancedGame.tfsaBalance ?? 0) + pulse.tfsaReturn));
+  const nextMoney = Math.round((advancedGame.money ?? 0) - pulse.inflationDrag);
+
+  return {
+    ...advancedGame,
+    money: nextMoney,
+    tfsaBalance: nextTfsaBalance,
+    elapsedWeeks: Number(previousGame.elapsedWeeks ?? 0) + 1,
+    economy: {
+      ...pulse.economy,
+      ...(advancedGame.economy ?? {}),
+      inflationRate: nextInflationRate,
+      tfsaRoom: nextTfsaRoom,
+      tfsaBalance: nextTfsaBalance
+    },
+    economySummary: {
+      inflationDrag: pulse.inflationDrag,
+      marketLabel: pulse.market.label,
+      marketDetail: pulse.market.detail,
+      tfsaReturn: pulse.tfsaReturn,
+      tfsaRoomAdded: startsNewTaxYear ? ECONOMY.annualTfsaLimit : 0,
+      inflationRate: pulse.economy.inflationRate
+    }
+  };
 };
 const getNextWeekState = (week, age) => {
   const nextWeek = week === 52 ? 1 : week + 1;
@@ -227,16 +369,24 @@ const createWeeklySummary = ({ previousGame, nextState, highlights = [] }) => {
 const formatSummaryDelta = (key, value) => {
   const prefix = value > 0 ? "+" : "";
 
-  if (key === "money") {
-    return `${prefix}${value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}`;
+  if (statConfig[key]?.formatter) {
+    return `${prefix}${statConfig[key].formatter(value)}`;
   }
 
   return `${prefix}${value}`;
 };
 
-const createDefaultGame = () => ({
+const createDefaultGame = () => {
+  const eventSeed = createEventSeed();
+  const economy = createEconomyPlan(eventSeed);
+
+  return {
   age: 40,
   money: 100000,
+  tfsaBalance: economy.tfsaBalance,
+  economy,
+  elapsedWeeks: 0,
+  economySummary: null,
   health: 80,
   marriage: 75,
   children: 35,
@@ -247,16 +397,26 @@ const createDefaultGame = () => ({
   selectedChoices: {},
   memories: [],
   currentEventId: getRandomEventId(),
-  eventSeed: createEventSeed(),
+  eventSeed,
   weekStartStats: null,
   weeklySummary: null,
   initialized: false
-});
+};
+};
 
-const normalizeGame = (game) => ({
+const normalizeGame = (game) => {
+  const eventSeed = Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed();
+  const economy = normalizeEconomy(game?.economy, eventSeed);
+
+  return {
   ...createDefaultGame(),
   ...game,
+  eventSeed,
+  economy,
+  economySummary: game?.economySummary && typeof game.economySummary === "object" ? game.economySummary : null,
+  elapsedWeeks: Math.max(0, Math.round(Number(game?.elapsedWeeks ?? 0))),
   money: Math.round(Number(game?.money ?? 0)),
+  tfsaBalance: Math.max(0, Math.round(Number(game?.tfsaBalance ?? economy.tfsaBalance))),
   age: clamp(Number(game?.age ?? 25), 12, 100),
   health: clamp(Number(game?.health ?? 70)),
   marriage: clamp(Number(game?.marriage ?? 40)),
@@ -267,10 +427,10 @@ const normalizeGame = (game) => ({
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
-  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
   weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
-});
+};
+};
 
 const loadSavedGame = () => {
   if (typeof window === "undefined") {
@@ -435,9 +595,15 @@ export default function App() {
     if (money >= 50000) marriage += 10;
     if (money < 5000) stress += 10;
 
+    const eventSeed = createEventSeed();
+    const economy = createEconomyPlan(eventSeed);
     const newGame = {
       age,
       money,
+      tfsaBalance: economy.tfsaBalance,
+      economy,
+      elapsedWeeks: 0,
+      economySummary: null,
       health: clamp(health),
       marriage: clamp(marriage),
       children: clamp(children),
@@ -448,7 +614,7 @@ export default function App() {
       selectedChoices: {},
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
-      eventSeed: createEventSeed(),
+      eventSeed,
       weeklySummary: null,
       initialized: true
     };
@@ -477,20 +643,44 @@ export default function App() {
   const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
+  const economyPulse = getEconomyPulse(game);
 
   const applyEffects = (baseState, effects) => {
-    const next = { ...baseState };
+    const next = { ...baseState, economy: baseState.economy ? { ...baseState.economy } : baseState.economy };
+
     Object.entries(effects).forEach(([key, value]) => {
+      if (key === "tfsaBalance" && next.economy) {
+        const room = Math.max(0, Math.round(next.economy.tfsaRoom ?? 0));
+
+        if (value > 0) {
+          const contribution = Math.min(value, room);
+          next.tfsaBalance = (next.tfsaBalance ?? 0) + contribution;
+          next.economy.tfsaRoom = room - contribution;
+          return;
+        }
+
+        const withdrawal = Math.min(Math.abs(value), next.tfsaBalance ?? 0);
+        next.tfsaBalance = (next.tfsaBalance ?? 0) - withdrawal;
+        next.economy.tfsaRoom = room + withdrawal;
+        return;
+      }
+
       next[key] = (next[key] ?? 0) + value;
     });
 
     return {
       ...next,
       money: Math.round(next.money),
+      tfsaBalance: Math.max(0, Math.round(next.tfsaBalance ?? 0)),
       health: clamp(next.health),
       marriage: clamp(next.marriage),
       children: clamp(next.children),
-      stress: clamp(next.stress)
+      stress: clamp(next.stress),
+      economy: next.economy ? {
+        ...next.economy,
+        tfsaRoom: Math.max(0, Math.round(next.economy.tfsaRoom ?? 0)),
+        tfsaBalance: Math.max(0, Math.round(next.tfsaBalance ?? next.economy.tfsaBalance ?? 0))
+      } : next.economy
     };
   };
 
@@ -578,18 +768,20 @@ export default function App() {
         return prevGame;
       }
 
-      const advancedGame = {
+      const wrappedGame = {
         ...nextState,
         ...getNextWeekState(prevGame.week, prevGame.age),
         completedDecisions: [],
-        currentEventId: getRandomEventId(prevGame.currentEventId),
-        memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
+        currentEventId: getRandomEventId(prevGame.currentEventId)
       };
+      const advancedGame = advanceEconomy(prevGame, wrappedGame);
+      const economyMemory = `Economy pulse: ${advancedGame.economySummary.marketLabel}, inflation skimmed ${currencyFormatter(advancedGame.economySummary.inflationDrag)}, TFSA return ${formatSummaryDelta("tfsaBalance", advancedGame.economySummary.tfsaReturn)}${advancedGame.economySummary.tfsaRoomAdded ? `, TFSA room +${currencyFormatter(advancedGame.economySummary.tfsaRoomAdded)}` : ""}.`;
 
       return {
         ...advancedGame,
+        memories: [...prevGame.memories, ...simulatedMemories, economyMemory].slice(-8),
         weekStartStats: captureStats(advancedGame),
-        weeklySummary: createWeeklySummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
+        weeklySummary: createWeeklySummary({ previousGame: prevGame, nextState: advancedGame, highlights: [...summaryHighlights, economyMemory] })
       };
     });
   };
@@ -598,7 +790,7 @@ export default function App() {
     <span className="choice-effects" aria-label="Choice effects">
       {Object.entries(effects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+          {statConfig[key]?.label ?? key} {formatSummaryDelta(key, value)}
         </span>
       ))}
     </span>
@@ -830,6 +1022,35 @@ export default function App() {
               </div>
             </div>
             <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday.</p>
+          </section>
+
+          <section className="panel economy-card">
+            <div className="section-heading">
+              <h2>Economy assumptions</h2>
+              <span>{formatPercent(economyPulse.economy.inflationRate)} inflation</span>
+            </div>
+            <div className={`market-chip ${economyPulse.market.tone}`}>
+              <span>{economyPulse.market.label}</span>
+              <strong>{economyPulse.market.detail}</strong>
+            </div>
+            <dl className="economy-list">
+              <div>
+                <dt>Weekly inflation drag</dt>
+                <dd>-{currencyFormatter(economyPulse.inflationDrag)}</dd>
+              </div>
+              <div>
+                <dt>TFSA room</dt>
+                <dd>{currencyFormatter(economyPulse.economy.tfsaRoom)}</dd>
+              </div>
+              <div>
+                <dt>Next TFSA market move</dt>
+                <dd>{formatSummaryDelta("tfsaBalance", economyPulse.tfsaReturn)}</dd>
+              </div>
+            </dl>
+            <p>Gameplay assumptions, not predictions: 2–3% annual inflation, +{currencyFormatter(ECONOMY.annualTfsaLimit)} TFSA room every new year, 10–20% corrections every {economyPulse.economy.correctionEveryMonths} months, and a {formatPercent(economyPulse.economy.crashDrawdown)} crash every {economyPulse.economy.crashEveryYears} years lasting {Math.round(economyPulse.economy.crashDurationWeeks / ECONOMY.weeksPerMonth)} months.</p>
+            <ul className="theory-notes">
+              {economyTheoryNotes.map((note) => <li key={note}>{note}</li>)}
+            </ul>
           </section>
 
           {game.weeklySummary ? (

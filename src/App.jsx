@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
+import unexpectedEventRecords from "./data/unexpected_events.json";
 
 const STORAGE_KEY = "life-map-game";
 const severityConfig = {
@@ -177,12 +178,13 @@ const getAgePriorityTags = (age) => {
 
 const getAgeRelevantEvents = (age) => {
   const priorityTags = getAgePriorityTags(age);
-  const relevantEvents = events.filter((event) => {
+  const scheduledEvents = events.filter((event) => !event.surprise);
+  const relevantEvents = scheduledEvents.filter((event) => {
     const tags = event.tags ?? ["general"];
     return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
   });
 
-  return relevantEvents.length > 0 ? relevantEvents : events;
+  return relevantEvents.length > 0 ? relevantEvents : scheduledEvents;
 };
 
 const getEventRelevanceScore = (event, age) => {
@@ -224,7 +226,25 @@ const getNextMonthState = (month, age) => {
   };
 };
 
-const surpriseEvents = events.filter((event) => event.surprise);
+const UNEXPECTED_EVENT_CHANCE = 0.28;
+const surpriseEvents = unexpectedEventRecords.map((event) => ({
+  ...event,
+  severity: getSeverity(event),
+  visual: { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Unexpected" }
+}));
+const getUnexpectedEventForMonth = (eventSeed, month, year) => {
+  if (surpriseEvents.length === 0) {
+    return null;
+  }
+
+  const triggerRoll = seededRandom(eventSeed, month, year, "unexpected-event");
+  if (triggerRoll >= UNEXPECTED_EVENT_CHANCE) {
+    return null;
+  }
+
+  const eventIndex = Math.floor(seededRandom(eventSeed, month, year, "unexpected-event-choice") * surpriseEvents.length);
+  return surpriseEvents[Math.min(eventIndex, surpriseEvents.length - 1)];
+};
 const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => ({
   ...event,
   severity: getSeverity(event),
@@ -1064,6 +1084,16 @@ export default function App() {
           simulatedMemories.push(`Month ${prevGame.month}, ${day.dayLabel}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
         }
       });
+
+      const unexpectedEvent = getUnexpectedEventForMonth(prevGame.eventSeed, prevGame.month, currentCalendarYear);
+
+      if (unexpectedEvent) {
+        const adjustedEffects = scaleEffectsForDifficulty(unexpectedEvent.effects, prevGame.legacy?.difficulty ?? 1);
+        const modifiedEffects = applyTalentModifiers(nextState, adjustedEffects);
+        nextState = applyEffects(nextState, modifiedEffects);
+        simulatedMemories.push(`Month ${prevGame.month}, age ${prevGame.age}: ${unexpectedEvent.memory}`);
+        summaryHighlights.push(`${unexpectedEvent.icon} Unexpected: ${unexpectedEvent.title}`);
+      }
 
       if (simulatedMemories.length === 0) {
         return prevGame;

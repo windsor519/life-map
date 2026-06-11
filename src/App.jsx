@@ -67,6 +67,30 @@ const eventVisuals = {
 };
 
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(value)));
+
+const getStatSeverity = (value, config) => {
+  if (!config.max) {
+    return null;
+  }
+
+  const normalizedValue = clamp(value, 0, config.max);
+
+  if (config.tone === "bad") {
+    if (normalizedValue >= 80) return "critical";
+    if (normalizedValue >= 60) return "warning";
+    return "stable";
+  }
+
+  if (normalizedValue <= 20) return "critical";
+  if (normalizedValue <= 40) return "warning";
+  return "stable";
+};
+
+const severityCopy = {
+  critical: { icon: "🚨", label: "Critical" },
+  warning: { icon: "⚠️", label: "Watch" }
+};
+
 const createEventSeed = () => Math.floor(Math.random() * 1_000_000_000);
 const seededRandom = (...values) => {
   let hash = 2166136261;
@@ -410,9 +434,17 @@ export default function App() {
         {Object.entries(statConfig).map(([key, config]) => {
           const value = game[key];
           const percentage = config.max ? `${clamp(value, 0, config.max)}%` : null;
+          const severity = getStatSeverity(value, config);
+          const alert = severityCopy[severity];
           return (
-            <article className={`stat-card stat-${key}`} key={key}>
+            <article className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`} key={key}>
               <div className="stat-icon" aria-hidden="true">{config.icon}</div>
+              {alert ? (
+                <div className={`stat-alert ${severity === "warning" ? "warning" : ""}`} aria-label={`${config.label} needs ${severity === "critical" ? "urgent attention" : "attention"}`}>
+                  <span aria-hidden="true">{alert.icon}</span>
+                  {alert.label}
+                </div>
+              ) : null}
               <span>{config.label}</span>
               <strong>{config.formatter ? config.formatter(value) : value}</strong>
               {percentage ? <div className={`meter ${config.tone}`}><span style={{ width: percentage }} /></div> : null}

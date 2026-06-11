@@ -284,6 +284,23 @@ input:focus {
   padding: 1rem;
 }
 
+.stat-card.severity-warning {
+  border-color: rgba(251, 191, 36, 0.76);
+  box-shadow:
+    0 0 0 1px rgba(251, 191, 36, 0.22),
+    0 22px 60px rgba(251, 191, 36, 0.16),
+    0 28px 90px rgba(0, 0, 0, 0.34);
+}
+
+.stat-card.severity-critical {
+  border-color: rgba(248, 113, 113, 0.94);
+  box-shadow:
+    0 0 0 1px rgba(248, 113, 113, 0.42),
+    0 18px 64px rgba(248, 113, 113, 0.28),
+    0 28px 90px rgba(0, 0, 0, 0.34);
+  animation: criticalPulse 1.45s ease-in-out infinite;
+}
+
 .stat-card::before {
   position: absolute;
   inset: auto -32% -60% 24%;
@@ -293,6 +310,19 @@ input:focus {
   content: "";
   filter: blur(4px);
   opacity: 0.54;
+}
+
+.stat-card.severity-warning::before,
+.stat-card.severity-critical::before {
+  inset: auto -18% -52% 18%;
+  width: 10rem;
+  height: 10rem;
+  opacity: 0.82;
+}
+
+.stat-card.severity-critical::before {
+  filter: blur(2px);
+  opacity: 0.95;
 }
 
 .stat-money::before { background: #fbbf24; }
@@ -313,11 +343,37 @@ input:focus {
   font-size: 1.35rem;
 }
 
-.stat-card span {
+.stat-card > span {
   display: block;
   color: #b9c6df;
   font-size: 0.82rem;
   font-weight: 850;
+}
+
+.stat-alert {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  border: 1px solid rgba(248, 113, 113, 0.42);
+  border-radius: 999px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.5);
+  box-shadow: 0 10px 28px rgba(248, 113, 113, 0.24);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.52rem;
+  text-transform: uppercase;
+}
+
+.stat-alert.warning {
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fde68a;
+  background: rgba(120, 53, 15, 0.5);
+  box-shadow: 0 10px 28px rgba(251, 191, 36, 0.16);
 }
 
 .stat-card strong {
@@ -348,6 +404,25 @@ input:focus {
 
 .meter.bad span {
   background: linear-gradient(90deg, #facc15, #fb7185);
+}
+
+.severity-warning .meter span {
+  background: linear-gradient(90deg, #facc15, #fb923c);
+}
+
+.severity-critical .meter span {
+  background: linear-gradient(90deg, #fb7185, #ef4444, #991b1b);
+}
+
+@keyframes criticalPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 .game-layout {

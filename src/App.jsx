@@ -244,6 +244,7 @@ const createDefaultGame = () => ({
   month: 1,
   week: 1,
   completedDecisions: [],
+  selectedChoices: {},
   memories: [],
   currentEventId: getRandomEventId(),
   eventSeed: createEventSeed(),
@@ -264,6 +265,7 @@ const normalizeGame = (game) => ({
   month: clamp(Number(game?.month ?? 1), 1, 12),
   week: clamp(Number(game?.week ?? game?.month ?? 1), 1, 52),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
+  selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
@@ -348,6 +350,7 @@ export default function App() {
       month: 1,
       week: 1,
       completedDecisions: [],
+      selectedChoices: {},
       memories: ["You started a new life chapter."],
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
@@ -373,7 +376,8 @@ export default function App() {
 
   const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
   const totalWeeklyDecisions = weekSchedule.reduce((total, day) => total + day.decisions.length, 0);
-  const completedThisWeek = game.completedDecisions.length;
+  const selectedChoices = game.selectedChoices ?? {};
+  const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
 
@@ -395,24 +399,32 @@ export default function App() {
 
   const handleChoice = (choice, decision, dayName) => {
     setGame((prevGame) => {
-      if (prevGame.completedDecisions.includes(decision.key)) {
-        return prevGame;
-      }
-
-      const schedule = getWeekSchedule(prevGame.week, prevGame.eventSeed);
-      const totalDecisions = schedule.reduce((total, day) => total + day.decisions.length, 0);
-      const completedDecisions = [...prevGame.completedDecisions, decision.key];
-      const weekComplete = completedDecisions.length >= totalDecisions;
-      const nextDate = weekComplete ? getNextWeekState(prevGame.week, prevGame.age) : { age: prevGame.age, month: prevGame.month, week: prevGame.week };
-      const nextState = applyEffects(prevGame, choice.effects);
+      const previousSelection = prevGame.selectedChoices?.[decision.key];
+      const undoEffects = previousSelection
+        ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
+        : null;
+      const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
+      const nextState = applyEffects(stateBeforeChoice, choice.effects);
+      const selectedChoices = {
+        ...(prevGame.selectedChoices ?? {}),
+        [decision.key]: {
+          dayName,
+          eventTitle: decision.title,
+          label: choice.label,
+          effects: choice.effects,
+          memory: choice.memory
+        }
+      };
+      const completedDecisions = Object.keys(selectedChoices);
       const timestamp = `Week ${prevGame.week}, ${dayName}, age ${prevGame.age}`;
+      const memoryAction = previousSelection ? `changed ${decision.title} from ${previousSelection.label} to ${choice.label}` : choice.memory;
 
       const updatedGame = {
         ...nextState,
-        ...nextDate,
-        completedDecisions: weekComplete ? [] : completedDecisions,
+        completedDecisions,
+        selectedChoices,
         currentEventId: getRandomEventId(prevGame.currentEventId),
-        memories: [...prevGame.memories, `${timestamp}: ${choice.memory}`].slice(-8)
+        memories: [...prevGame.memories, `${timestamp}: ${memoryAction}`].slice(-8)
       };
 
       return {
@@ -423,6 +435,17 @@ export default function App() {
           : prevGame.weeklySummary
       };
     });
+  };
+
+  const handleAdvanceWeek = () => {
+    setGame((prevGame) => ({
+      ...prevGame,
+      ...getNextWeekState(prevGame.week, prevGame.age),
+      completedDecisions: [],
+      selectedChoices: {},
+      currentEventId: getRandomEventId(prevGame.currentEventId),
+      memories: [...prevGame.memories, `Week ${prevGame.week} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+    }));
   };
 
   const handleSimulateWeek = () => {
@@ -560,7 +583,11 @@ export default function App() {
           <h1>Weekly Life Map</h1>
         </div>
         <div className="topbar-actions">
-          <button onClick={handleSimulateWeek}>Simulate Week</button>
+          {pendingThisWeek === 0 ? (
+            <button onClick={handleAdvanceWeek}>Advance Week</button>
+          ) : (
+            <button onClick={handleSimulateWeek}>Simulate Week</button>
+          )}
           <button className="secondary" onClick={resetGame}>Restart Setup</button>
         </div>
       </header>
@@ -600,10 +627,14 @@ export default function App() {
           <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, then Monday through Sunday will resolve with random choices and random minor, moderate, or major events.</p>
           <div className="flow-panel">
             <div>
-              <strong>Default mode: go with the flow</strong>
-              <span>{completedThisWeek}/{totalWeeklyDecisions} decisions made. {pendingThisWeek} will go with the flow.</span>
+              <strong>{pendingThisWeek === 0 ? "Weekly plan ready" : "Default mode: go with the flow"}</strong>
+              <span>{completedThisWeek}/{totalWeeklyDecisions} decisions selected. {pendingThisWeek === 0 ? "Review or change any highlighted choice before advancing." : `${pendingThisWeek} will go with the flow if you simulate.`}</span>
             </div>
-            <button onClick={handleSimulateWeek}>Simulate Week</button>
+            {pendingThisWeek === 0 ? (
+              <button onClick={handleAdvanceWeek}>Advance Week</button>
+            ) : (
+              <button onClick={handleSimulateWeek}>Simulate Week</button>
+            )}
           </div>
           <div className="weekly-calendar">
             {weekSchedule.map((day) => (
@@ -614,7 +645,9 @@ export default function App() {
                 </div>
                 <div className="day-decisions">
                   {day.decisions.map((decision) => {
-                    const completed = game.completedDecisions.includes(decision.key);
+                    const selectedChoice = selectedChoices[decision.key];
+                    const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
+                    const completed = Boolean(selectedChoice) || lockedLegacyChoice;
                     return (
                       <section className={`decision-card accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
                         <div className="decision-title">
@@ -629,18 +662,31 @@ export default function App() {
                           </span>
                         </div>
                         <p>{decision.description}</p>
+                        {selectedChoice ? (
+                          <div className="selected-summary" aria-live="polite">
+                            <span>Selected</span>
+                            <strong>{selectedChoice.label}</strong>
+                            <small>Click another option below to change this decision.</small>
+                          </div>
+                        ) : null}
                         <div className="decision-options">
-                          {decision.choices.map((choice) => (
-                            <button
-                              className="option-button"
-                              disabled={completed}
-                              key={choice.label}
-                              onClick={() => handleChoice(choice, decision, day.day)}
-                            >
-                              <strong>{choice.label}</strong>
-                              {renderEffectPreview(choice.effects)}
-                            </button>
-                          ))}
+                          {decision.choices.map((choice) => {
+                            const isSelected = selectedChoice?.label === choice.label;
+                            return (
+                              <button
+                                className={`option-button ${isSelected ? "selected" : ""}`}
+                                disabled={lockedLegacyChoice}
+                                key={choice.label}
+                                onClick={() => handleChoice(choice, decision, day.day)}
+                              >
+                                <span className="choice-label-row">
+                                  <strong>{choice.label}</strong>
+                                  {isSelected ? <span className="selected-pill">Selected</span> : null}
+                                </span>
+                                {renderEffectPreview(choice.effects)}
+                              </button>
+                            );
+                          })}
                         </div>
                       </section>
                     );

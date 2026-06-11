@@ -1321,37 +1321,41 @@ export default function App() {
           ) : null}
         </div>
         <div className="topbar-actions">
-          {pendingThisMonth === 0 ? (
-            <button onClick={handleAdvanceMonth}>Advance Month</button>
-          ) : (
-            <button onClick={handleSimulateMonth}>Simulate Month</button>
-          )}
           <button className="secondary music-toggle" onClick={toggleZenMusic}>{musicPlaying ? "Pause Zen" : "Play Zen"}</button>
           <button className="secondary" onClick={resetGame}>Restart Setup</button>
         </div>
       </header>
 
-      <section className="stat-grid" aria-label="Current life stats">
-        {Object.entries(statConfig).map(([key, config]) => {
-          const value = game[key];
-          const percentage = config.max ? `${clamp(value, 0, config.max)}%` : null;
-          const severity = getStatSeverity(value, config);
-          const alert = severityCopy[severity];
-          return (
-            <article className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`} key={key}>
-              <div className="stat-icon" aria-hidden="true">{config.icon}</div>
-              {alert ? (
-                <div className={`stat-alert ${severity === "warning" ? "warning" : ""}`} aria-label={`${config.label} needs ${severity === "critical" ? "urgent attention" : "attention"}`}>
-                  <span aria-hidden="true">{alert.icon}</span>
-                  {alert.label}
-                </div>
-              ) : null}
-              <span>{config.label}</span>
-              <strong>{config.formatter ? config.formatter(value) : value}</strong>
-              {percentage ? <div className={`meter ${config.tone}`}><span style={{ width: percentage }} /></div> : null}
-            </article>
-          );
-        })}
+      <section className="bottom-turn-hud" aria-label="Life stats and month controls">
+        <div className="bottom-stat-strip">
+          <section className="stat-grid" aria-label="Current life stats">
+            {Object.entries(statConfig).map(([key, config]) => {
+              const value = game[key];
+              const percentage = config.max ? `${clamp(value, 0, config.max)}%` : null;
+              const severity = getStatSeverity(value, config);
+              const alert = severityCopy[severity];
+              return (
+                <article className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`} key={key}>
+                  <div className="stat-icon" aria-hidden="true">{config.icon}</div>
+                  {alert ? (
+                    <div className={`stat-alert ${severity === "warning" ? "warning" : ""}`} aria-label={`${config.label} needs ${severity === "critical" ? "urgent attention" : "attention"}`}>
+                      <span aria-hidden="true">{alert.icon}</span>
+                      {alert.label}
+                    </div>
+                  ) : null}
+                  <span>{config.label}</span>
+                  <strong>{config.formatter ? config.formatter(value) : value}</strong>
+                  {percentage ? <div className={`meter ${config.tone}`}><span style={{ width: percentage }} /></div> : null}
+                </article>
+              );
+            })}
+          </section>
+        </div>
+        {pendingThisMonth === 0 ? (
+          <button className="next-turn-button" onClick={handleAdvanceMonth}>Advance Month</button>
+        ) : (
+          <button className="next-turn-button" onClick={handleSimulateMonth}>▶ Simulate Month</button>
+        )}
       </section>
 
       <div className="game-layout">

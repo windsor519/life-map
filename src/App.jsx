@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 
 const STORAGE_KEY = "life-map-game";
-const monthDays = Array.from({ length: 30 }, (_, index) => `Day ${index + 1}`);
 const severityConfig = {
   minor: { label: "Minor", icon: "·" },
   moderate: { label: "Moderate", icon: "◆" },
@@ -22,6 +21,11 @@ const monthNames = [
   "November",
   "December"
 ];
+
+const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
+const getMonthStartWeekday = (month, year) => new Date(year, month - 1, 1).getDay();
 
 const statConfig = {
   money: { label: "Money", icon: "💸", formatter: (value) => value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }) },
@@ -187,15 +191,23 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getMonthSchedule = (month, eventSeed) => {
-  return monthDays.map((day, dayIndex) => {
-    const hasEvent = seededRandom(eventSeed, month, dayIndex, "has-event") < 0.2;
+const getMonthSchedule = (month, year, eventSeed) => {
+  const daysInMonth = getMonthLength(month, year);
+
+  return Array.from({ length: daysInMonth }, (_, index) => {
+    const date = new Date(year, month - 1, index + 1);
+    const weekday = weekdayNames[date.getDay()];
+    const dayLabel = `${weekday} ${index + 1}`;
+    const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < 0.2;
     const decisions = hasEvent
-      ? [getDecoratedEvent(events[Math.floor(seededRandom(eventSeed, month, dayIndex, "event") * events.length)], eventSeed, month, dayIndex, 0)]
+      ? [getDecoratedEvent(events[Math.floor(seededRandom(eventSeed, month, year, index, "event") * events.length)], eventSeed, month, index, 0)]
       : [];
 
     return {
-      day,
+      date,
+      weekday,
+      dayNumber: index + 1,
+      dayLabel,
       decisions
     };
   });
@@ -836,7 +848,13 @@ export default function App() {
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
-  const monthSchedule = useMemo(() => getMonthSchedule(game.month, game.eventSeed), [game.eventSeed, game.month]);
+  const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
+  const monthSchedule = useMemo(() => getMonthSchedule(game.month, currentCalendarYear, game.eventSeed), [game.eventSeed, game.month, currentCalendarYear]);
+  const monthStartWeekday = getMonthStartWeekday(game.month, currentCalendarYear);
+  const calendarSlots = useMemo(
+    () => [...Array(monthStartWeekday).fill(null), ...monthSchedule],
+    [monthSchedule, monthStartWeekday]
+  );
   const totalMonthlyDecisions = monthSchedule.reduce((total, day) => total + day.decisions.length, 0);
   const selectedChoices = game.selectedChoices ?? {};
   const completedThisMonth = Object.keys(selectedChoices).length || game.completedDecisions.length;
@@ -978,7 +996,7 @@ export default function App() {
   const handleSimulateMonth = () => {
     setExpandedDecisionKey(null);
     setGame((prevGame) => {
-      const schedule = getMonthSchedule(prevGame.month, prevGame.eventSeed);
+      const schedule = getMonthSchedule(prevGame.month, currentCalendarYear, prevGame.eventSeed);
       let nextState = prevGame;
       const simulatedMemories = [];
       const summaryHighlights = [];
@@ -997,11 +1015,11 @@ export default function App() {
           const modifiedEffects = applyTalentModifiers(nextState, choice.effects);
           nextState = applyEffects(nextState, modifiedEffects);
           dayResults.push(`${decision.title}: ${choice.label}`);
-          summaryHighlights.push(`${day.day}: ${decision.title} → ${choice.label}`);
+          summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${choice.label}`);
         });
 
         if (dayResults.length > 0) {
-          simulatedMemories.push(`Month ${prevGame.month}, ${day.day}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
+          simulatedMemories.push(`Month ${prevGame.month}, ${day.dayLabel}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
         }
       });
 
@@ -1230,7 +1248,7 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · Month {game.month} · {monthNames[game.month - 1]} · Age {game.age}</p>
+          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · Month {game.month} · {monthNames[game.month - 1]} {currentCalendarYear} · Age {game.age}</p>
           <h1>Monthly Life Map</h1>
           {game.character ? (
             <div className="active-character">
@@ -1297,83 +1315,97 @@ export default function App() {
               <button onClick={handleSimulateMonth}>Simulate Month</button>
             )}
           </div>
-          <div className="monthly-calendar">
-            {monthSchedule.map((day) => (
-              <article className="day-column" key={day.day}>
-                <div className="day-header">
-                  <strong>{day.day}</strong>
-                  <span>{day.decisions.length} decisions</span>
-                </div>
-                <div className="day-decisions">
-                  {day.decisions.map((decision) => {
-                    const selectedChoice = selectedChoices[decision.key];
-                    const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
-                    const completed = Boolean(selectedChoice) || lockedLegacyChoice;
-                    const isExpanded = expandedDecisionKey === decision.key;
-                    return (
-                      <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
-                        <button
-                          className="decision-toggle"
-                          type="button"
-                          aria-expanded={isExpanded}
-                          onClick={() => setExpandedDecisionKey(isExpanded ? null : decision.key)}
-                        >
-                          <span className="decision-title">
-                            <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
-                            <span>
-                              <small>{decision.visual.label}</small>
-                              <h3>{decision.title}</h3>
-                            </span>
-                          </span>
-                          <span className="decision-status">
-                            {selectedChoice ? <span className="selected-pill">Picked</span> : null}
-                            <span className={`severity-badge severity-${decision.severity}`}>
-                              <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
-                              {severityConfig[decision.severity]?.label ?? decision.severity}
-                            </span>
-                            <span className="expand-cue" aria-hidden="true">{isExpanded ? "−" : "+"}</span>
-                          </span>
-                        </button>
-                        {isExpanded ? (
-                          <div className="decision-details">
-                            <p>{decision.description}</p>
-                            {selectedChoice ? (
-                              <div className="selected-summary" aria-live="polite">
-                                <span>Selected</span>
-                                <strong>{selectedChoice.label}</strong>
-                                <small>Pick another option below to change this decision.</small>
+          <div className="calendar-grid">
+            <div className="calendar-weekdays">
+              {weekdayNames.map((weekday) => (
+                <div key={weekday} className="weekday-label">{weekday}</div>
+              ))}
+            </div>
+            <div className="monthly-calendar">
+              {calendarSlots.map((day, index) => (
+                day ? (
+                  <article className="day-column" key={day.dayLabel}>
+                    <div className="day-header">
+                      <div>
+                        <strong>{day.dayNumber}</strong>
+                        <span>{day.weekday}</span>
+                      </div>
+                      <span>{day.decisions.length} event{day.decisions.length === 1 ? "" : "s"}</span>
+                    </div>
+                    <div className="day-decisions">
+                      {day.decisions.map((decision) => {
+                        const selectedChoice = selectedChoices[decision.key];
+                        const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
+                        const completed = Boolean(selectedChoice) || lockedLegacyChoice;
+                        const isExpanded = expandedDecisionKey === decision.key;
+                        return (
+                          <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
+                            <button
+                              className="decision-toggle"
+                              type="button"
+                              aria-expanded={isExpanded}
+                              onClick={() => setExpandedDecisionKey(isExpanded ? null : decision.key)}
+                            >
+                              <span className="decision-title">
+                                <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
+                                <span>
+                                  <small>{decision.visual.label}</small>
+                                  <h3>{decision.title}</h3>
+                                </span>
+                              </span>
+                              <span className="decision-status">
+                                {selectedChoice ? <span className="selected-pill">Picked</span> : null}
+                                <span className={`severity-badge severity-${decision.severity}`}>
+                                  <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
+                                  {severityConfig[decision.severity]?.label ?? decision.severity}
+                                </span>
+                                <span className="expand-cue" aria-hidden="true">{isExpanded ? "−" : "+"}</span>
+                              </span>
+                            </button>
+                            {isExpanded ? (
+                              <div className="decision-details">
+                                <p>{decision.description}</p>
+                                {selectedChoice ? (
+                                  <div className="selected-summary" aria-live="polite">
+                                    <span>Selected</span>
+                                    <strong>{selectedChoice.label}</strong>
+                                    <small>Pick another option below to change this decision.</small>
+                                  </div>
+                                ) : null}
+                                <div className="decision-options">
+                                  {decision.choices.map((choice) => {
+                                    const isSelected = selectedChoice?.label === choice.label;
+                                    return (
+                                      <button
+                                        className={`option-button ${isSelected ? "selected" : ""}`}
+                                        disabled={lockedLegacyChoice}
+                                        key={choice.label}
+                                        onClick={() => {
+                                          handleChoice(choice, decision, day.dayLabel);
+                                          setExpandedDecisionKey(null);
+                                        }}
+                                      >
+                                        <span className="choice-label-row">
+                                          <strong>{choice.label}</strong>
+                                          {isSelected ? <span className="selected-pill">Selected</span> : null}
+                                        </span>
+                                        {renderEffectPreview(choice.effects)}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             ) : null}
-                            <div className="decision-options">
-                              {decision.choices.map((choice) => {
-                                const isSelected = selectedChoice?.label === choice.label;
-                                return (
-                                  <button
-                                    className={`option-button ${isSelected ? "selected" : ""}`}
-                                    disabled={lockedLegacyChoice}
-                                    key={choice.label}
-                                    onClick={() => {
-                                      handleChoice(choice, decision, day.day);
-                                      setExpandedDecisionKey(null);
-                                    }}
-                                  >
-                                    <span className="choice-label-row">
-                                      <strong>{choice.label}</strong>
-                                      {isSelected ? <span className="selected-pill">Selected</span> : null}
-                                    </span>
-                                    {renderEffectPreview(choice.effects)}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        ) : null}
-                      </section>
-                    );
-                  })}
-                </div>
-              </article>
-            ))}
+                          </section>
+                        );
+                      })}
+                    </div>
+                  </article>
+                ) : (
+                  <div className="day-column empty-day" key={`empty-${index}`} />
+                )
+              ))}
+            </div>
           </div>
         </section>
 

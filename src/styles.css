@@ -701,6 +701,46 @@ input:focus {
   line-height: 1.65;
 }
 
+.calendar-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.calendar-weekdays,
+.monthly-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.weekday-label {
+  color: #b9c6df;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.monthly-calendar {
+  gap: 0.85rem;
+}
+
+.day-column.empty-day {
+  min-height: 140px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: transparent;
+}
+
+.day-column.empty-day::before {
+  content: "";
+  display: block;
+  min-height: 100%;
+}
 
 .flow-panel {
   display: flex;

@@ -2323,3 +2323,19 @@ input:focus {
 .next-turn-button:disabled:focus-visible {
   box-shadow: none;
 }
+
+.monthly-summary-modal {
+  max-height: min(90vh, 54rem);
+  overflow: auto;
+}
+
+.compact-summary-card p {
+  margin: 0.7rem 0 0;
+  color: #d7e1f7;
+  line-height: 1.5;
+}
+
+.source-quiet {
+  background: rgba(96, 165, 250, 0.18);
+  color: #bfdbfe;
+}

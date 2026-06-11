@@ -1,6 +1,7 @@
 const baseEvents = [
   {
     id: "daughter-recital",
+    tags: ["young-family", "general"],
     title: "Daughter's Recital",
     description: "Your daughter has a recital tonight, but a client also wants a late call.",
     choices: [
@@ -11,6 +12,7 @@ const baseEvents = [
   },
   {
     id: "friend-birthday",
+    tags: ["general"],
     title: "Friend's Birthday",
     description: "A close friend is celebrating their birthday and wants everyone together.",
     choices: [
@@ -21,6 +23,7 @@ const baseEvents = [
   },
   {
     id: "gym-session",
+    tags: ["midlife", "general"],
     title: "Gym Session",
     description: "A gym session is scheduled, but the couch looks tempting.",
     choices: [
@@ -30,6 +33,7 @@ const baseEvents = [
   },
   {
     id: "annual-checkup",
+    tags: ["midlife", "general"],
     title: "Annual Checkup",
     description: "Your doctor has an opening for a preventive visit, but it means taking time off work.",
     choices: [
@@ -40,6 +44,7 @@ const baseEvents = [
   },
   {
     id: "weekend-getaway",
+    tags: ["midlife", "general"],
     title: "Weekend Getaway",
     description: "Your partner suggests a low-key weekend away to reconnect.",
     choices: [
@@ -50,6 +55,7 @@ const baseEvents = [
   },
   {
     id: "online-course",
+    tags: ["midlife", "general"],
     title: "Career Course",
     description: "A practical online course could improve your future earning power.",
     choices: [
@@ -60,6 +66,7 @@ const baseEvents = [
   },
   {
     id: "school-project",
+    tags: ["young-family", "general"],
     title: "School Project",
     description: "Your child needs help building a last-minute science project.",
     choices: [
@@ -70,6 +77,7 @@ const baseEvents = [
   },
   {
     id: "grocery-budget",
+    tags: ["young-family", "midlife", "general"],
     title: "Grocery Run",
     description: "The fridge is empty and the weekly food budget is already tight.",
     choices: [
@@ -80,6 +88,7 @@ const baseEvents = [
   },
   {
     id: "car-repair",
+    tags: ["midlife", "general"],
     title: "Car Repair",
     description: "A warning light appears before a packed week of errands.",
     choices: [
@@ -90,6 +99,7 @@ const baseEvents = [
   },
   {
     id: "team-lunch",
+    tags: ["midlife", "general"],
     title: "Team Lunch",
     description: "Coworkers invite you out during a busy workday.",
     choices: [
@@ -109,6 +119,7 @@ const baseEvents = [
   },
   {
     id: "date-night",
+    tags: ["midlife", "general"],
     title: "Date Night",
     description: "There is finally a free evening for your relationship.",
     choices: [
@@ -119,6 +130,7 @@ const baseEvents = [
   },
   {
     id: "sleep-debt",
+    tags: ["midlife", "general"],
     title: "Sleep Debt",
     description: "Late nights are catching up and tomorrow starts early.",
     choices: [
@@ -129,6 +141,7 @@ const baseEvents = [
   },
   {
     id: "home-maintenance",
+    tags: ["midlife", "general"],
     title: "Home Maintenance",
     description: "A small leak under the sink is easy to postpone.",
     choices: [
@@ -149,6 +162,7 @@ const baseEvents = [
   },
   {
     id: "side-hustle",
+    tags: ["midlife", "general"],
     title: "Side Hustle Offer",
     description: "A short freelance job could add cash but eats into family time.",
     choices: [
@@ -159,6 +173,7 @@ const baseEvents = [
   },
   {
     id: "family-call",
+    tags: ["eldercare", "young-family", "general"],
     title: "Family Call",
     description: "An older relative wants a long catch-up call.",
     choices: [
@@ -169,6 +184,7 @@ const baseEvents = [
   },
   {
     id: "therapy-session",
+    tags: ["midlife", "general"],
     title: "Therapy Session",
     description: "A therapy opening appears during a stressful stretch.",
     choices: [
@@ -179,6 +195,7 @@ const baseEvents = [
   },
   {
     id: "kids-sports",
+    tags: ["young-family", "general"],
     title: "Kids' Sports Signup",
     description: "Registration opens for a season your child is excited about.",
     choices: [
@@ -189,6 +206,7 @@ const baseEvents = [
   },
   {
     id: "investment-choice",
+    tags: ["midlife", "general"],
     title: "Investment Choice",
     description: "You have a chance to move extra cash into savings or spend it now.",
     choices: [
@@ -199,6 +217,7 @@ const baseEvents = [
   },
   {
     id: "digital-detox",
+    tags: ["midlife", "general"],
     title: "Digital Detox",
     description: "Your screen time report is higher than you expected.",
     choices: [
@@ -209,6 +228,7 @@ const baseEvents = [
   },
   {
     id: "pop-quiz",
+    tags: ["young-family", "general"],
     title: "Pop Quiz",
     severity: "minor",
     description: "A surprise quiz lands in first period, and your child is nervous about the result.",
@@ -309,6 +329,7 @@ const baseEvents = [
 
   {
     id: "car-breakdown",
+    tags: ["midlife", "general"],
     title: "Car Breaks Down",
     severity: "major",
     surprise: true,
@@ -398,6 +419,7 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
     icon: blueprint.icon,
     accent: blueprint.accent,
     description: blueprint.description,
+    tags: blueprint.tags ?? ["general"],
     choices: [
       { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },
       { label: blueprint.balanced[0], effects: blueprint.balanced[1], memory: blueprint.balanced[2] },

@@ -168,6 +168,47 @@ const getRandomEventId = (excludeId) => {
   return pool[Math.floor(Math.random() * pool.length)].id;
 };
 
+const getAgePriorityTags = (age) => {
+  if (age >= 35 && age <= 45) {
+    return ["young-family", "eldercare", "midlife"];
+  }
+  return ["general"];
+};
+
+const getAgeRelevantEvents = (age) => {
+  const priorityTags = getAgePriorityTags(age);
+  const relevantEvents = events.filter((event) => {
+    const tags = event.tags ?? ["general"];
+    return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
+  });
+
+  return relevantEvents.length > 0 ? relevantEvents : events;
+};
+
+const getEventRelevanceScore = (event, age) => {
+  const tags = event.tags ?? [];
+  const priorityTags = getAgePriorityTags(age);
+  const hasPriority = tags.some((tag) => priorityTags.includes(tag));
+  const hasGeneral = tags.includes("general");
+
+  let score = 1;
+  if (hasPriority) score += 6;
+  if (hasGeneral) score += 2;
+  return score;
+};
+
+const chooseAgeRelevantEvent = (eventSeed, month, year, index, eventPool, age) => {
+  const weighted = eventPool.map((event) => ({ event, weight: getEventRelevanceScore(event, age) }));
+  const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
+  const choiceRoll = seededRandom(eventSeed, month, year, index, "event-weight") * totalWeight;
+  let running = 0;
+
+  return weighted.find(({ weight }) => {
+    running += weight;
+    return choiceRoll < running;
+  })?.event ?? eventPool[0];
+};
+
 const getSeverity = (event) => event.severity ?? "minor";
 const getRandomChoice = (eventSeed, month, dayIndex, decisionIndex, choices) => {
   const choiceIndex = Math.floor(seededRandom(eventSeed, month, dayIndex, decisionIndex, "choice") * choices.length);
@@ -191,7 +232,8 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getMonthSchedule = (month, year, eventSeed) => {
+const getMonthSchedule = (month, year, eventSeed, age) => {
+  const eventPool = getAgeRelevantEvents(age);
   const daysInMonth = getMonthLength(month, year);
 
   return Array.from({ length: daysInMonth }, (_, index) => {
@@ -200,7 +242,7 @@ const getMonthSchedule = (month, year, eventSeed) => {
     const dayLabel = `${weekday} ${index + 1}`;
     const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < 0.2;
     const decisions = hasEvent
-      ? [getDecoratedEvent(events[Math.floor(seededRandom(eventSeed, month, year, index, "event") * events.length)], eventSeed, month, index, 0)]
+      ? [getDecoratedEvent(chooseAgeRelevantEvent(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
       : [];
 
     return {
@@ -397,7 +439,7 @@ const characterArchetypes = [
     title: "The Fragile Genius",
     description: "Smart but weak: great plans, questionable knees.",
     vibe: "Glass cannon",
-    ageRange: [19, 34],
+    ageRange: [35, 45],
     moneyRange: [8000, 28000],
     stats: { health: -18, marriage: 4, children: -2, stress: 12 },
     traits: ["Smart", "Focused", "Weak"],
@@ -408,7 +450,7 @@ const characterArchetypes = [
     title: "The Iron Loner",
     description: "Strong but antisocial: can move a couch, cannot text back.",
     vibe: "Tank build",
-    ageRange: [22, 42],
+    ageRange: [35, 45],
     moneyRange: [5000, 22000],
     stats: { health: 22, marriage: -20, children: -12, stress: -4 },
     traits: ["Strong", "Disciplined", "Antisocial"],
@@ -419,7 +461,7 @@ const characterArchetypes = [
     title: "The Golden Burnout",
     description: "Rich but cooked: impressive account balance, haunted calendar.",
     vibe: "High risk",
-    ageRange: [27, 48],
+    ageRange: [35, 45],
     moneyRange: [65000, 120000],
     stats: { health: -10, marriage: -12, children: -8, stress: 28 },
     traits: ["Wealthy", "Overworked", "Anxious"],
@@ -430,7 +472,7 @@ const characterArchetypes = [
     title: "The Social Meteor",
     description: "Charismatic and chaotic: beloved by everyone, including trouble.",
     vibe: "Blessed mess",
-    ageRange: [18, 38],
+    ageRange: [35, 45],
     moneyRange: [3000, 18000],
     stats: { health: 2, marriage: 24, children: 18, stress: 14 },
     traits: ["Charismatic", "Impulsive", "Connected"],
@@ -441,7 +483,7 @@ const characterArchetypes = [
     title: "The Lucky Mess",
     description: "A walking dice roll with suspiciously good timing.",
     vibe: "Chaos build",
-    ageRange: [18, 45],
+    ageRange: [35, 45],
     moneyRange: [1000, 35000],
     stats: { health: -4, marriage: 2, children: 4, stress: 10 },
     traits: ["Lucky", "Messy", "Adaptable"],
@@ -452,7 +494,7 @@ const characterArchetypes = [
     title: "The Family Glue",
     description: "Emotionally available, financially improvising.",
     vibe: "Heart build",
-    ageRange: [24, 50],
+    ageRange: [35, 45],
     moneyRange: [2500, 26000],
     stats: { health: 0, marriage: 18, children: 26, stress: 8 },
     traits: ["Nurturing", "Patient", "Broke-ish"],
@@ -579,7 +621,7 @@ const createGameFromProfile = (profile) => {
 };
 
 const createDefaultGame = () => ({
-  age: 40,
+  age: 38,
   money: 100000,
   health: 80,
   marriage: 75,
@@ -638,7 +680,7 @@ const loadSavedGame = () => {
 
 export default function App() {
   const [game, setGame] = useState(loadSavedGame);
-  const [startAge, setStartAge] = useState(game.initialized ? game.age : 25);
+  const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
   const [startMoney, setStartMoney] = useState(game.initialized ? game.money : 10000);
   const [quiz, setQuiz] = useState({
     exercise: "sometimes",
@@ -849,7 +891,7 @@ export default function App() {
   };
 
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
-  const monthSchedule = useMemo(() => getMonthSchedule(game.month, currentCalendarYear, game.eventSeed), [game.eventSeed, game.month, currentCalendarYear]);
+  const monthSchedule = useMemo(() => getMonthSchedule(game.month, currentCalendarYear, game.eventSeed, game.age), [game.eventSeed, game.month, game.age, currentCalendarYear]);
   const monthStartWeekday = getMonthStartWeekday(game.month, currentCalendarYear);
   const calendarSlots = useMemo(
     () => [...Array(monthStartWeekday).fill(null), ...monthSchedule],
@@ -996,7 +1038,7 @@ export default function App() {
   const handleSimulateMonth = () => {
     setExpandedDecisionKey(null);
     setGame((prevGame) => {
-      const schedule = getMonthSchedule(prevGame.month, currentCalendarYear, prevGame.eventSeed);
+      const schedule = getMonthSchedule(prevGame.month, currentCalendarYear, prevGame.eventSeed, prevGame.age);
       let nextState = prevGame;
       const simulatedMemories = [];
       const summaryHighlights = [];
@@ -1125,8 +1167,8 @@ export default function App() {
         <section className="hero-card">
           <div>
             <p className="eyebrow">Life simulator</p>
-            <h1>Design a life path worth replaying.</h1>
-            <p className="subtitle">Improve your life one week at a time.</p>
+            <h1>Navigate a challenging phase of life.</h1>
+            <p className="subtitle">With kids, aging grandparents, and hard choices—can you make it through?</p>
           </div>
           <div className="life-board" aria-hidden="true">
             <span className="board-node node-money">💸</span>

@@ -1352,9 +1352,9 @@ export default function App() {
           </section>
         </div>
         {pendingThisMonth === 0 ? (
-          <button className="next-turn-button" onClick={handleAdvanceMonth}>Advance Month</button>
+          <button className="next-turn-button" onClick={handleAdvanceMonth}>Next Month</button>
         ) : (
-          <button className="next-turn-button" onClick={handleSimulateMonth}>▶ Simulate Month</button>
+          <button className="next-turn-button" onClick={handleSimulateMonth}>▶ Simulate</button>
         )}
       </section>
 

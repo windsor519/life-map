@@ -3,6 +3,8 @@ import events from "./data/events.js";
 
 const STORAGE_KEY = "life-map-game";
 const seasons = ["Winter", "Spring", "Summer", "Fall"];
+const WEEKS_PER_SEASON = 13;
+const WEEKS_PER_YEAR = 52;
 const seasonDecisionPlan = [
   {
     label: "Week 1 sample",
@@ -135,18 +137,18 @@ const getRandomEventId = (excludeId) => {
 };
 
 const getSeverity = (event) => event.severity ?? "minor";
-const getRandomChoice = (eventSeed, week, dayIndex, decisionIndex, choices) => {
-  const choiceIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex, "choice") * choices.length);
+const getRandomChoice = (eventSeed, week, periodIndex, decisionIndex, choices) => {
+  const choiceIndex = Math.floor(seededRandom(eventSeed, week, periodIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
 };
-const getSeasonNumber = (week) => Math.min(4, Math.max(1, Math.ceil(week / 13)));
+const getSeasonNumber = (week) => Math.min(seasons.length, Math.max(1, Math.ceil(week / WEEKS_PER_SEASON)));
 const getSeasonName = (week) => seasons[getSeasonNumber(week) - 1];
 const getNextSeasonState = (week, age) => {
   const currentSeason = getSeasonNumber(week);
-  const nextWeek = currentSeason === 4 ? 1 : currentSeason * 13 + 1;
+  const nextWeek = currentSeason === seasons.length ? 1 : currentSeason * WEEKS_PER_SEASON + 1;
 
   return {
-    age: currentSeason === 4 ? age + 1 : age,
+    age: currentSeason === seasons.length ? age + 1 : age,
     month: Math.min(12, Math.ceil(nextWeek / 4.333)),
     week: nextWeek
   };
@@ -155,13 +157,17 @@ const getNextSeasonState = (week, age) => {
 const scaleEffects = (effects, multiplier = 1) =>
   Object.fromEntries(Object.entries(effects).map(([key, value]) => [key, Math.round(value * multiplier)]));
 
-const getSeasonEvents = (plan, eventSeed, week, planIndex) => {
+const getSeasonEvents = (plan, eventSeed, week, planIndex, usedEventIds) => {
   const matchingEvents = events.filter((event) => plan.eventTypes.includes(getSeverity(event)));
-  const eventPool = matchingEvents.length > 0 ? matchingEvents : events;
+  const fallbackPool = matchingEvents.length > 0 ? matchingEvents : events;
 
   return Array.from({ length: plan.decisionCount }, (_, decisionIndex) => {
+    const availableEvents = fallbackPool.filter((event) => !usedEventIds.has(event.id));
+    const eventPool = availableEvents.length > 0 ? availableEvents : fallbackPool;
     const eventIndex = Math.floor(seededRandom(eventSeed, week, planIndex, decisionIndex) * eventPool.length);
     const event = eventPool[Math.min(eventIndex, eventPool.length - 1)];
+
+    usedEventIds.add(event.id);
 
     return {
       ...event,
@@ -173,18 +179,21 @@ const getSeasonEvents = (plan, eventSeed, week, planIndex) => {
   });
 };
 
-const getSeasonSchedule = (week, eventSeed) =>
-  seasonDecisionPlan.map((plan, planIndex) => ({
+const getSeasonSchedule = (week, eventSeed) => {
+  const usedEventIds = new Set();
+
+  return seasonDecisionPlan.map((plan, planIndex) => ({
     ...plan,
-    decisions: getSeasonEvents(plan, eventSeed, week, planIndex)
+    decisions: getSeasonEvents(plan, eventSeed, week, planIndex, usedEventIds)
   }));
+};
 
 const summaryCopy = {
   chaos: {
     mood: "🔥",
     headline: "Your calendar chose violence",
     joke: "Stress went up so fast it probably needs its own zip code.",
-    award: "Certified Chaos Goblin Week"
+    award: "Certified Chaos Goblin Season"
   },
   broke: {
     mood: "💸",
@@ -214,12 +223,12 @@ const summaryCopy = {
     mood: "🏆",
     headline: "Tiny wins, suspicious vibes",
     joke: "Nothing exploded, which experts are calling personal growth.",
-    award: "Least Unhinged Week"
+    award: "Least Unhinged Season"
   },
   survived: {
     mood: "😵‍💫",
     headline: "You made it through somehow",
-    joke: "No one knows how, but the week has legally ended.",
+    joke: "No one knows how, but the season has legally ended.",
     award: "Emotional Support Calendar Needed"
   }
 };
@@ -244,7 +253,7 @@ const getLifeWeather = (deltas) => {
 };
 
 const createSeasonSummary = ({ previousGame, nextState, highlights = [] }) => {
-  const startStats = previousGame.seasonStartStats ?? previousGame.weekStartStats ?? captureStats(previousGame);
+  const startStats = previousGame.seasonBaselineStats ?? previousGame.seasonStartStats ?? previousGame.weekStartStats ?? captureStats(previousGame);
   const endStats = captureStats(nextState);
   const deltas = summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: endStats[key] - (startStats[key] ?? previousGame[key] ?? 0) }), {});
   const tone = getSummaryTone(deltas);
@@ -288,8 +297,8 @@ const createDefaultGame = () => ({
   currentEventId: getRandomEventId(),
   eventSeed: createEventSeed(),
   seasonStartStats: null,
-  weekStartStats: null,
-  weeklySummary: null,
+  seasonBaselineStats: null,
+  seasonSummary: null,
   initialized: false
 });
 
@@ -309,8 +318,8 @@ const normalizeGame = (game) => ({
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   seasonStartStats: game?.seasonStartStats && typeof game.seasonStartStats === "object" ? game.seasonStartStats : game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
+  seasonBaselineStats: game?.seasonBaselineStats && typeof game.seasonBaselineStats === "object" ? game.seasonBaselineStats : game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
+  seasonSummary: game?.seasonSummary && typeof game.seasonSummary === "object" ? game.seasonSummary : game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
 });
 
 const loadSavedGame = () => {
@@ -491,14 +500,14 @@ export default function App() {
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
       seasonStartStats: null,
-      weeklySummary: null,
+      seasonSummary: null,
       initialized: true
     };
 
     setGame({
       ...newGame,
       seasonStartStats: captureStats(newGame),
-      weekStartStats: captureStats(newGame)
+      seasonBaselineStats: captureStats(newGame)
     });
     startZenMusic();
   };
@@ -521,7 +530,7 @@ export default function App() {
   const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
   const currentSeasonName = getSeasonName(game.week);
   const currentSeasonNumber = getSeasonNumber(game.week);
-  const currentYearProgress = Math.round((game.week / 52) * 100);
+  const currentYearProgress = Math.round((game.week / WEEKS_PER_YEAR) * 100);
 
   const applyEffects = (baseState, effects) => {
     const next = { ...baseState };
@@ -577,11 +586,11 @@ export default function App() {
 
       return {
         ...updatedGame,
-        seasonStartStats: seasonComplete ? captureStats(updatedGame) : prevGame.seasonStartStats ?? captureStats(prevGame),
-        weekStartStats: seasonComplete ? captureStats(updatedGame) : prevGame.weekStartStats ?? captureStats(prevGame),
-        weeklySummary: seasonComplete
+        seasonStartStats: prevGame.seasonStartStats ?? captureStats(prevGame),
+        seasonBaselineStats: prevGame.seasonBaselineStats ?? prevGame.seasonStartStats ?? captureStats(prevGame),
+        seasonSummary: seasonComplete
           ? createSeasonSummary({ previousGame: prevGame, nextState, highlights: [`${periodName}: ${decision.title} → ${choice.label}`] })
-          : prevGame.weeklySummary
+          : prevGame.seasonSummary
       };
     });
   };
@@ -602,7 +611,7 @@ export default function App() {
       return {
         ...nextGame,
         seasonStartStats: captureStats(nextGame),
-        weekStartStats: captureStats(nextGame)
+        seasonBaselineStats: captureStats(nextGame)
       };
     });
   };
@@ -651,8 +660,8 @@ export default function App() {
       return {
         ...advancedGame,
         seasonStartStats: captureStats(advancedGame),
-        weekStartStats: captureStats(advancedGame),
-        weeklySummary: createSeasonSummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
+        seasonBaselineStats: captureStats(advancedGame),
+        seasonSummary: createSeasonSummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
       };
     });
   };
@@ -800,15 +809,15 @@ export default function App() {
               <button onClick={handleSimulateSeason}>Simulate Season</button>
             )}
           </div>
-          <div className="weekly-calendar">
+          <div className="seasonal-calendar">
             {seasonSchedule.map((period) => (
-              <article className="day-column" key={period.label}>
-                <div className="day-header">
+              <article className="period-column" key={period.label}>
+                <div className="period-header">
                   <strong>{period.label}</strong>
                   <span>{period.decisions.length} decisions · {period.effectMultiplier > 1 ? `${period.effectMultiplier}× impact` : "one-off"}</span>
                 </div>
                 <p className="period-description">{period.description}</p>
-                <div className="day-decisions">
+                <div className="period-decisions">
                   {period.decisions.map((decision) => {
                     const selectedChoice = selectedChoices[decision.key];
                     const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
@@ -896,10 +905,10 @@ export default function App() {
             <p>Use Simulate Season to resolve two sample weeks plus a one-off seasonal event. Fall wraps the year and adds a birthday.</p>
           </section>
 
-          {game.weeklySummary ? (
-            <section className="panel weekly-summary-card" aria-live="polite">
+          {game.seasonSummary ? (
+            <section className="panel season-summary-card" aria-live="polite">
               <div className="summary-confetti" aria-hidden="true">
-                <span>{game.weeklySummary.mood}</span>
+                <span>{game.seasonSummary.mood}</span>
                 <span>💸</span>
                 <span>⚡</span>
                 <span>💪</span>
@@ -907,34 +916,34 @@ export default function App() {
               <div className="section-heading summary-heading">
                 <div>
                   <p className="eyebrow">Ridiculous recap</p>
-                  <h2>{game.weeklySummary.season} recap</h2>
+                  <h2>{game.seasonSummary.season} recap</h2>
                 </div>
-                <span>Age {game.weeklySummary.age}</span>
+                <span>Age {game.seasonSummary.age}</span>
               </div>
               <div className="summary-hero">
-                <span className="summary-mascot" aria-hidden="true">{game.weeklySummary.mood}</span>
+                <span className="summary-mascot" aria-hidden="true">{game.seasonSummary.mood}</span>
                 <div>
-                  <h3>{game.weeklySummary.headline}</h3>
-                  <p>{game.weeklySummary.joke}</p>
+                  <h3>{game.seasonSummary.headline}</h3>
+                  <p>{game.seasonSummary.joke}</p>
                 </div>
               </div>
               <div className="summary-weather">
                 <span>Life weather</span>
-                <strong>{game.weeklySummary.weather}</strong>
+                <strong>{game.seasonSummary.weather}</strong>
               </div>
               <div className="summary-deltas" aria-label="Seasonal stat changes">
-                {summaryStatKeys.map((key) => renderSummaryDelta(key, game.weeklySummary.deltas[key] ?? 0))}
+                {summaryStatKeys.map((key) => renderSummaryDelta(key, game.seasonSummary.deltas[key] ?? 0))}
               </div>
               <div className="summary-award">
                 <span aria-hidden="true">🏅</span>
                 <div>
                   <small>Fake award</small>
-                  <strong>{game.weeklySummary.award}</strong>
+                  <strong>{game.seasonSummary.award}</strong>
                 </div>
               </div>
-              {(game.weeklySummary.highlights ?? []).length > 0 ? (
+              {(game.seasonSummary.highlights ?? []).length > 0 ? (
                 <ul className="summary-highlights">
-                  {(game.weeklySummary.highlights ?? []).map((highlight) => (
+                  {(game.seasonSummary.highlights ?? []).map((highlight) => (
                     <li key={highlight}>{highlight}</li>
                   ))}
                 </ul>

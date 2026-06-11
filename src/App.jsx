@@ -1307,13 +1307,8 @@ export default function App() {
           <div className="flow-panel">
             <div>
               <strong>{pendingThisMonth === 0 ? "Monthly plan ready" : "Planning mode: choose what matters"}</strong>
-              <span>{completedThisMonth}/{totalMonthlyDecisions} decisions selected. {pendingThisMonth === 0 ? "Review or change any highlighted choice before advancing." : `${pendingThisMonth} will go with the flow if you simulate.`}</span>
+              <span>{completedThisMonth}/{totalMonthlyDecisions} decisions selected. {pendingThisMonth === 0 ? "Review or change any highlighted choice before advancing." : "Unselected days will auto-resolve when you simulate."}</span>
             </div>
-            {pendingThisMonth === 0 ? (
-              <button onClick={handleAdvanceMonth}>Advance Month</button>
-            ) : (
-              <button onClick={handleSimulateMonth}>Simulate Month</button>
-            )}
           </div>
           <div className="calendar-grid">
             <div className="calendar-weekdays">

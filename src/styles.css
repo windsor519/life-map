@@ -222,7 +222,6 @@ textarea:focus {
   font-size: 2rem;
 }
 
-.node-money { left: 8%; top: 18%; }
 .node-heart { right: 18%; top: 8%; }
 .node-health { left: 34%; bottom: 8%; }
 .node-family { right: 8%; bottom: 18%; }
@@ -511,8 +510,7 @@ textarea:focus {
   box-shadow: 0 3px 10px rgba(251, 191, 36, 0.12);
 }
 
-.bottom-stat-strip .meter,
-.money-chip {
+.bottom-stat-strip .meter {
   grid-column: 1 / -1;
 }
 
@@ -524,18 +522,6 @@ textarea:focus {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.34);
 }
 
-.money-chip {
-  justify-self: start;
-  border: 1px solid color-mix(in srgb, var(--stat-accent, #fbbf24) 34%, transparent);
-  border-radius: 999px;
-  color: #fde68a;
-  background: rgba(2, 6, 23, 0.48);
-  font-size: 0.58rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  padding: 0.16rem 0.5rem;
-  text-transform: uppercase;
-}
 
 .next-turn-button {
   position: sticky;
@@ -620,7 +606,6 @@ textarea:focus {
   opacity: 0.95;
 }
 
-.stat-money::before { background: #fbbf24; }
 .stat-health::before { background: #34d399; }
 .stat-marriage::before { background: #fb7185; }
 .stat-children::before { background: #22d3ee; }
@@ -2340,6 +2325,48 @@ textarea:focus {
   font-weight: 950;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.custom-events-panel {
+  display: grid;
+  gap: 0.9rem;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  border-radius: 1.3rem;
+  background: rgba(14, 165, 233, 0.07);
+  padding: 1rem;
+}
+
+.custom-events-panel > p,
+.prompt-guide p {
+  margin: 0;
+  color: #c8d3e9;
+  line-height: 1.55;
+}
+
+.prompt-guide {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 1rem;
+  background: rgba(2, 6, 23, 0.24);
+  padding: 0.8rem;
+}
+
+.prompt-guide summary {
+  color: #bfdbfe;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.prompt-guide textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.78rem;
+}
+
+.form-error {
+  border: 1px solid rgba(248, 113, 113, 0.38);
+  border-radius: 0.9rem;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.3);
+  padding: 0.75rem 0.9rem;
 }
 
 .character-options {

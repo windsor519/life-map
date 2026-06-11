@@ -1,4 +1,4 @@
-const events = [
+const baseEvents = [
   {
     id: "daughter-recital",
     title: "Daughter's Recital",
@@ -306,6 +306,52 @@ const events = [
       { label: "Blame the school", effects: { children: 2, stress: 8, marriage: -2 }, memory: "You blamed the school and the conflict escalated." }
     ]
   },
+
+  {
+    id: "car-breakdown",
+    title: "Car Breaks Down",
+    severity: "major",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🚗",
+    accent: "amber",
+    description: "The car will not start on a morning when everyone needs to be somewhere.",
+    choices: [
+      { label: "Tow and repair it", effects: { money: -1800, stress: 9, health: -1 }, memory: "You handled a sudden car breakdown with a tow and repair." },
+      { label: "Use emergency fund", effects: { money: -1200, stress: 4 }, memory: "You used savings to keep the car breakdown from taking over the week." },
+      { label: "Delay and juggle rides", effects: { money: -250, stress: 12, marriage: -3, children: -2 }, memory: "You delayed the repair and spent the week juggling rides." }
+    ]
+  },
+  {
+    id: "furnace-replacement",
+    title: "Furnace Goes Out",
+    severity: "major",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🔥",
+    accent: "rose",
+    description: "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
+    choices: [
+      { label: "Replace it now", effects: { money: -5200, stress: 10, health: 3 }, memory: "You replaced the furnace before the house got unsafe." },
+      { label: "Finance the furnace", effects: { money: -1200, stress: 8, marriage: -2 }, memory: "You financed a furnace replacement to protect cash flow." },
+      { label: "Patch and wait", effects: { money: -650, stress: 14, health: -5 }, memory: "You patched the failing furnace and hoped it would last." }
+    ]
+  },
+  {
+    id: "fence-blown-down",
+    title: "Fence Blows Down",
+    severity: "moderate",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🌬️",
+    accent: "teal",
+    description: "A windstorm knocks down a section of fence and the yard suddenly needs a fix.",
+    choices: [
+      { label: "Hire a repair crew", effects: { money: -1100, stress: -2, marriage: 2 }, memory: "You hired help after the fence blew down." },
+      { label: "DIY this weekend", effects: { money: -320, stress: 7, health: -2 }, memory: "You spent the weekend fixing the blown-down fence yourself." },
+      { label: "Temporary patch", effects: { money: -90, stress: 5, marriage: -1 }, memory: "You patched the blown-down fence and added it to the future list." }
+    ]
+  },
   {
     id: "school-fundraiser",
     title: "School Fundraiser",
@@ -318,5 +364,48 @@ const events = [
     ]
   },
 ];
+
+
+const generatedEventBlueprints = [
+  { category: "Money", icon: "💳", accent: "amber", title: "Subscription Audit", description: "A forgotten subscription renewal hits your account this week.", minor: ["Cancel unused plans", { money: 95, stress: -2 }, "You trimmed unused subscriptions."], balanced: ["Keep favorites", { money: -35, stress: -1 }, "You kept the subscriptions you actually enjoy."], risky: ["Ignore the charge", { money: -120, stress: 3 }, "You ignored another subscription renewal."] },
+  { category: "Wellness", icon: "🧘", accent: "green", title: "Morning Stretch", description: "A short mobility routine could make the week feel easier.", minor: ["Stretch daily", { health: 5, stress: -3 }, "You made stretching a small daily ritual."], balanced: ["Try twice", { health: 2, stress: -1 }, "You squeezed in a couple of stretch breaks."], risky: ["Skip it", { health: -2, stress: 2 }, "You skipped the stretch routine."] },
+  { category: "Relationship", icon: "💌", accent: "rose", title: "Thoughtful Check-In", description: "Your partner seems quieter than usual after a busy day.", minor: ["Ask and listen", { marriage: 6, stress: -2 }, "You made space for a thoughtful relationship check-in."], balanced: ["Send a kind text", { marriage: 3, stress: -1 }, "You sent a small note of support."], risky: ["Assume it is fine", { marriage: -4, stress: 2 }, "You missed a chance to check in." ] },
+  { category: "Parenting", icon: "🧩", accent: "teal", title: "Homework Spiral", description: "Homework turns into frustration right before bedtime.", minor: ["Coach calmly", { children: 6, stress: 2 }, "You helped homework end calmly."], balanced: ["Take a snack break", { children: 4, stress: -1 }, "You reset homework with a snack break."], risky: ["Push through", { children: -4, stress: 5 }, "You pushed through homework tension." ] },
+  { category: "Career", icon: "📎", accent: "indigo", title: "Inbox Backlog", description: "Your inbox is full of small tasks competing for attention.", minor: ["Clear top priorities", { money: 110, stress: -3 }, "You cleared the highest-value inbox tasks."], balanced: ["Set a timer", { money: 60, stress: -1 }, "You used a timer to tame the inbox."], risky: ["Let it pile up", { stress: 5, health: -1 }, "The inbox kept piling up." ] },
+  { category: "Home", icon: "🪴", accent: "green", title: "Plant Care", description: "The houseplants are drooping and need attention.", minor: ["Water and prune", { health: 2, stress: -3 }, "You revived the plants and the room felt calmer."], balanced: ["Water quickly", { stress: -1 }, "You gave the plants a quick rescue."], risky: ["Forget again", { stress: 2 }, "The plants stayed droopy another week." ] },
+  { category: "Community", icon: "☕", accent: "blue", title: "Coffee Invitation", description: "Someone from your neighborhood suggests a low-key coffee meetup.", minor: ["Meet for coffee", { marriage: 4, stress: -2, money: -12 }, "You built community over coffee."], balanced: ["Suggest a walk", { health: 2, marriage: 3 }, "You turned coffee into a neighborhood walk."], risky: ["Decline twice", { marriage: -2, stress: 1 }, "You declined the neighborhood invite." ] },
+  { category: "Health", icon: "🍲", accent: "green", title: "Lunch Choice", description: "Lunch can be quick comfort food or something that fuels the afternoon.", minor: ["Choose balanced lunch", { health: 4, stress: -1, money: -18 }, "You picked a balanced lunch."], balanced: ["Pack leftovers", { health: 3, money: 20 }, "You saved money with leftovers."], risky: ["Snack all day", { health: -3, stress: 3 }, "You grazed through the afternoon." ] },
+  { category: "Errands", icon: "📮", accent: "amber", title: "Post Office Run", description: "A package return deadline is about to expire.", minor: ["Return it today", { money: 70, stress: -3 }, "You returned the package before the deadline."], balanced: ["Schedule pickup", { money: 45, stress: -1 }, "You scheduled a package pickup."], risky: ["Miss deadline", { money: -75, stress: 2 }, "You missed the return deadline." ] },
+  { category: "Recovery", icon: "🌙", accent: "indigo", title: "Early Bedtime", description: "A quiet evening could become actual rest if you protect it.", minor: ["Sleep early", { health: 6, stress: -5 }, "You protected an early bedtime."], balanced: ["One calm hour", { health: 3, stress: -2 }, "You made room for one calm hour."], risky: ["Scroll late", { health: -4, stress: 4 }, "You scrolled late into the night." ] },
+  { category: "Money", icon: "🧾", accent: "amber", title: "Bill Review", description: "A bill looks higher than expected and might be negotiable.", minor: ["Call provider", { money: 140, stress: 1 }, "You called and lowered a bill."], balanced: ["Compare plans", { money: 80, stress: 2 }, "You compared cheaper plans."], risky: ["Auto-pay it", { money: -90, stress: -1 }, "You paid the higher bill without review." ] },
+  { category: "School", icon: "📚", accent: "blue", title: "Reading Log", description: "The weekly reading log needs a parent signature.", minor: ["Read together", { children: 5, stress: -1 }, "You read together and signed the log."], balanced: ["Sign and ask", { children: 3 }, "You checked in before signing the reading log."], risky: ["Forget it", { children: -3, stress: 3 }, "The reading log went back unsigned." ] },
+  { category: "Major life event", icon: "🏥", accent: "rose", title: "Urgent Care Choice", severity: "major", description: "A concerning symptom raises the question of urgent care versus waiting.", minor: ["Go to urgent care", { money: -280, health: 9, stress: 4 }, "You got timely care for a concerning symptom."], balanced: ["Call nurse line", { money: -40, health: 4, stress: 1 }, "You used a nurse line to decide next steps."], risky: ["Wait it out", { health: -8, stress: 6 }, "You waited too long on a concerning symptom." ] },
+  { category: "Major family event", icon: "🛟", accent: "rose", title: "Family Emergency", severity: "major", description: "A relative needs immediate help during a difficult moment.", minor: ["Show up fast", { children: 8, marriage: 5, stress: 8, money: -220 }, "You showed up for a family emergency."], balanced: ["Coordinate help", { children: 5, marriage: 3, stress: 4 }, "You coordinated support for the family emergency."], risky: ["Stay out of it", { children: -8, marriage: -4, stress: 3 }, "You stayed out of a family emergency." ] },
+  { category: "Major career event", icon: "🚪", accent: "violet", title: "Job Interview", severity: "major", description: "A strong job lead appears, but preparing will crowd the week.", minor: ["Prepare deeply", { money: 850, stress: 8, health: -2 }, "You prepared hard for a job interview."], balanced: ["Prep essentials", { money: 420, stress: 4 }, "You covered the essentials before the interview."], risky: ["Wing it", { money: -150, stress: -2 }, "You winged an important interview." ] }
+];
+
+const generatedEvents = Array.from({ length: 279 }, (_, index) => {
+  const blueprint = generatedEventBlueprints[index % generatedEventBlueprints.length];
+  const cycle = Math.floor(index / generatedEventBlueprints.length) + 1;
+  const severity = blueprint.severity ?? (index % 11 === 0 ? "moderate" : "minor");
+  const titleSuffix = cycle > 1 ? ` ${cycle}` : "";
+
+  return {
+    id: `expanded-${index + 1}-${blueprint.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`,
+    title: `${blueprint.title}${titleSuffix}`,
+    severity,
+    category: blueprint.category,
+    icon: blueprint.icon,
+    accent: blueprint.accent,
+    description: blueprint.description,
+    choices: [
+      { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },
+      { label: blueprint.balanced[0], effects: blueprint.balanced[1], memory: blueprint.balanced[2] },
+      { label: blueprint.risky[0], effects: blueprint.risky[1], memory: blueprint.risky[2] }
+    ]
+  };
+});
+
+const events = [...baseEvents, ...generatedEvents];
 
 export default events;

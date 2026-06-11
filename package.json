@@ -1,7 +1,7 @@
 {
   "name": "life-map",
   "version": "1.0.0",
-  "description": "Improve your life one week at a time.",
+  "description": "Improve your life one season at a time.",
   "type": "module",
   "scripts": {
     "dev": "vite",

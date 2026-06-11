@@ -3,6 +3,13 @@ import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 
 const STORAGE_KEY = "life-map-game";
+const createIdleSimulationState = () => ({
+  phase: "idle",
+  steps: [],
+  currentIndex: 0,
+  unexpectedEvent: null,
+  summary: null
+});
 const severityConfig = {
   minor: { label: "Minor", icon: "·" },
   moderate: { label: "Moderate", icon: "◆" },
@@ -708,6 +715,7 @@ export default function App() {
     social: "weak"
   });
   const [activeDecisionContext, setActiveDecisionContext] = useState(null);
+  const [simulationState, setSimulationState] = useState(createIdleSimulationState);
   const [characterOptions, setCharacterOptions] = useState(() => generateCharacterOptions());
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
@@ -874,6 +882,7 @@ export default function App() {
       initialized: true
     };
 
+    setSimulationState(createIdleSimulationState());
     setGame({
       ...newGame,
       weekStartStats: captureStats(newGame)
@@ -886,6 +895,7 @@ export default function App() {
       window.localStorage.removeItem(STORAGE_KEY);
     }
     stopZenMusic();
+    setSimulationState(createIdleSimulationState());
     setGame(createDefaultGame());
     setStartAge(25);
     setStartMoney(10000);
@@ -898,12 +908,14 @@ export default function App() {
   };
 
   const startProfileGame = (profile) => {
+    setSimulationState(createIdleSimulationState());
     setGame(createGameFromProfile(profile));
     startZenMusic();
   };
 
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
+    setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setStartMoney(10000);
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
@@ -926,6 +938,7 @@ export default function App() {
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
   const runNumber = getRunNumber(legacy);
   const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
+  const isSimulationLocked = simulationState.phase === "animating" || simulationState.phase === "unexpected";
 
   const finishRunIfNeeded = (nextState, prevGame) => {
     const gameOverReason = getGameOverReason(nextState);
@@ -1000,6 +1013,10 @@ export default function App() {
   };
 
   const handleChoice = (choice, decision, dayName) => {
+    if (isSimulationLocked) {
+      return;
+    }
+
     setGame((prevGame) => {
       const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
       const previousSelection = prevGame.selectedChoices?.[decision.key];
@@ -1044,6 +1061,10 @@ export default function App() {
   };
 
   const handleAdvanceMonth = () => {
+    if (isSimulationLocked) {
+      return;
+    }
+
     setActiveDecisionContext(null);
     setGame((prevGame) => prevGame.gameOver ? prevGame : ({
       ...prevGame,
@@ -1056,65 +1077,143 @@ export default function App() {
   };
 
   const handleSimulateMonth = () => {
+    if (isSimulationLocked || game.gameOver) {
+      return;
+    }
+
     setActiveDecisionContext(null);
-    setGame((prevGame) => {
-      const schedule = getMonthSchedule(prevGame.month, currentCalendarYear, prevGame.eventSeed, prevGame.age);
-      let nextState = prevGame;
-      const simulatedMemories = [];
-      const summaryHighlights = [];
 
-      schedule.forEach((day, dayIndex) => {
-        const dayResults = [];
+    const schedule = getMonthSchedule(game.month, currentCalendarYear, game.eventSeed, game.age);
+    let nextState = game;
+    const steps = [];
+    const simulatedMemories = [];
+    const summaryHighlights = [];
 
-        day.decisions.forEach((decision, decisionIndex) => {
-          if (prevGame.completedDecisions.includes(decision.key)) {
-            return;
-          }
+    schedule.forEach((day, dayIndex) => {
+      const randomDayResults = [];
 
-          const choice = getRandomChoice(prevGame.eventSeed, prevGame.month, dayIndex, decisionIndex, decision.choices);
-          const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
-          nextState = applyEffects(nextState, adjustedEffects);
-          const modifiedEffects = applyTalentModifiers(nextState, choice.effects);
-          nextState = applyEffects(nextState, modifiedEffects);
-          dayResults.push(`${decision.title}: ${choice.label}`);
-          summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${choice.label}`);
-        });
+      day.decisions.forEach((decision, decisionIndex) => {
+        const selectedChoice = game.selectedChoices?.[decision.key];
 
-        if (dayResults.length > 0) {
-          simulatedMemories.push(`Month ${prevGame.month}, ${day.dayLabel}, age ${prevGame.age}: Went with the flow (${dayResults.join("; ")}).`);
+        if (selectedChoice) {
+          steps.push({
+            key: `${decision.key}-selected`,
+            dayLabel: day.dayLabel,
+            eventTitle: decision.title,
+            choiceLabel: selectedChoice.label,
+            choiceSource: "Selected",
+            effects: selectedChoice.effects,
+            visual: decision.visual,
+            severity: decision.severity
+          });
+          summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${selectedChoice.label}`);
+          return;
         }
-      });
 
-      const unexpectedEvent = getUnexpectedEventForMonth(prevGame.eventSeed, prevGame.month, currentCalendarYear);
-
-      if (unexpectedEvent) {
-        const adjustedEffects = scaleEffectsForDifficulty(unexpectedEvent.effects, prevGame.legacy?.difficulty ?? 1);
+        const choice = getRandomChoice(game.eventSeed, game.month, dayIndex, decisionIndex, decision.choices);
+        const adjustedEffects = scaleEffectsForDifficulty(choice.effects, game.legacy?.difficulty ?? 1);
         const modifiedEffects = applyTalentModifiers(nextState, adjustedEffects);
         nextState = applyEffects(nextState, modifiedEffects);
-        simulatedMemories.push(`Month ${prevGame.month}, age ${prevGame.age}: ${unexpectedEvent.memory}`);
-        summaryHighlights.push(`${unexpectedEvent.icon} Unexpected: ${unexpectedEvent.title}`);
-      }
+        steps.push({
+          key: `${decision.key}-random`,
+          dayLabel: day.dayLabel,
+          eventTitle: decision.title,
+          choiceLabel: choice.label,
+          choiceSource: "Random",
+          effects: modifiedEffects,
+          visual: decision.visual,
+          severity: decision.severity
+        });
+        randomDayResults.push(`${decision.title}: ${choice.label}`);
+        summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${choice.label}`);
+      });
 
-      if (simulatedMemories.length === 0) {
-        return prevGame;
+      if (randomDayResults.length > 0) {
+        simulatedMemories.push(`Month ${game.month}, ${day.dayLabel}, age ${game.age}: Went with the flow (${randomDayResults.join("; ")}).`);
       }
+    });
 
-      const advancedGame = {
-        ...nextState,
-        ...getNextMonthState(prevGame.month, prevGame.age),
-        completedDecisions: [],
-        selectedChoices: {},
-        currentEventId: getRandomEventId(prevGame.currentEventId),
-        memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
+    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear);
+    let unexpectedStep = null;
+
+    if (unexpectedEvent) {
+      const adjustedEffects = scaleEffectsForDifficulty(unexpectedEvent.effects, game.legacy?.difficulty ?? 1);
+      const modifiedEffects = applyTalentModifiers(nextState, adjustedEffects);
+      nextState = applyEffects(nextState, modifiedEffects);
+      unexpectedStep = {
+        key: `unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`,
+        dayLabel: "Surprise",
+        eventTitle: unexpectedEvent.title,
+        choiceLabel: "Life happens",
+        choiceSource: "Unexpected",
+        effects: modifiedEffects,
+        visual: unexpectedEvent.visual,
+        severity: unexpectedEvent.severity,
+        description: unexpectedEvent.description
       };
+      simulatedMemories.push(`Month ${game.month}, age ${game.age}: ${unexpectedEvent.memory}`);
+      summaryHighlights.push(`${unexpectedEvent.icon} Unexpected: ${unexpectedEvent.title}`);
+    }
 
-      return finishRunIfNeeded({
-        ...advancedGame,
-        weekStartStats: captureStats(advancedGame),
-        weeklySummary: createMonthlySummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
-      }, prevGame);
+    if (steps.length === 0 && !unexpectedStep) {
+      return;
+    }
+
+    const advancedGame = {
+      ...nextState,
+      ...getNextMonthState(game.month, game.age),
+      completedDecisions: [],
+      selectedChoices: {},
+      currentEventId: getRandomEventId(game.currentEventId),
+      memories: [...game.memories, ...simulatedMemories].slice(-8)
+    };
+    const finalGame = finishRunIfNeeded({
+      ...advancedGame,
+      weekStartStats: captureStats(advancedGame),
+      weeklySummary: createMonthlySummary({ previousGame: game, nextState, highlights: summaryHighlights })
+    }, game);
+
+    setSimulationState({
+      phase: steps.length > 0 ? "animating" : "unexpected",
+      steps,
+      currentIndex: 0,
+      unexpectedEvent: unexpectedStep,
+      summary: { finalGame }
     });
   };
+
+
+  useEffect(() => {
+    if (simulationState.phase !== "animating" && simulationState.phase !== "unexpected") {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (simulationState.phase === "animating" && simulationState.currentIndex < simulationState.steps.length - 1) {
+        setSimulationState((prevSimulationState) => ({
+          ...prevSimulationState,
+          currentIndex: prevSimulationState.currentIndex + 1
+        }));
+        return;
+      }
+
+      if (simulationState.phase === "animating" && simulationState.unexpectedEvent) {
+        setSimulationState((prevSimulationState) => ({
+          ...prevSimulationState,
+          phase: "unexpected"
+        }));
+        return;
+      }
+
+      if (simulationState.summary?.finalGame) {
+        setGame(simulationState.summary.finalGame);
+      }
+      setSimulationState(createIdleSimulationState());
+    }, simulationState.phase === "unexpected" ? 1500 : 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [simulationState]);
+
 
 
   const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
@@ -1148,6 +1247,16 @@ export default function App() {
     );
   };
 
+  const renderSimulationEffects = (effects) => (
+    <span className="choice-effects simulation-effects" aria-label="Simulation stat changes">
+      {Object.entries(effects ?? {}).map(([key, value]) => (
+        <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
+          {statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+        </span>
+      ))}
+    </span>
+  );
+
   const renderSummaryDelta = (key, value) => {
     const config = statConfig[key];
     const isGoodChange = key === "stress" ? value <= 0 : value >= 0;
@@ -1160,6 +1269,10 @@ export default function App() {
       </span>
     );
   };
+
+  const currentSimulationStep = simulationState.phase === "unexpected"
+    ? simulationState.unexpectedEvent
+    : simulationState.steps[simulationState.currentIndex];
 
   if (game.gameOver) {
     return (
@@ -1382,9 +1495,9 @@ export default function App() {
           </section>
         </div>
         {pendingThisMonth === 0 ? (
-          <button className="next-turn-button" onClick={handleAdvanceMonth}>Next Month</button>
+          <button className="next-turn-button" onClick={handleAdvanceMonth} disabled={isSimulationLocked}>Next Month</button>
         ) : (
-          <button className="next-turn-button" onClick={handleSimulateMonth}>▶ Simulate</button>
+          <button className="next-turn-button" onClick={handleSimulateMonth} disabled={isSimulationLocked}>▶ Simulate</button>
         )}
       </section>
 
@@ -1433,6 +1546,7 @@ export default function App() {
                               type="button"
                               aria-haspopup="dialog"
                               onClick={() => setActiveDecisionContext({ decision, dayLabel: day.dayLabel })}
+                              disabled={isSimulationLocked}
                             >
                               <span className="decision-title">
                                 <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
@@ -1543,6 +1657,47 @@ export default function App() {
         </aside>
       </div>
 
+      {currentSimulationStep ? (
+        <div className="simulation-modal-backdrop" aria-live="polite">
+          <section
+            className={`simulation-modal severity-card-${currentSimulationStep.severity ?? "minor"} accent-${currentSimulationStep.visual?.accent ?? "blue"}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="simulation-modal-title"
+          >
+            <div className="simulation-modal-header">
+              <div className="decision-title">
+                <span className="mini-icon" aria-hidden="true">{currentSimulationStep.visual?.icon ?? "🎲"}</span>
+                <span>
+                  <small>{simulationState.phase === "unexpected" ? "Unexpected event" : `Simulated day · ${currentSimulationStep.dayLabel}`}</small>
+                  <h2 id="simulation-modal-title">{currentSimulationStep.eventTitle}</h2>
+                </span>
+              </div>
+              <span className={`simulation-source source-${currentSimulationStep.choiceSource?.toLowerCase() ?? "random"}`}>
+                {currentSimulationStep.choiceSource}
+              </span>
+            </div>
+            {currentSimulationStep.description ? <p>{currentSimulationStep.description}</p> : null}
+            <div className="simulation-choice-card">
+              <span>{currentSimulationStep.choiceSource === "Selected" ? "Your planned choice" : currentSimulationStep.choiceSource === "Random" ? "Auto-resolved choice" : "Outcome"}</span>
+              <strong>{currentSimulationStep.choiceLabel}</strong>
+            </div>
+            <div className="simulation-stat-changes">
+              <span>Stat changes</span>
+              {renderSimulationEffects(currentSimulationStep.effects)}
+            </div>
+            <div className="simulation-progress" aria-label="Simulation progress">
+              {simulationState.phase === "animating" ? (
+                <span>Step {simulationState.currentIndex + 1} of {simulationState.steps.length}</span>
+              ) : (
+                <span>Resolving unexpected event…</span>
+              )}
+              <div><span style={{ width: `${simulationState.phase === "animating" && simulationState.steps.length > 0 ? ((simulationState.currentIndex + 1) / simulationState.steps.length) * 100 : 100}%` }} /></div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       {activeDecisionContext ? (() => {
         const { decision, dayLabel } = activeDecisionContext;
         const selectedChoice = selectedChoices[decision.key];
@@ -1597,7 +1752,7 @@ export default function App() {
                     return (
                       <button
                         className={`option-button ${isSelected ? "selected" : ""}`}
-                        disabled={lockedLegacyChoice}
+                        disabled={lockedLegacyChoice || isSimulationLocked}
                         key={choice.label}
                         onClick={() => {
                           handleChoice(choice, decision, dayLabel);

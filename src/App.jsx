@@ -44,18 +44,47 @@ const legacySkillConfig = {
   hustle: { label: "Hustle", icon: "💼", description: "Banks a scaled-down money mindset for new game plus." }
 };
 
+const createEmptyStats = () => Object.fromEntries(summaryStatKeys.map((key) => [key, 0]));
+const createEmptySkills = () => Object.fromEntries(Object.keys(legacySkillConfig).map((key) => [key, 0]));
+
 const createDefaultLegacy = () => ({
   runs: 0,
   difficulty: 1,
   carryRate: 0.25,
-  skills: Object.fromEntries(Object.keys(legacySkillConfig).map((key) => [key, 0])),
-  carriedStats: Object.fromEntries(summaryStatKeys.map((key) => [key, 0])),
+  skills: createEmptySkills(),
+  carriedStats: createEmptyStats(),
   lastRun: null
 });
 
 const getCarryRate = (runs) => Math.max(0.08, 0.25 - runs * 0.025);
 const getDifficultyMultiplier = (runs) => Number((1 + runs * 0.12).toFixed(2));
 const getRunNumber = (legacy) => (legacy?.runs ?? 0) + 1;
+const toFiniteNumber = (value, fallback = 0) => {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : fallback;
+};
+const normalizeLegacy = (legacy) => {
+  const runs = Math.max(0, Math.round(toFiniteNumber(legacy?.runs)));
+  const skills = createEmptySkills();
+  const carriedStats = createEmptyStats();
+
+  Object.keys(skills).forEach((key) => {
+    skills[key] = clamp(toFiniteNumber(legacy?.skills?.[key]), 0, 99);
+  });
+
+  summaryStatKeys.forEach((key) => {
+    carriedStats[key] = Math.round(toFiniteNumber(legacy?.carriedStats?.[key]));
+  });
+
+  return {
+    runs,
+    difficulty: Math.max(1, toFiniteNumber(legacy?.difficulty, getDifficultyMultiplier(runs))),
+    carryRate: Math.max(0.08, Math.min(0.25, toFiniteNumber(legacy?.carryRate, getCarryRate(runs)))),
+    skills,
+    carriedStats,
+    lastRun: legacy?.lastRun && typeof legacy.lastRun === "object" ? legacy.lastRun : null
+  };
+};
 
 const eventVisuals = {
   "daughter-recital": { icon: "🎼", accent: "violet", label: "Family moment" },
@@ -264,8 +293,27 @@ const getGameOverReason = (game) => {
   return null;
 };
 
+const getLegacySkillBonuses = (legacy) => {
+  const skills = legacy?.skills ?? createEmptySkills();
+
+  return {
+    money: Math.min(20000, (skills.hustle ?? 0) * 250),
+    health: Math.min(20, Math.floor((skills.wellness ?? 0) / 2)),
+    marriage: Math.min(20, Math.floor((skills.bonds ?? 0) / 2)),
+    children: Math.min(20, Math.floor((skills.parenting ?? 0) / 2)),
+    stress: -Math.min(20, Math.floor((skills.grit ?? 0) / 2))
+  };
+};
+
+const getTotalLegacyBonuses = (legacy) => {
+  const carriedStats = legacy?.carriedStats ?? createEmptyStats();
+  const skillBonuses = getLegacySkillBonuses(legacy);
+
+  return Object.fromEntries(summaryStatKeys.map((key) => [key, (carriedStats[key] ?? 0) + (skillBonuses[key] ?? 0)]));
+};
+
 const buildNextLegacy = (legacy, finalGame) => {
-  const currentLegacy = { ...createDefaultLegacy(), ...(legacy ?? {}) };
+  const currentLegacy = normalizeLegacy(legacy);
   const runs = currentLegacy.runs + 1;
   const carryRate = getCarryRate(runs);
   const carriedStats = {
@@ -301,15 +349,15 @@ const buildNextLegacy = (legacy, finalGame) => {
 };
 
 const applyLegacyBonuses = (baseStats, legacy) => {
-  const carriedStats = legacy?.carriedStats ?? {};
+  const legacyBonuses = getTotalLegacyBonuses(legacy);
 
   return {
     ...baseStats,
-    money: Math.max(0, Math.round(baseStats.money + (carriedStats.money ?? 0))),
-    health: clamp(baseStats.health + (carriedStats.health ?? 0)),
-    marriage: clamp(baseStats.marriage + (carriedStats.marriage ?? 0)),
-    children: clamp(baseStats.children + (carriedStats.children ?? 0)),
-    stress: clamp(baseStats.stress + (carriedStats.stress ?? 0))
+    money: Math.max(0, Math.round(baseStats.money + (legacyBonuses.money ?? 0))),
+    health: clamp(baseStats.health + (legacyBonuses.health ?? 0)),
+    marriage: clamp(baseStats.marriage + (legacyBonuses.marriage ?? 0)),
+    children: clamp(baseStats.children + (legacyBonuses.children ?? 0)),
+    stress: clamp(baseStats.stress + (legacyBonuses.stress ?? 0))
   };
 };
 
@@ -361,18 +409,7 @@ const normalizeGame = (game) => ({
   weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
   gameOver: Boolean(game?.gameOver),
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
-  legacy: {
-    ...createDefaultLegacy(),
-    ...(game?.legacy && typeof game.legacy === "object" ? game.legacy : {}),
-    skills: {
-      ...createDefaultLegacy().skills,
-      ...(game?.legacy?.skills && typeof game.legacy.skills === "object" ? game.legacy.skills : {})
-    },
-    carriedStats: {
-      ...createDefaultLegacy().carriedStats,
-      ...(game?.legacy?.carriedStats && typeof game.legacy.carriedStats === "object" ? game.legacy.carriedStats : {})
-    }
-  }
+  legacy: normalizeLegacy(game?.legacy)
 });
 
 const loadSavedGame = () => {
@@ -465,7 +502,7 @@ export default function App() {
       weeklySummary: null,
       gameOver: false,
       gameOverReason: null,
-      legacy: game.legacy ?? createDefaultLegacy(),
+      legacy: normalizeLegacy(game.legacy),
       initialized: true
     };
 
@@ -490,7 +527,7 @@ export default function App() {
     setStartAge(25);
     setStartMoney(10000);
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
-    setGame((prevGame) => ({ ...createDefaultGame(), legacy: prevGame.legacy }));
+    setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
   const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
@@ -499,7 +536,8 @@ export default function App() {
   const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
-  const legacy = game.legacy ?? createDefaultLegacy();
+  const legacy = normalizeLegacy(game.legacy);
+  const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
   const runNumber = getRunNumber(legacy);
   const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
 
@@ -678,12 +716,13 @@ export default function App() {
             <span><strong>{Math.round((legacy.carryRate ?? 0) * 100)}%</strong> Carryover rate</span>
             <span><strong>{legacy.runs}</strong> Runs completed</span>
           </div>
-          <div className="legacy-stat-grid" aria-label="Scaled stat carryover">
+          <div className="legacy-stat-grid" aria-label="Total New Game Plus bonuses">
             {summaryStatKeys.map((key) => (
               <article key={key}>
                 <span>{statConfig[key].icon}</span>
                 <strong>{statConfig[key].label}</strong>
-                <em>{formatSummaryDelta(key, legacy.carriedStats?.[key] ?? 0)}</em>
+                <em>{formatSummaryDelta(key, totalLegacyBonuses[key] ?? 0)}</em>
+                <small>carry + skills</small>
               </article>
             ))}
           </div>
@@ -766,11 +805,11 @@ export default function App() {
             <section className="legacy-preview" aria-label="New Game Plus bonuses">
               <div>
                 <strong>New Game+ Run {runNumber}</strong>
-                <span>{difficultyMultiplier.toFixed(2)}× difficulty · {Math.round((legacy.carryRate ?? 0) * 100)}% carryover</span>
+                <span>{difficultyMultiplier.toFixed(2)}× difficulty · {Math.round((legacy.carryRate ?? 0) * 100)}% carryover + skill boosts</span>
               </div>
               <div className="legacy-preview-stats">
                 {summaryStatKeys.map((key) => (
-                  <span key={key}>{statConfig[key].icon} {formatSummaryDelta(key, legacy.carriedStats?.[key] ?? 0)}</span>
+                  <span key={key}>{statConfig[key].icon} {formatSummaryDelta(key, totalLegacyBonuses[key] ?? 0)}</span>
                 ))}
               </div>
             </section>

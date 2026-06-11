@@ -1540,3 +1540,11 @@ input:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.legacy-stat-grid small {
+  color: #93c5fd;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

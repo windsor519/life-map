@@ -615,7 +615,7 @@ const normalizeGame = (game) => ({
   weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
   gameOver: Boolean(game?.gameOver),
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
-  legacy: normalizeLegacy(game?.legacy)
+  legacy: normalizeLegacy(game?.legacy),
   character: game?.character && typeof game.character === "object" ? game.character : null
 });
 
@@ -936,7 +936,6 @@ export default function App() {
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
         : null;
       const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
-      const nextState = applyEffects(stateBeforeChoice, adjustedEffects);
       const modifiedEffects = applyTalentModifiers(stateBeforeChoice, choice.effects);
       const nextState = applyEffects(stateBeforeChoice, modifiedEffects);
       const selectedChoices = {
@@ -945,7 +944,6 @@ export default function App() {
           dayName,
           eventTitle: decision.title,
           label: choice.label,
-          effects: adjustedEffects,
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory

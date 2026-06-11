@@ -1547,6 +1547,7 @@ input:focus {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
 .music-toggle {
   background: linear-gradient(135deg, rgba(20, 184, 166, 0.28), rgba(99, 102, 241, 0.28));
 }

@@ -36,11 +36,18 @@ const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
 const getMonthStartWeekday = (month, year) => new Date(year, month - 1, 1).getDay();
 
 const statConfig = {
-  money: { label: "Money", icon: "💸", formatter: (value) => value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }) },
-  health: { label: "Health", icon: "💪", max: 100, tone: "good" },
-  marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good" },
-  children: { label: "Family bond", icon: "🌱", max: 100, tone: "good" },
-  stress: { label: "Stress", icon: "⚡", max: 100, tone: "bad" }
+  money: {
+    label: "Money",
+    icon: "💸",
+    formatter: (value) => value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
+    accent: "#fbbf24",
+    glow: "rgba(251, 191, 36, 0.38)",
+    signal: "Runway"
+  },
+  health: { label: "Health", icon: "💪", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Vitality" },
+  marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Connection" },
+  children: { label: "Family bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Home base" },
+  stress: { label: "Stress", icon: "⚡", max: 100, tone: "bad", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.36)", signal: "Pressure" }
 };
 
 const summaryStatKeys = Object.keys(statConfig);
@@ -1474,21 +1481,40 @@ export default function App() {
           <section className="stat-grid" aria-label="Current life stats">
             {Object.entries(statConfig).map(([key, config]) => {
               const value = game[key];
-              const percentage = config.max ? `${clamp(value, 0, config.max)}%` : null;
+              const normalizedValue = config.max ? clamp(value, 0, config.max) : null;
+              const percentage = config.max ? `${normalizedValue}%` : null;
               const severity = getStatSeverity(value, config);
               const alert = severityCopy[severity];
+              const ringFill = config.max ? `${normalizedValue * 3.6}deg` : "360deg";
+              const moneyStatus = key === "money" ? (value < 0 ? "Debt" : value < 2500 ? "Tight" : "Funded") : null;
+
               return (
-                <article className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`} key={key}>
-                  <div className="stat-icon" aria-hidden="true">{config.icon}</div>
+                <article
+                  className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`}
+                  key={key}
+                  style={{ "--stat-accent": config.accent, "--stat-glow": config.glow, "--stat-fill": ringFill }}
+                >
+                  <div className="stat-orb" aria-hidden="true">
+                    <span className="stat-icon">{config.icon}</span>
+                  </div>
+                  <div className="stat-readout">
+                    <span className="stat-signal">{config.signal}</span>
+                    <span className="stat-label">{config.label}</span>
+                    <strong>{config.formatter ? config.formatter(value) : value}</strong>
+                  </div>
                   {alert ? (
                     <div className={`stat-alert ${severity === "warning" ? "warning" : ""}`} aria-label={`${config.label} needs ${severity === "critical" ? "urgent attention" : "attention"}`}>
                       <span aria-hidden="true">{alert.icon}</span>
                       {alert.label}
                     </div>
                   ) : null}
-                  <span>{config.label}</span>
-                  <strong>{config.formatter ? config.formatter(value) : value}</strong>
-                  {percentage ? <div className={`meter ${config.tone}`}><span style={{ width: percentage }} /></div> : null}
+                  {percentage ? (
+                    <div className={`meter ${config.tone}`} aria-hidden="true">
+                      <span style={{ width: percentage }} />
+                    </div>
+                  ) : (
+                    <div className="money-chip" aria-hidden="true">{moneyStatus}</div>
+                  )}
                 </article>
               );
             })}

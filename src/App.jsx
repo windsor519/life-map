@@ -30,10 +30,17 @@ const monthNames = [
   "December"
 ];
 
-const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const seasonConfig = [
+  { id: "spring", label: "Spring", icon: "🌸", months: [1, 2, 3], palette: "Bloom", description: "Fresh starts, healthier routines, and tiny brave resets." },
+  { id: "summer", label: "Summer", icon: "☀️", months: [4, 5, 6], palette: "Sunlit", description: "High-energy plans, family logistics, and social heat." },
+  { id: "fall", label: "Fall", icon: "🍂", months: [7, 8, 9], palette: "Harvest", description: "Back-to-rhythm choices, money checks, and cozy priorities." },
+  { id: "winter", label: "Winter", icon: "❄️", months: [10, 11, 12], palette: "Frost", description: "Recovery, reflection, surprise bills, and warm connections." }
+];
 
 const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
-const getMonthStartWeekday = (month, year) => new Date(year, month - 1, 1).getDay();
+const getSeasonForMonth = (month) => seasonConfig.find((season) => season.months.includes(month)) ?? seasonConfig[0];
+const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => season.months.includes(month));
+const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
 const statConfig = {
   money: {
@@ -230,11 +237,13 @@ const getRandomChoice = (eventSeed, month, dayIndex, decisionIndex, choices) => 
   const choiceIndex = Math.floor(seededRandom(eventSeed, month, dayIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
 };
-const getNextMonthState = (month, age) => {
-  const nextMonth = month === 12 ? 1 : month + 1;
+const getNextSeasonState = (month, age) => {
+  const seasonIndex = getSeasonIndexForMonth(month);
+  const nextSeason = seasonConfig[(seasonIndex + 1) % seasonConfig.length];
+  const nextMonth = nextSeason.months[0];
 
   return {
-    age: month === 12 ? age + 1 : age,
+    age: nextMonth <= month ? age + 1 : age,
     month: nextMonth,
     week: nextMonth
   };
@@ -272,8 +281,7 @@ const getMonthSchedule = (month, year, eventSeed, age) => {
 
   return Array.from({ length: daysInMonth }, (_, index) => {
     const date = new Date(year, month - 1, index + 1);
-    const weekday = weekdayNames[date.getDay()];
-    const dayLabel = `${weekday} ${index + 1}`;
+    const dayLabel = `${monthNames[month - 1]} ${index + 1}`;
     const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < 0.2;
     const decisions = hasEvent
       ? [getDecoratedEvent(chooseAgeRelevantEvent(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
@@ -281,7 +289,8 @@ const getMonthSchedule = (month, year, eventSeed, age) => {
 
     return {
       date,
-      weekday,
+      month,
+      monthName: monthNames[month - 1],
       dayNumber: index + 1,
       dayLabel,
       decisions
@@ -353,7 +362,7 @@ const getLifeWeather = (deltas) => {
   return "Partly chaotic, clearing by next Monday 😵‍💫";
 };
 
-const createMonthlySummary = ({ previousGame, nextState, highlights = [] }) => {
+const createSeasonalSummary = ({ previousGame, nextState, highlights = [] }) => {
   const startStats = previousGame.weekStartStats ?? captureStats(previousGame);
   const endStats = captureStats(nextState);
   const deltas = summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: endStats[key] - (startStats[key] ?? previousGame[key] ?? 0) }), {});
@@ -363,6 +372,7 @@ const createMonthlySummary = ({ previousGame, nextState, highlights = [] }) => {
   return {
     id: `${previousGame.eventSeed}-${previousGame.month}-${Date.now()}`,
     month: previousGame.month,
+    season: getSeasonForMonth(previousGame.month).label,
     age: previousGame.age,
     deltas,
     highlights: highlights.slice(-3),
@@ -930,22 +940,33 @@ export default function App() {
   };
 
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
-  const monthSchedule = useMemo(() => getMonthSchedule(game.month, currentCalendarYear, game.eventSeed, game.age), [game.eventSeed, game.month, game.age, currentCalendarYear]);
-  const monthStartWeekday = getMonthStartWeekday(game.month, currentCalendarYear);
-  const calendarSlots = useMemo(
-    () => [...Array(monthStartWeekday).fill(null), ...monthSchedule],
-    [monthSchedule, monthStartWeekday]
+  const activeSeason = getSeasonForMonth(game.month);
+  const activeSeasonIndex = getSeasonIndexForMonth(game.month);
+  const seasonSchedule = useMemo(
+    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age)),
+    [activeSeason, game.eventSeed, game.age, currentCalendarYear]
   );
-  const totalMonthlyDecisions = monthSchedule.reduce((total, day) => total + day.decisions.length, 0);
+  const seasonDecisions = useMemo(
+    () => seasonSchedule.flatMap((day) => day.decisions.map((decision, decisionIndex) => ({ ...decision, day, decisionIndex }))),
+    [seasonSchedule]
+  );
+  const totalSeasonDecisions = seasonDecisions.length;
   const selectedChoices = game.selectedChoices ?? {};
-  const completedThisMonth = Object.keys(selectedChoices).length || game.completedDecisions.length;
-  const pendingThisMonth = Math.max(0, totalMonthlyDecisions - completedThisMonth);
-  const currentYearProgress = Math.round((game.month / 12) * 100);
+  const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
+  const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
+  const currentYearProgress = Math.round(((activeSeasonIndex + 1) / seasonConfig.length) * 100);
   const legacy = normalizeLegacy(game.legacy);
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
   const runNumber = getRunNumber(legacy);
   const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
   const isSimulationLocked = simulationState.phase === "animating" || simulationState.phase === "unexpected" || simulationState.phase === "summary";
+
+  useEffect(() => {
+    document.body.dataset.season = activeSeason.id;
+    return () => {
+      delete document.body.dataset.season;
+    };
+  }, [activeSeason.id]);
 
   const finishRunIfNeeded = (nextState, prevGame) => {
     const gameOverReason = getGameOverReason(nextState);
@@ -1049,7 +1070,7 @@ export default function App() {
         }
       };
       const completedDecisions = Object.keys(selectedChoices);
-      const timestamp = `Month ${prevGame.month}, ${dayName}, age ${prevGame.age}`;
+      const timestamp = `${getSeasonForMonth(prevGame.month).label}, ${dayName}, age ${prevGame.age}`;
       const memoryAction = previousSelection ? `changed ${decision.title} from ${previousSelection.label} to ${choice.label}` : choice.memory;
 
       const updatedGame = {
@@ -1068,7 +1089,7 @@ export default function App() {
     });
   };
 
-  const handleAdvanceMonth = () => {
+  const handleAdvanceSeason = () => {
     if (isSimulationLocked) {
       return;
     }
@@ -1076,22 +1097,22 @@ export default function App() {
     setActiveDecisionContext(null);
     setGame((prevGame) => prevGame.gameOver ? prevGame : ({
       ...prevGame,
-      ...getNextMonthState(prevGame.month, prevGame.age),
+      ...getNextSeasonState(prevGame.month, prevGame.age),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(prevGame.currentEventId),
-      memories: [...prevGame.memories, `Month ${prevGame.month} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+      memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     }));
   };
 
-  const handleSimulateMonth = () => {
+  const handleSimulateSeason = () => {
     if (isSimulationLocked || game.gameOver) {
       return;
     }
 
     setActiveDecisionContext(null);
 
-    const schedule = getMonthSchedule(game.month, currentCalendarYear, game.eventSeed, game.age);
+    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age));
     let nextState = game;
     const steps = [];
     const simulatedMemories = [];
@@ -1118,7 +1139,7 @@ export default function App() {
           return;
         }
 
-        const choice = getRandomChoice(game.eventSeed, game.month, dayIndex, decisionIndex, decision.choices);
+        const choice = getRandomChoice(game.eventSeed, day.month, dayIndex, decisionIndex, decision.choices);
         const modifiedEffects = resolveChoiceEffects(nextState, choice.effects, game.legacy?.difficulty ?? 1);
         nextState = applyEffects(nextState, modifiedEffects);
         steps.push({
@@ -1136,7 +1157,7 @@ export default function App() {
       });
 
       if (randomDayResults.length > 0) {
-        simulatedMemories.push(`Month ${game.month}, ${day.dayLabel}, age ${game.age}: Went with the flow (${randomDayResults.join("; ")}).`);
+        simulatedMemories.push(`${activeSeason.label}, ${day.dayLabel}, age ${game.age}: Went with the flow (${randomDayResults.join("; ")}).`);
       }
     });
 
@@ -1157,34 +1178,34 @@ export default function App() {
         severity: unexpectedEvent.severity,
         description: unexpectedEvent.description
       };
-      simulatedMemories.push(`Month ${game.month}, age ${game.age}: ${unexpectedEvent.memory}`);
+      simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${unexpectedEvent.memory}`);
       summaryHighlights.push(`${unexpectedEvent.icon} Unexpected: ${unexpectedEvent.title}`);
     }
 
     if (steps.length === 0 && !unexpectedStep) {
       steps.push({
-        key: `quiet-${game.eventSeed}-${game.month}`,
-        dayLabel: `${monthNames[game.month - 1]} wrap-up`,
-        eventTitle: "Quiet Month",
+        key: `quiet-${game.eventSeed}-${activeSeason.id}`,
+        dayLabel: `${activeSeason.label} wrap-up`,
+        eventTitle: "Quiet Season",
         choiceLabel: "No major loose ends needed attention.",
         choiceSource: "Quiet",
         effects: {},
         visual: { icon: "🌙", accent: "blue", label: "Calm" },
         severity: "minor"
       });
-      summaryHighlights.push("Quiet month: no unresolved choices or emergencies.");
-      simulatedMemories.push(`Month ${game.month}, age ${game.age}: The calendar stayed unusually calm.`);
+      summaryHighlights.push("Quiet season: no unresolved choices or emergencies.");
+      simulatedMemories.push(`${activeSeason.label}, age ${game.age}: The season stayed unusually calm.`);
     }
 
     const advancedGame = {
       ...nextState,
-      ...getNextMonthState(game.month, game.age),
+      ...getNextSeasonState(game.month, game.age),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
     };
-    const monthlySummary = createMonthlySummary({ previousGame: game, nextState, highlights: summaryHighlights });
+    const monthlySummary = createSeasonalSummary({ previousGame: game, nextState, highlights: summaryHighlights });
     const finalGame = finishRunIfNeeded({
       ...advancedGame,
       weekStartStats: captureStats(advancedGame),
@@ -1484,8 +1505,8 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · Month {game.month} · {monthNames[game.month - 1]} {currentCalendarYear} · Age {game.age}</p>
-          <h1>Monthly Life Map</h1>
+          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · {activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>
+          <h1>Seasonal Life Map</h1>
           {game.character ? (
             <div className="active-character">
               <span>{game.character.talent?.icon}</span>
@@ -1502,7 +1523,7 @@ export default function App() {
         </div>
       </header>
 
-      <section className="bottom-turn-hud" aria-label="Life stats and month controls">
+      <section className="bottom-turn-hud" aria-label="Life stats and season controls">
         <div className="bottom-stat-strip">
           <section className="stat-grid" aria-label="Current life stats">
             {Object.entries(statConfig).map(([key, config]) => {
@@ -1546,60 +1567,62 @@ export default function App() {
             })}
           </section>
         </div>
-        <button className="next-turn-button" onClick={handleSimulateMonth} disabled={isSimulationLocked}>▶ Simulate Month</button>
+        <button className="next-turn-button" onClick={handleSimulateSeason} disabled={isSimulationLocked}>▶ Simulate Season</button>
       </section>
 
       <div className="game-layout">
-        <section className="panel calendar-card">
+        <section className={`panel season-card season-${activeSeason.id}`}>
           <div className="section-heading calendar-heading">
             <div>
-              <p className="eyebrow">This month</p>
-              <h2>Plan your month</h2>
+              <p className="eyebrow">This season</p>
+              <h2>Plan {activeSeason.label}</h2>
             </div>
-            <span>{pendingThisMonth} decisions left · 1 random emergency</span>
+            <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
           </div>
-          <p className="calendar-intro">Build a monthly plan by picking key choices, then let the simulation resolve the rest. Every month includes a chance for unexpected trouble so life can still throw a car, furnace, or fence problem at you.</p>
+          <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this season, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
           <div className="flow-panel">
             <div>
-              <strong>{pendingThisMonth === 0 ? "Monthly plan ready" : "Planning mode: choose what matters"}</strong>
-              <span>{completedThisMonth}/{totalMonthlyDecisions} decisions selected. {pendingThisMonth === 0 ? "Review or change any highlighted choice before advancing." : "Unselected days will auto-resolve when you simulate."}</span>
+              <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
+              <span>{completedThisSeason}/{totalSeasonDecisions} decisions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before advancing." : "Unselected seasonal moments will auto-resolve when you simulate."}</span>
             </div>
           </div>
-          <div className="calendar-grid">
-            <div className="calendar-weekdays">
-              {weekdayNames.map((weekday) => (
-                <div key={weekday} className="weekday-label">{weekday}</div>
-              ))}
-            </div>
-            <div className="monthly-calendar">
-              {calendarSlots.map((day, index) => (
-                day ? (
-                  <article className="day-column" key={day.dayLabel}>
-                    <div className="day-header">
-                      <div>
-                        <strong>{day.dayNumber}</strong>
-                        <span>{day.weekday}</span>
-                      </div>
-                      <span>{day.decisions.length} event{day.decisions.length === 1 ? "" : "s"}</span>
+          <div className="season-carousel" aria-label="Season cards">
+            {seasonConfig.map((season) => {
+              const isActive = season.id === activeSeason.id;
+              const seasonMonthNames = getSeasonMonthNames(season);
+              const cardDecisions = isActive ? seasonDecisions : [];
+
+              return (
+                <article className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""}`} key={season.id}>
+                  <div className="season-panel-header">
+                    <span className="season-icon" aria-hidden="true">{season.icon}</span>
+                    <div>
+                      <p className="eyebrow">{season.palette} season</p>
+                      <h3>{season.label}</h3>
                     </div>
-                    <div className="day-decisions">
-                      {day.decisions.map((decision) => {
+                  </div>
+                  <p>{season.description}</p>
+                  <span className="season-months">{seasonMonthNames}</span>
+                  {isActive ? (
+                    <div className="season-decisions">
+                      {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
                         const selectedChoice = selectedChoices[decision.key];
                         const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
                         const completed = Boolean(selectedChoice) || lockedLegacyChoice;
+
                         return (
                           <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
                             <button
                               className="decision-toggle"
                               type="button"
                               aria-haspopup="dialog"
-                              onClick={() => setActiveDecisionContext({ decision, dayLabel: day.dayLabel })}
+                              onClick={() => setActiveDecisionContext({ decision, dayLabel: decision.day.dayLabel })}
                               disabled={isSimulationLocked}
                             >
                               <span className="decision-title">
                                 <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
                                 <span>
-                                  <small>{decision.visual.label}</small>
+                                  <small>{decision.visual.label} · {decision.day.dayLabel}</small>
                                   <h3>{decision.title}</h3>
                                 </span>
                               </span>
@@ -1614,14 +1637,17 @@ export default function App() {
                             </button>
                           </section>
                         );
-                      })}
+                      }) : <p className="season-empty">This season is unusually quiet. Simulate to discover whether life stays that way.</p>}
                     </div>
-                  </article>
-                ) : (
-                  <div className="day-column empty-day" key={`empty-${index}`} />
-                )
-              ))}
-            </div>
+                  ) : (
+                    <div className="season-preview">
+                      <strong>{season.months.length} month arc</strong>
+                      <span>Coming after {activeSeason.label}</span>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </section>
 
@@ -1633,12 +1659,12 @@ export default function App() {
             </div>
             <div className="year-ring" style={{ "--progress": `${currentYearProgress}%` }}>
               <div>
-                <strong>M{game.month}</strong>
-                <span>Age {game.age}</span>
+                <strong>{activeSeason.icon}</strong>
+                <span>{activeSeason.label} · Age {game.age}</span>
               </div>
             </div>
-            <p>Use Simulate Month to automatically resolve the month. Each month includes a chance for unexpected trouble and a random event day.</p>
-            <p>Plan the choices you care about, then use Simulate Month to let the calendar simulate the rest.</p>
+            <p>Use Simulate Season to automatically resolve the season. Each season includes a chance for unexpected trouble and random life events.</p>
+            <p>Plan the choices you care about, then use Simulate Season to let the seasonal arc resolve the rest.</p>
           </section>
 
           {game.weeklySummary ? (
@@ -1646,7 +1672,7 @@ export default function App() {
               <div className="section-heading summary-heading">
                 <div>
                   <p className="eyebrow">Last recap</p>
-                  <h2>Month {game.weeklySummary.month}</h2>
+                  <h2>{game.weeklySummary.season}</h2>
                 </div>
                 <span>{game.weeklySummary.mood}</span>
               </div>
@@ -1699,7 +1725,7 @@ export default function App() {
             </div>
             <div className="simulation-stat-changes">
               <span>Stat changes</span>
-              {Object.keys(currentSimulationStep.effects ?? {}).length > 0 ? renderSimulationEffects(currentSimulationStep.effects) : <p>No stat changes this month.</p>}
+              {Object.keys(currentSimulationStep.effects ?? {}).length > 0 ? renderSimulationEffects(currentSimulationStep.effects) : <p>No stat changes this season.</p>}
             </div>
             {simulationState.phase === "unexpected" ? (
               <button className="next-turn-button" type="button" onClick={handleUnexpectedOkay}>Okay</button>
@@ -1729,8 +1755,8 @@ export default function App() {
             </div>
             <div className="section-heading summary-heading">
               <div>
-                <p className="eyebrow">Monthly summary</p>
-                <h2 id="monthly-summary-modal-title">Month {activeMonthlySummary.month}</h2>
+                <p className="eyebrow">Seasonal summary</p>
+                <h2 id="monthly-summary-modal-title">{activeMonthlySummary.season}</h2>
               </div>
               <span>Age {activeMonthlySummary.age}</span>
             </div>
@@ -1745,7 +1771,7 @@ export default function App() {
               <span>Life weather</span>
               <strong>{activeMonthlySummary.weather}</strong>
             </div>
-            <div className="summary-deltas" aria-label="Monthly stat changes">
+            <div className="summary-deltas" aria-label="Seasonal stat changes">
               {summaryStatKeys.map((key) => renderSummaryDelta(key, activeMonthlySummary.deltas[key] ?? 0))}
             </div>
             <div className="summary-award">

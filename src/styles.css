@@ -14,11 +14,45 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  transition: background 500ms ease;
   background:
     radial-gradient(circle at 12% 18%, rgba(255, 107, 107, 0.32), transparent 22rem),
     radial-gradient(circle at 82% 8%, rgba(104, 109, 255, 0.36), transparent 24rem),
     radial-gradient(circle at 72% 78%, rgba(45, 212, 191, 0.22), transparent 20rem),
     linear-gradient(145deg, #070817 0%, #10162e 48%, #160b24 100%);
+}
+
+
+body[data-season="spring"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(244, 114, 182, 0.34), transparent 22rem),
+    radial-gradient(circle at 82% 8%, rgba(52, 211, 153, 0.32), transparent 24rem),
+    radial-gradient(circle at 72% 78%, rgba(190, 242, 100, 0.2), transparent 20rem),
+    linear-gradient(145deg, #102018 0%, #163520 48%, #2b1230 100%);
+}
+
+body[data-season="summer"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(251, 191, 36, 0.36), transparent 22rem),
+    radial-gradient(circle at 82% 8%, rgba(56, 189, 248, 0.34), transparent 24rem),
+    radial-gradient(circle at 72% 78%, rgba(249, 115, 22, 0.24), transparent 20rem),
+    linear-gradient(145deg, #171307 0%, #26351a 48%, #073047 100%);
+}
+
+body[data-season="fall"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.34), transparent 22rem),
+    radial-gradient(circle at 82% 8%, rgba(239, 68, 68, 0.3), transparent 24rem),
+    radial-gradient(circle at 72% 78%, rgba(120, 53, 15, 0.34), transparent 20rem),
+    linear-gradient(145deg, #1f1008 0%, #3a1d10 48%, #22131f 100%);
+}
+
+body[data-season="winter"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(147, 197, 253, 0.34), transparent 22rem),
+    radial-gradient(circle at 82% 8%, rgba(125, 211, 252, 0.3), transparent 24rem),
+    radial-gradient(circle at 72% 78%, rgba(196, 181, 253, 0.22), transparent 20rem),
+    linear-gradient(145deg, #07111f 0%, #0f253a 48%, #161433 100%);
 }
 
 body::before {
@@ -954,6 +988,182 @@ input:focus {
   .panel,
   .hero-card {
     border-radius: 1.35rem;
+  }
+}
+
+
+.season-card {
+  min-height: 620px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.season-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background:
+    radial-gradient(circle at 82% 12%, rgba(99, 102, 241, 0.3), transparent 22rem),
+    radial-gradient(circle at 18% 78%, rgba(20, 184, 166, 0.22), transparent 20rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055));
+}
+
+.season-spring::before {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(244, 114, 182, 0.28), transparent 22rem),
+    radial-gradient(circle at 18% 78%, rgba(52, 211, 153, 0.24), transparent 20rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.055));
+}
+
+.season-summer::before {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(251, 191, 36, 0.28), transparent 22rem),
+    radial-gradient(circle at 18% 78%, rgba(56, 189, 248, 0.24), transparent 20rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.055));
+}
+
+.season-fall::before {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(245, 158, 11, 0.3), transparent 22rem),
+    radial-gradient(circle at 18% 78%, rgba(239, 68, 68, 0.2), transparent 20rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.055));
+}
+
+.season-winter::before {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(147, 197, 253, 0.3), transparent 22rem),
+    radial-gradient(circle at 18% 78%, rgba(196, 181, 253, 0.22), transparent 20rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.055));
+}
+
+.season-carousel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(250px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.season-panel {
+  display: grid;
+  gap: 0.8rem;
+  min-height: 360px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.14), transparent 10rem),
+    rgba(9, 12, 30, 0.38);
+  padding: 1rem;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+}
+
+.season-panel.active {
+  border-color: rgba(255, 255, 255, 0.34);
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.22), transparent 12rem),
+    rgba(255, 255, 255, 0.1);
+}
+
+.season-panel-spring { --season-glow: rgba(244, 114, 182, 0.28); }
+.season-panel-summer { --season-glow: rgba(251, 191, 36, 0.3); }
+.season-panel-fall { --season-glow: rgba(245, 158, 11, 0.3); }
+.season-panel-winter { --season-glow: rgba(147, 197, 253, 0.3); }
+
+.season-panel {
+  background:
+    radial-gradient(circle at 100% 0, var(--season-glow), transparent 11rem),
+    rgba(9, 12, 30, 0.38);
+}
+
+.season-panel.active {
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.24), transparent 12rem),
+    radial-gradient(circle at 0 100%, var(--season-glow), transparent 14rem),
+    rgba(255, 255, 255, 0.1);
+}
+
+.season-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.season-panel h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.45rem, 2.1vw, 2.25rem);
+  letter-spacing: -0.05em;
+}
+
+.season-panel p {
+  margin: 0;
+  color: #c8d4ea;
+  line-height: 1.55;
+}
+
+.season-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.65rem;
+}
+
+.season-months,
+.season-preview {
+  border-radius: 1rem;
+  color: #dbeafe;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.7rem 0.8rem;
+}
+
+.season-months {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.season-decisions {
+  display: grid;
+  max-height: 520px;
+  gap: 0.6rem;
+  overflow: auto;
+  padding-right: 0.2rem;
+  scrollbar-color: rgba(255, 255, 255, 0.34) rgba(255, 255, 255, 0.08);
+}
+
+.season-preview {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: auto;
+}
+
+.season-preview strong {
+  color: #fff;
+}
+
+.season-preview span,
+.season-empty {
+  color: #aab8d4;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1120px) {
+  .season-carousel {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 0.85rem;
+    scroll-snap-type: x proximity;
+  }
+
+  .season-panel {
+    min-width: min(82vw, 360px);
+    scroll-snap-align: start;
   }
 }
 

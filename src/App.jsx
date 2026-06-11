@@ -67,7 +67,10 @@ const eventVisuals = {
   "school-play-audition": { icon: "🎭", accent: "indigo", label: "School" },
   "scholarship-deadline": { icon: "🎓", accent: "amber", label: "Major school event" },
   "detention-call": { icon: "📞", accent: "rose", label: "School" },
-  "school-fundraiser": { icon: "🎟️", accent: "teal", label: "School" }
+  "school-fundraiser": { icon: "🎟️", accent: "teal", label: "School" },
+  "car-breakdown": { icon: "🚗", accent: "amber", label: "Random emergency" },
+  "furnace-replacement": { icon: "🔥", accent: "rose", label: "Random emergency" },
+  "fence-blown-down": { icon: "🌬️", accent: "teal", label: "Random emergency" }
 };
 
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(value)));
@@ -127,20 +130,32 @@ const getNextWeekState = (week, age) => {
   };
 };
 
-const getWeekSchedule = (week, eventSeed) =>
-  dayNames.map((day, dayIndex) => ({
+const surpriseEvents = events.filter((event) => event.surprise);
+const getDecoratedEvent = (event, eventSeed, week, dayIndex, decisionIndex) => ({
+  ...event,
+  severity: getSeverity(event),
+  key: `${eventSeed}-${week}-${dayIndex}-${decisionIndex}-${event.id}`,
+  visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
+});
+
+const getWeekSchedule = (week, eventSeed) => {
+  const surpriseDayIndex = Math.floor(seededRandom(eventSeed, week, "surprise-day") * dayNames.length);
+  const surpriseDecisionIndex = Math.floor(seededRandom(eventSeed, week, "surprise-decision") * decisionsPerDay[surpriseDayIndex]);
+  const surpriseEvent = surpriseEvents.length > 0
+    ? surpriseEvents[Math.floor(seededRandom(eventSeed, week, "surprise-event") * surpriseEvents.length)]
+    : null;
+
+  return dayNames.map((day, dayIndex) => ({
     day,
     decisions: Array.from({ length: decisionsPerDay[dayIndex] }, (_, decisionIndex) => {
+      const useSurpriseEvent = surpriseEvent && dayIndex === surpriseDayIndex && decisionIndex === surpriseDecisionIndex;
       const eventIndex = Math.floor(seededRandom(eventSeed, week, dayIndex, decisionIndex) * events.length);
-      const event = events[eventIndex];
-      return {
-        ...event,
-        severity: getSeverity(event),
-        key: `${eventSeed}-${week}-${dayIndex}-${decisionIndex}-${event.id}`,
-        visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
-      };
+      const event = useSurpriseEvent ? surpriseEvent : events[eventIndex];
+
+      return getDecoratedEvent(event, eventSeed, week, dayIndex, decisionIndex);
     })
   }));
+};
 
 const summaryCopy = {
   chaos: {
@@ -582,6 +597,7 @@ export default function App() {
         ...nextState,
         ...getNextWeekState(prevGame.week, prevGame.age),
         completedDecisions: [],
+        selectedChoices: {},
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
       };
@@ -721,14 +737,14 @@ export default function App() {
           <div className="section-heading calendar-heading">
             <div>
               <p className="eyebrow">This week</p>
-              <h2>Simulate your week</h2>
+              <h2>Plan your week</h2>
             </div>
-            <span>{pendingThisWeek} random decisions left</span>
+            <span>{pendingThisWeek} decisions left · 1 random emergency</span>
           </div>
-          <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, or click a compact decision card to expand it and choose your own outcome.</p>
+          <p className="calendar-intro">Build a weekly plan by picking key choices, then let the simulation resolve the rest. Every week includes one random emergency so life can still throw a car, furnace, or fence problem at you.</p>
           <div className="flow-panel">
             <div>
-              <strong>{pendingThisWeek === 0 ? "Weekly plan ready" : "Default mode: go with the flow"}</strong>
+              <strong>{pendingThisWeek === 0 ? "Weekly plan ready" : "Planning mode: choose what matters"}</strong>
               <span>{completedThisWeek}/{totalWeeklyDecisions} decisions selected. {pendingThisWeek === 0 ? "Review or change any highlighted choice before advancing." : `${pendingThisWeek} will go with the flow if you simulate.`}</span>
             </div>
             {pendingThisWeek === 0 ? (
@@ -829,7 +845,7 @@ export default function App() {
                 <span>Age {game.age}</span>
               </div>
             </div>
-            <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday.</p>
+            <p>Plan the choices you care about, then use Simulate Week to resolve Monday through Sunday. Week 52 adds a new birthday.</p>
           </section>
 
           {game.weeklySummary ? (

@@ -306,6 +306,52 @@ const baseEvents = [
       { label: "Blame the school", effects: { children: 2, stress: 8, marriage: -2 }, memory: "You blamed the school and the conflict escalated." }
     ]
   },
+
+  {
+    id: "car-breakdown",
+    title: "Car Breaks Down",
+    severity: "major",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🚗",
+    accent: "amber",
+    description: "The car will not start on a morning when everyone needs to be somewhere.",
+    choices: [
+      { label: "Tow and repair it", effects: { money: -1800, stress: 9, health: -1 }, memory: "You handled a sudden car breakdown with a tow and repair." },
+      { label: "Use emergency fund", effects: { money: -1200, stress: 4 }, memory: "You used savings to keep the car breakdown from taking over the week." },
+      { label: "Delay and juggle rides", effects: { money: -250, stress: 12, marriage: -3, children: -2 }, memory: "You delayed the repair and spent the week juggling rides." }
+    ]
+  },
+  {
+    id: "furnace-replacement",
+    title: "Furnace Goes Out",
+    severity: "major",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🔥",
+    accent: "rose",
+    description: "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
+    choices: [
+      { label: "Replace it now", effects: { money: -5200, stress: 10, health: 3 }, memory: "You replaced the furnace before the house got unsafe." },
+      { label: "Finance the furnace", effects: { money: -1200, stress: 8, marriage: -2 }, memory: "You financed a furnace replacement to protect cash flow." },
+      { label: "Patch and wait", effects: { money: -650, stress: 14, health: -5 }, memory: "You patched the failing furnace and hoped it would last." }
+    ]
+  },
+  {
+    id: "fence-blown-down",
+    title: "Fence Blows Down",
+    severity: "moderate",
+    surprise: true,
+    category: "Random emergency",
+    icon: "🌬️",
+    accent: "teal",
+    description: "A windstorm knocks down a section of fence and the yard suddenly needs a fix.",
+    choices: [
+      { label: "Hire a repair crew", effects: { money: -1100, stress: -2, marriage: 2 }, memory: "You hired help after the fence blew down." },
+      { label: "DIY this weekend", effects: { money: -320, stress: 7, health: -2 }, memory: "You spent the weekend fixing the blown-down fence yourself." },
+      { label: "Temporary patch", effects: { money: -90, stress: 5, marriage: -1 }, memory: "You patched the blown-down fence and added it to the future list." }
+    ]
+  },
   {
     id: "school-fundraiser",
     title: "School Fundraiser",

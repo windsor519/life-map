@@ -206,7 +206,117 @@ const events = [
       { label: "Set app limits", effects: { health: 2, stress: -2 }, memory: "You added screen-time guardrails." },
       { label: "Ignore report", effects: { health: -2, stress: 3 }, memory: "You ignored the screen-time warning." }
     ]
-  }
+  },
+  {
+    id: "pop-quiz",
+    title: "Pop Quiz",
+    severity: "minor",
+    description: "A surprise quiz lands in first period, and your child is nervous about the result.",
+    choices: [
+      { label: "Review mistakes together", effects: { children: 6, stress: 2 }, memory: "You turned a pop quiz into a calm study moment." },
+      { label: "Brush it off", effects: { children: -2, stress: -2 }, memory: "You treated the pop quiz as no big deal." },
+      { label: "Email the teacher", effects: { children: 3, stress: 4 }, memory: "You checked in with the teacher about the surprise quiz." }
+    ]
+  },
+  {
+    id: "school-supply-list",
+    title: "School Supply List",
+    severity: "minor",
+    description: "A new supply list comes home with a few unexpected classroom requests.",
+    choices: [
+      { label: "Buy everything", effects: { money: -85, children: 5, stress: -2 }, memory: "You stocked the backpack with every requested supply." },
+      { label: "Shop discounts", effects: { money: -35, children: 3, stress: 2 }, memory: "You hunted for school supplies on a tighter budget." },
+      { label: "Wait until payday", effects: { money: 0, children: -3, stress: 5 }, memory: "You delayed the supply run until money was available." }
+    ]
+  },
+  {
+    id: "parent-teacher-conference",
+    title: "Parent-Teacher Conference",
+    severity: "moderate",
+    description: "The teacher asks for a conference about slipping homework and classroom focus.",
+    choices: [
+      { label: "Attend in person", effects: { children: 10, stress: 4, money: -80 }, memory: "You attended the conference and made a school plan." },
+      { label: "Schedule a video call", effects: { children: 6, stress: 1 }, memory: "You handled the teacher conference by video." },
+      { label: "Miss the meeting", effects: { children: -8, stress: 6 }, memory: "You missed the teacher conference and the issue lingered." }
+    ]
+  },
+  {
+    id: "field-trip-form",
+    title: "Field Trip Form",
+    severity: "minor",
+    description: "A permission slip and fee are due tomorrow for a museum field trip.",
+    choices: [
+      { label: "Pay and chaperone", effects: { money: -70, children: 8, stress: 3 }, memory: "You joined the field trip and made a shared memory." },
+      { label: "Pay the fee", effects: { money: -40, children: 5, stress: -1 }, memory: "You sent in the field trip form on time." },
+      { label: "Skip this trip", effects: { money: 0, children: -6, stress: -2 }, memory: "You skipped the field trip to protect the budget." }
+    ]
+  },
+  {
+    id: "bullying-report",
+    title: "Bullying Report",
+    severity: "major",
+    description: "Your child says another student has been targeting them at school.",
+    choices: [
+      { label: "Meet the principal", effects: { children: 14, stress: 9, money: -120 }, memory: "You pushed the school for a safety plan after bullying." },
+      { label: "Coach coping skills", effects: { children: 5, health: 1, stress: 3 }, memory: "You helped your child practice responses to bullying." },
+      { label: "Wait and observe", effects: { children: -12, stress: 6, health: -2 }, memory: "You waited on the bullying report and your child felt alone." }
+    ]
+  },
+  {
+    id: "honor-roll-invite",
+    title: "Honor Roll Invite",
+    severity: "minor",
+    description: "The school invites families to celebrate students who improved their grades.",
+    choices: [
+      { label: "Celebrate loudly", effects: { money: -60, children: 9, stress: -3 }, memory: "You celebrated academic progress and boosted confidence." },
+      { label: "Quiet congratulations", effects: { children: 5, stress: -1 }, memory: "You gave heartfelt praise for the honor roll invite." },
+      { label: "Too busy to attend", effects: { children: -5, money: 120, stress: 2 }, memory: "You missed the honor roll celebration because work ran long." }
+    ]
+  },
+  {
+    id: "school-play-audition",
+    title: "School Play Audition",
+    severity: "moderate",
+    description: "Your child wants to audition for the school play, adding rehearsals to the calendar.",
+    choices: [
+      { label: "Support the audition", effects: { children: 9, stress: 4, money: -55 }, memory: "You supported the school play audition despite the schedule crunch." },
+      { label: "Set homework rules", effects: { children: 5, stress: 1 }, memory: "You balanced theater excitement with homework expectations." },
+      { label: "Say not this time", effects: { children: -7, stress: -3 }, memory: "You passed on the school play to keep evenings simpler." }
+    ]
+  },
+  {
+    id: "scholarship-deadline",
+    title: "Scholarship Deadline",
+    severity: "major",
+    description: "A scholarship application is due this week and could change future school costs.",
+    choices: [
+      { label: "Work on it together", effects: { money: 900, children: 8, stress: 8 }, memory: "You completed a scholarship application as a team." },
+      { label: "Hire essay help", effects: { money: 550, children: 4, stress: 3 }, memory: "You paid for application help and met the scholarship deadline." },
+      { label: "Let it pass", effects: { money: -300, children: -4, stress: -2 }, memory: "You missed the scholarship deadline and lost an opportunity." }
+    ]
+  },
+  {
+    id: "detention-call",
+    title: "Detention Call",
+    severity: "moderate",
+    description: "The school calls: your child got detention after an argument in class.",
+    choices: [
+      { label: "Talk it through", effects: { children: 7, stress: 4 }, memory: "You used detention as a chance to talk through conflict." },
+      { label: "Strict consequences", effects: { children: -3, stress: 6, marriage: 1 }, memory: "You responded to detention with firm consequences." },
+      { label: "Blame the school", effects: { children: 2, stress: 8, marriage: -2 }, memory: "You blamed the school and the conflict escalated." }
+    ]
+  },
+  {
+    id: "school-fundraiser",
+    title: "School Fundraiser",
+    severity: "minor",
+    description: "The class fundraiser needs families to sell tickets or volunteer at a booth.",
+    choices: [
+      { label: "Volunteer booth", effects: { children: 6, stress: 4, marriage: 2 }, memory: "You volunteered at the school fundraiser booth." },
+      { label: "Donate quietly", effects: { money: -100, children: 3, stress: -1 }, memory: "You donated to the school fundraiser without taking a shift." },
+      { label: "Opt out", effects: { stress: -3, children: -2 }, memory: "You opted out of the school fundraiser." }
+    ]
+  },
 ];
 
 export default events;

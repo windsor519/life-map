@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 
 const STORAGE_KEY = "life-map-game";
@@ -687,7 +687,7 @@ export default function App() {
     stableJob: "no",
     social: "weak"
   });
-  const [expandedDecisionKey, setExpandedDecisionKey] = useState(null);
+  const [activeDecisionContext, setActiveDecisionContext] = useState(null);
   const [characterOptions, setCharacterOptions] = useState(() => generateCharacterOptions());
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
@@ -883,7 +883,7 @@ export default function App() {
   };
 
   const prepareNewGamePlus = () => {
-    setExpandedDecisionKey(null);
+    setActiveDecisionContext(null);
     setStartAge(25);
     setStartMoney(10000);
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
@@ -1024,7 +1024,7 @@ export default function App() {
   };
 
   const handleAdvanceMonth = () => {
-    setExpandedDecisionKey(null);
+    setActiveDecisionContext(null);
     setGame((prevGame) => prevGame.gameOver ? prevGame : ({
       ...prevGame,
       ...getNextMonthState(prevGame.month, prevGame.age),
@@ -1036,7 +1036,7 @@ export default function App() {
   };
 
   const handleSimulateMonth = () => {
-    setExpandedDecisionKey(null);
+    setActiveDecisionContext(null);
     setGame((prevGame) => {
       const schedule = getMonthSchedule(prevGame.month, currentCalendarYear, prevGame.eventSeed, prevGame.age);
       let nextState = prevGame;
@@ -1085,6 +1085,24 @@ export default function App() {
       }, prevGame);
     });
   };
+
+
+  const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
+
+  useEffect(() => {
+    if (!activeDecisionContext || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closeDecisionModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeDecisionContext, closeDecisionModal]);
 
   const renderEffectPreview = (effects) => {
     const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
@@ -1374,14 +1392,13 @@ export default function App() {
                         const selectedChoice = selectedChoices[decision.key];
                         const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
                         const completed = Boolean(selectedChoice) || lockedLegacyChoice;
-                        const isExpanded = expandedDecisionKey === decision.key;
                         return (
-                          <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""} ${isExpanded ? "expanded" : ""}`} key={decision.key}>
+                          <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
                             <button
                               className="decision-toggle"
                               type="button"
-                              aria-expanded={isExpanded}
-                              onClick={() => setExpandedDecisionKey(isExpanded ? null : decision.key)}
+                              aria-haspopup="dialog"
+                              onClick={() => setActiveDecisionContext({ decision, dayLabel: day.dayLabel })}
                             >
                               <span className="decision-title">
                                 <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
@@ -1396,43 +1413,9 @@ export default function App() {
                                   <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
                                   {severityConfig[decision.severity]?.label ?? decision.severity}
                                 </span>
-                                <span className="expand-cue" aria-hidden="true">{isExpanded ? "−" : "+"}</span>
+                                <span className="expand-cue" aria-hidden="true">↗</span>
                               </span>
                             </button>
-                            {isExpanded ? (
-                              <div className="decision-details">
-                                <p>{decision.description}</p>
-                                {selectedChoice ? (
-                                  <div className="selected-summary" aria-live="polite">
-                                    <span>Selected</span>
-                                    <strong>{selectedChoice.label}</strong>
-                                    <small>Pick another option below to change this decision.</small>
-                                  </div>
-                                ) : null}
-                                <div className="decision-options">
-                                  {decision.choices.map((choice) => {
-                                    const isSelected = selectedChoice?.label === choice.label;
-                                    return (
-                                      <button
-                                        className={`option-button ${isSelected ? "selected" : ""}`}
-                                        disabled={lockedLegacyChoice}
-                                        key={choice.label}
-                                        onClick={() => {
-                                          handleChoice(choice, decision, day.dayLabel);
-                                          setExpandedDecisionKey(null);
-                                        }}
-                                      >
-                                        <span className="choice-label-row">
-                                          <strong>{choice.label}</strong>
-                                          {isSelected ? <span className="selected-pill">Selected</span> : null}
-                                        </span>
-                                        {renderEffectPreview(choice.effects)}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            ) : null}
                           </section>
                         );
                       })}
@@ -1525,6 +1508,82 @@ export default function App() {
           </section>
         </aside>
       </div>
+
+      {activeDecisionContext ? (() => {
+        const { decision, dayLabel } = activeDecisionContext;
+        const selectedChoice = selectedChoices[decision.key];
+        const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
+        const modalTitleId = `decision-modal-title-${decision.key}`;
+
+        return (
+          <div
+            className="decision-modal-backdrop"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                closeDecisionModal();
+              }
+            }}
+          >
+            <section
+              className={`decision-modal severity-card-${decision.severity} accent-${decision.visual.accent}`}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={modalTitleId}
+            >
+              <div className="decision-modal-header">
+                <div className="decision-title">
+                  <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
+                  <span>
+                    <small>{decision.visual.label} · {dayLabel}</small>
+                    <h2 id={modalTitleId}>{decision.title}</h2>
+                  </span>
+                </div>
+                <button
+                  className="decision-modal-close"
+                  type="button"
+                  aria-label="Close decision details"
+                  onClick={closeDecisionModal}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="decision-details">
+                <p>{decision.description}</p>
+                {selectedChoice ? (
+                  <div className="selected-summary" aria-live="polite">
+                    <span>Selected</span>
+                    <strong>{selectedChoice.label}</strong>
+                    <small>Pick another option below to change this decision.</small>
+                  </div>
+                ) : null}
+                <div className="decision-options">
+                  {decision.choices.map((choice) => {
+                    const isSelected = selectedChoice?.label === choice.label;
+                    return (
+                      <button
+                        className={`option-button ${isSelected ? "selected" : ""}`}
+                        disabled={lockedLegacyChoice}
+                        key={choice.label}
+                        onClick={() => {
+                          handleChoice(choice, decision, dayLabel);
+                          closeDecisionModal();
+                        }}
+                      >
+                        <span className="choice-label-row">
+                          <strong>{choice.label}</strong>
+                          {isSelected ? <span className="selected-pill">Selected</span> : null}
+                        </span>
+                        {renderEffectPreview(choice.effects)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          </div>
+        );
+      })() : null}
     </main>
   );
 }

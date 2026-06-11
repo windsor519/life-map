@@ -1,0 +1,95 @@
+[
+  {
+    "id": "car-breakdown",
+    "title": "Car Breaks Down",
+    "severity": "major",
+    "category": "Random emergency",
+    "icon": "🚗",
+    "accent": "amber",
+    "description": "The car will not start on a morning when everyone needs to be somewhere.",
+    "effects": {
+      "money": -1200,
+      "stress": 6,
+      "marriage": -1,
+      "children": -1
+    },
+    "memory": "A sudden car breakdown forced you to spend savings and juggle everyone's schedule."
+  },
+  {
+    "id": "furnace-replacement",
+    "title": "Furnace Goes Out",
+    "severity": "major",
+    "category": "Home emergency",
+    "icon": "🔥",
+    "accent": "rose",
+    "description": "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
+    "effects": {
+      "money": -2800,
+      "stress": 9,
+      "health": -2
+    },
+    "memory": "You dealt with a failing furnace before the house became unsafe."
+  },
+  {
+    "id": "fence-blown-down",
+    "title": "Fence Blows Down",
+    "severity": "moderate",
+    "category": "Home emergency",
+    "icon": "🌬️",
+    "accent": "teal",
+    "description": "A windstorm knocks down a section of fence and the yard suddenly needs a fix.",
+    "effects": {
+      "money": -450,
+      "stress": 5,
+      "marriage": -1
+    },
+    "memory": "A windstorm knocked down the fence and added an urgent repair to the month."
+  },
+  {
+    "id": "surprise-medical-bill",
+    "title": "Surprise Medical Bill",
+    "severity": "moderate",
+    "category": "Health expense",
+    "icon": "🧾",
+    "accent": "blue",
+    "description": "An old appointment finally processes through insurance and leaves an awkward balance due.",
+    "effects": {
+      "money": -650,
+      "stress": 4,
+      "health": -1
+    },
+    "memory": "A delayed medical bill arrived and dented the budget."
+  },
+  {
+    "id": "boss-quits",
+    "title": "Boss Quits Suddenly",
+    "severity": "moderate",
+    "category": "Work disruption",
+    "icon": "📎",
+    "accent": "indigo",
+    "description": "Your boss resigns with almost no notice, leaving the team to absorb the mess for a while.",
+    "effects": {
+      "money": 250,
+      "stress": 8,
+      "health": -1,
+      "marriage": -2
+    },
+    "memory": "Your boss quit suddenly, and the extra work took over more evenings than expected."
+  },
+  {
+    "id": "family-favor-emergency",
+    "title": "Family Favor Emergency",
+    "severity": "minor",
+    "category": "Family surprise",
+    "icon": "☎️",
+    "accent": "violet",
+    "description": "A relative needs last-minute help, and saying yes means rearranging an already packed month.",
+    "effects": {
+      "money": -180,
+      "stress": 3,
+      "children": 3,
+      "marriage": 1
+    },
+    "memory": "You made room for a family favor when someone needed last-minute help."
+  }
+]

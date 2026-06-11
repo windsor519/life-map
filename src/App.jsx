@@ -234,6 +234,196 @@ const formatSummaryDelta = (key, value) => {
   return `${prefix}${value}`;
 };
 
+
+const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+const characterArchetypes = [
+  {
+    title: "The Fragile Genius",
+    description: "Smart but weak: great plans, questionable knees.",
+    vibe: "Glass cannon",
+    ageRange: [19, 34],
+    moneyRange: [8000, 28000],
+    stats: { health: -18, marriage: 4, children: -2, stress: 12 },
+    traits: ["Smart", "Focused", "Weak"],
+    perkTags: ["money", "career"],
+    drawback: { name: "Glass Constitution", description: "Health starts low, so reckless wellness choices hurt more." }
+  },
+  {
+    title: "The Iron Loner",
+    description: "Strong but antisocial: can move a couch, cannot text back.",
+    vibe: "Tank build",
+    ageRange: [22, 42],
+    moneyRange: [5000, 22000],
+    stats: { health: 22, marriage: -20, children: -12, stress: -4 },
+    traits: ["Strong", "Disciplined", "Antisocial"],
+    perkTags: ["stress", "health"],
+    drawback: { name: "Unread Messages", description: "Relationship and family stats start fragile." }
+  },
+  {
+    title: "The Golden Burnout",
+    description: "Rich but cooked: impressive account balance, haunted calendar.",
+    vibe: "High risk",
+    ageRange: [27, 48],
+    moneyRange: [65000, 120000],
+    stats: { health: -10, marriage: -12, children: -8, stress: 28 },
+    traits: ["Wealthy", "Overworked", "Anxious"],
+    perkTags: ["money"],
+    drawback: { name: "Always On", description: "Stress starts high enough to become its own side quest." }
+  },
+  {
+    title: "The Social Meteor",
+    description: "Charismatic and chaotic: beloved by everyone, including trouble.",
+    vibe: "Blessed mess",
+    ageRange: [18, 38],
+    moneyRange: [3000, 18000],
+    stats: { health: 2, marriage: 24, children: 18, stress: 14 },
+    traits: ["Charismatic", "Impulsive", "Connected"],
+    perkTags: ["social", "family"],
+    drawback: { name: "Calendar Avalanche", description: "The social life is strong; the recovery time is not." }
+  },
+  {
+    title: "The Lucky Mess",
+    description: "A walking dice roll with suspiciously good timing.",
+    vibe: "Chaos build",
+    ageRange: [18, 45],
+    moneyRange: [1000, 35000],
+    stats: { health: -4, marriage: 2, children: 4, stress: 10 },
+    traits: ["Lucky", "Messy", "Adaptable"],
+    perkTags: ["luck"],
+    drawback: { name: "No Plan, Just Vibes", description: "Balanced stats, but stress starts slightly spicy." }
+  },
+  {
+    title: "The Family Glue",
+    description: "Emotionally available, financially improvising.",
+    vibe: "Heart build",
+    ageRange: [24, 50],
+    moneyRange: [2500, 26000],
+    stats: { health: 0, marriage: 18, children: 26, stress: 8 },
+    traits: ["Nurturing", "Patient", "Broke-ish"],
+    perkTags: ["family", "social"],
+    drawback: { name: "Soft Wallet", description: "Low money makes generosity a tactical problem." }
+  }
+];
+
+const talentPool = [
+  { id: "pattern-vision", name: "Pattern Vision", icon: "🧠", tag: "money", cost: 18, description: "Negative money hits are softened by 20%." },
+  { id: "stress-armor", name: "Stress Armor", icon: "🛡️", tag: "stress", cost: 16, description: "Stress increases are reduced by 25%." },
+  { id: "iron-routine", name: "Iron Routine", icon: "🏋️", tag: "health", cost: 14, description: "Positive health gains receive a small bonus." },
+  { id: "npc-whisperer", name: "NPC Whisperer", icon: "🗣️", tag: "social", cost: 16, description: "Relationship gains get a small boost." },
+  { id: "family-glue", name: "Family Glue", icon: "🌱", tag: "family", cost: 16, description: "Family bond gains get a small boost." },
+  { id: "goblin-luck", name: "Goblin Luck", icon: "🎲", tag: "luck", cost: 18, description: "Very bad single-stat losses are softened a little." }
+];
+
+const balanceCharacter = (profile, talentCost) => {
+  const statScore =
+    (profile.money - 20000) / 2500 +
+    (profile.health - 60) * 0.9 +
+    (profile.marriage - 45) * 0.75 +
+    (profile.children - 30) * 0.65 -
+    (profile.stress - 35) * 0.9 +
+    talentCost;
+
+  let adjustment = Math.round(statScore);
+  const balancedProfile = { ...profile };
+
+  while (adjustment > 8) {
+    if (balancedProfile.money > 12000) {
+      balancedProfile.money -= 2500;
+    } else if (balancedProfile.stress < 72) {
+      balancedProfile.stress += 4;
+    } else {
+      balancedProfile.health -= 3;
+    }
+    adjustment -= 6;
+  }
+
+  while (adjustment < -8) {
+    if (balancedProfile.stress > 24) {
+      balancedProfile.stress -= 4;
+    } else if (balancedProfile.money < 45000) {
+      balancedProfile.money += 2500;
+    } else {
+      balancedProfile.health += 3;
+    }
+    adjustment += 6;
+  }
+
+  return {
+    ...balancedProfile,
+    money: Math.max(500, Math.round(balancedProfile.money)),
+    health: clamp(balancedProfile.health),
+    marriage: clamp(balancedProfile.marriage),
+    children: clamp(balancedProfile.children),
+    stress: clamp(balancedProfile.stress),
+    balanceScore: adjustment
+  };
+};
+
+const generateCharacterOptions = (count = 3) => {
+  const shuffledArchetypes = [...characterArchetypes].sort(() => Math.random() - 0.5);
+
+  return shuffledArchetypes.slice(0, count).map((archetype, index) => {
+    const matchingTalents = talentPool.filter((talent) => archetype.perkTags.includes(talent.tag));
+    const talent = matchingTalents[randomBetween(0, matchingTalents.length - 1)] ?? talentPool[index % talentPool.length];
+    const [minAge, maxAge] = archetype.ageRange;
+    const [minMoney, maxMoney] = archetype.moneyRange;
+    const profile = balanceCharacter(
+      {
+        id: `${archetype.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}-${index}`,
+        title: archetype.title,
+        description: archetype.description,
+        vibe: archetype.vibe,
+        age: randomBetween(minAge, maxAge),
+        money: randomBetween(minMoney, maxMoney),
+        health: 62 + archetype.stats.health + randomBetween(-5, 5),
+        marriage: 45 + archetype.stats.marriage + randomBetween(-6, 6),
+        children: 30 + archetype.stats.children + randomBetween(-6, 6),
+        stress: 35 + archetype.stats.stress + randomBetween(-5, 5),
+        traits: archetype.traits,
+        talent,
+        drawback: archetype.drawback
+      },
+      talent.cost
+    );
+
+    return profile;
+  });
+};
+
+const createGameFromProfile = (profile) => {
+  const newGame = {
+    age: profile.age,
+    money: profile.money,
+    health: clamp(profile.health),
+    marriage: clamp(profile.marriage),
+    children: clamp(profile.children),
+    stress: clamp(profile.stress),
+    character: {
+      title: profile.title,
+      description: profile.description,
+      vibe: profile.vibe,
+      traits: profile.traits,
+      talent: profile.talent,
+      drawback: profile.drawback
+    },
+    month: 1,
+    week: 1,
+    completedDecisions: [],
+    selectedChoices: {},
+    memories: [`You started as ${profile.title}: ${profile.description}`],
+    currentEventId: getRandomEventId(),
+    eventSeed: createEventSeed(),
+    weeklySummary: null,
+    initialized: true
+  };
+
+  return {
+    ...newGame,
+    weekStartStats: captureStats(newGame)
+  };
+};
+
 const createDefaultGame = () => ({
   age: 40,
   money: 100000,
@@ -250,6 +440,7 @@ const createDefaultGame = () => ({
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
+  character: null,
   initialized: false
 });
 
@@ -269,7 +460,8 @@ const normalizeGame = (game) => ({
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
+  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
+  character: game?.character && typeof game.character === "object" ? game.character : null
 });
 
 const loadSavedGame = () => {
@@ -296,6 +488,7 @@ export default function App() {
     social: "weak"
   });
   const [expandedDecisionKey, setExpandedDecisionKey] = useState(null);
+  const [characterOptions, setCharacterOptions] = useState(() => generateCharacterOptions());
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -450,6 +643,7 @@ export default function App() {
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
       weeklySummary: null,
+      character: null,
       initialized: true
     };
 
@@ -469,6 +663,16 @@ export default function App() {
     setStartAge(25);
     setStartMoney(10000);
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
+    setCharacterOptions(generateCharacterOptions());
+  };
+
+  const rerollCharacters = () => {
+    setCharacterOptions(generateCharacterOptions());
+  };
+
+  const startProfileGame = (profile) => {
+    setGame(createGameFromProfile(profile));
+    startZenMusic();
   };
 
   const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
@@ -477,6 +681,45 @@ export default function App() {
   const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
+
+  const applyTalentModifiers = (baseState, effects) => {
+    const talentId = baseState.character?.talent?.id;
+    const nextEffects = { ...effects };
+
+    if (talentId === "pattern-vision" && nextEffects.money < 0) {
+      nextEffects.money = Math.round(nextEffects.money * 0.8);
+    }
+
+    if (talentId === "stress-armor" && nextEffects.stress > 0) {
+      nextEffects.stress = Math.ceil(nextEffects.stress * 0.75);
+    }
+
+    if (talentId === "iron-routine" && nextEffects.health > 0) {
+      nextEffects.health += 2;
+    }
+
+    if (talentId === "npc-whisperer" && nextEffects.marriage > 0) {
+      nextEffects.marriage += 2;
+    }
+
+    if (talentId === "family-glue" && nextEffects.children > 0) {
+      nextEffects.children += 2;
+    }
+
+    if (talentId === "goblin-luck") {
+      Object.entries(nextEffects).forEach(([key, value]) => {
+        if (key !== "money" && value <= -8) {
+          nextEffects[key] = value + 2;
+        }
+
+        if (key === "money" && value <= -500) {
+          nextEffects.money = Math.round(value * 0.88);
+        }
+      });
+    }
+
+    return nextEffects;
+  };
 
   const applyEffects = (baseState, effects) => {
     const next = { ...baseState };
@@ -501,14 +744,16 @@ export default function App() {
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
         : null;
       const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
-      const nextState = applyEffects(stateBeforeChoice, choice.effects);
+      const modifiedEffects = applyTalentModifiers(stateBeforeChoice, choice.effects);
+      const nextState = applyEffects(stateBeforeChoice, modifiedEffects);
       const selectedChoices = {
         ...(prevGame.selectedChoices ?? {}),
         [decision.key]: {
           dayName,
           eventTitle: decision.title,
           label: choice.label,
-          effects: choice.effects,
+          effects: modifiedEffects,
+          originalEffects: choice.effects,
           memory: choice.memory
         }
       };
@@ -564,7 +809,8 @@ export default function App() {
           }
 
           const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, dayIndex, decisionIndex, decision.choices);
-          nextState = applyEffects(nextState, choice.effects);
+          const modifiedEffects = applyTalentModifiers(nextState, choice.effects);
+          nextState = applyEffects(nextState, modifiedEffects);
           dayResults.push(`${decision.title}: ${choice.label}`);
           summaryHighlights.push(`${day.day}: ${decision.title} → ${choice.label}`);
         });
@@ -636,6 +882,59 @@ export default function App() {
         </section>
 
         <form className="panel setup-form" onSubmit={startNewGame}>
+          <section className="randomizer-panel" aria-label="Randomized character options">
+            <div className="randomizer-heading">
+              <div>
+                <p className="eyebrow">Quick start</p>
+                <h2>Randomize 3 balanced lives</h2>
+                <p>Each roll gets a perk and a drawback, then the budget-balancer trims anything too overpowered.</p>
+              </div>
+              <button type="button" className="secondary" onClick={rerollCharacters}>Randomize again</button>
+            </div>
+
+            <div className="character-options">
+              {characterOptions.map((profile) => (
+                <article className="character-card" key={profile.id}>
+                  <div className="character-card-header">
+                    <span>{profile.vibe}</span>
+                    <strong>{profile.title}</strong>
+                    <p>{profile.description}</p>
+                  </div>
+
+                  <div className="trait-row" aria-label={`${profile.title} traits`}>
+                    {profile.traits.map((trait) => <span key={trait}>{trait}</span>)}
+                  </div>
+
+                  <div className="character-stats">
+                    <span>Age <strong>{profile.age}</strong></span>
+                    <span>Money <strong>{statConfig.money.formatter(profile.money)}</strong></span>
+                    <span>Health <strong>{profile.health}</strong></span>
+                    <span>Relationship <strong>{profile.marriage}</strong></span>
+                    <span>Family <strong>{profile.children}</strong></span>
+                    <span>Stress <strong>{profile.stress}</strong></span>
+                  </div>
+
+                  <div className="talent-box">
+                    <span aria-hidden="true">{profile.talent.icon}</span>
+                    <div>
+                      <strong>{profile.talent.name}</strong>
+                      <p>{profile.talent.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="drawback-box">
+                    <strong>Drawback: {profile.drawback.name}</strong>
+                    <p>{profile.drawback.description}</p>
+                  </div>
+
+                  <button type="button" onClick={() => startProfileGame(profile)}>Choose this life</button>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="manual-divider"><span>or build manually</span></div>
+
           <div className="form-grid">
             <label>
               <span>Starting age</span>
@@ -681,6 +980,15 @@ export default function App() {
         <div>
           <p className="eyebrow">Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
           <h1>Weekly Life Map</h1>
+          {game.character ? (
+            <div className="active-character">
+              <span>{game.character.talent?.icon}</span>
+              <div>
+                <strong>{game.character.title}</strong>
+                <small>{game.character.talent?.name}: {game.character.talent?.description}</small>
+              </div>
+            </div>
+          ) : null}
         </div>
         <div className="topbar-actions">
           {pendingThisWeek === 0 ? (

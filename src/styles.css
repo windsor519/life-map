@@ -1383,3 +1383,160 @@ input:focus {
   white-space: nowrap;
 
 }
+
+.game-over-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 1rem;
+  min-height: 100vh;
+  align-content: center;
+}
+
+.game-over-card {
+  display: grid;
+  gap: 1.1rem;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(244, 63, 94, 0.32), transparent 18rem),
+    radial-gradient(circle at 90% 8%, rgba(251, 191, 36, 0.26), transparent 16rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
+}
+
+.game-over-card h1 {
+  max-width: 9ch;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  letter-spacing: -0.08em;
+  line-height: 0.94;
+}
+
+.legacy-meta-grid,
+.legacy-stat-grid,
+.legacy-preview-stats {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.legacy-meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.legacy-meta-grid span,
+.legacy-stat-grid article,
+.legacy-preview,
+.skill-list article {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem;
+  background: rgba(9, 12, 30, 0.34);
+  padding: 0.85rem;
+}
+
+.legacy-meta-grid span {
+  display: grid;
+  gap: 0.2rem;
+  color: #aab8d4;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.legacy-meta-grid strong {
+  color: #fff;
+  font-size: 1.35rem;
+}
+
+.legacy-stat-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.legacy-stat-grid article {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.legacy-stat-grid article > span {
+  font-size: 1.35rem;
+}
+
+.legacy-stat-grid strong,
+.skill-list strong,
+.legacy-preview strong {
+  color: #fff;
+}
+
+.legacy-stat-grid em {
+  color: #bbf7d0;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.legacy-card {
+  align-self: stretch;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(34, 197, 94, 0.26), transparent 14rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+}
+
+.skill-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.skill-list article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skill-list article > span {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.35rem;
+}
+
+.skill-list div,
+.legacy-preview div:first-child {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.skill-list small,
+.legacy-preview span {
+  color: #b9c6df;
+  line-height: 1.4;
+}
+
+.legacy-preview {
+  display: grid;
+  gap: 0.8rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(251, 191, 36, 0.22), transparent 10rem),
+    rgba(255, 255, 255, 0.085);
+}
+
+.legacy-preview-stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.legacy-preview-stats span {
+  border-radius: 999px;
+  color: #dcfce7;
+  background: rgba(34, 197, 94, 0.15);
+  font-size: 0.76rem;
+  font-weight: 900;
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+}
+
+@media (max-width: 880px) {
+  .game-over-shell,
+  .legacy-meta-grid,
+  .legacy-stat-grid,
+  .legacy-preview-stats {
+    grid-template-columns: 1fr;
+  }
+}

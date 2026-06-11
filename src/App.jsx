@@ -36,6 +36,27 @@ const summaryStatKeys = Object.keys(statConfig);
 const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
 
+const legacySkillConfig = {
+  grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
+  wellness: { label: "Wellness", icon: "🌿", description: "Carries forward healthier habits after a bad ending." },
+  bonds: { label: "Bonds", icon: "💞", description: "Keeps a little relationship wisdom between lives." },
+  parenting: { label: "Parenting", icon: "🧸", description: "Saves family lessons for the next run." },
+  hustle: { label: "Hustle", icon: "💼", description: "Banks a scaled-down money mindset for new game plus." }
+};
+
+const createDefaultLegacy = () => ({
+  runs: 0,
+  difficulty: 1,
+  carryRate: 0.25,
+  skills: Object.fromEntries(Object.keys(legacySkillConfig).map((key) => [key, 0])),
+  carriedStats: Object.fromEntries(summaryStatKeys.map((key) => [key, 0])),
+  lastRun: null
+});
+
+const getCarryRate = (runs) => Math.max(0.08, 0.25 - runs * 0.025);
+const getDifficultyMultiplier = (runs) => Number((1 + runs * 0.12).toFixed(2));
+const getRunNumber = (legacy) => (legacy?.runs ?? 0) + 1;
+
 const eventVisuals = {
   "daughter-recital": { icon: "🎼", accent: "violet", label: "Family moment" },
   "friend-birthday": { icon: "🎂", accent: "rose", label: "Social life" },
@@ -234,6 +255,71 @@ const formatSummaryDelta = (key, value) => {
   return `${prefix}${value}`;
 };
 
+const getGameOverReason = (game) => {
+  if (game.health <= 0) return "Your health hit zero. The run collapsed into a cautionary smoothie ad.";
+  if (game.marriage <= 0) return "The relationship meter bottomed out. The couch has entered witness protection.";
+  if (game.children <= 0) return "Family bond hit zero. The snack-based legacy needs a reboot.";
+  if (game.stress >= 100) return "Stress hit 100. The calendar became sentient and demanded a rematch.";
+  if (game.money <= -10000) return "Debt got too deep. Your wallet rage-quit the timeline.";
+  return null;
+};
+
+const buildNextLegacy = (legacy, finalGame) => {
+  const currentLegacy = { ...createDefaultLegacy(), ...(legacy ?? {}) };
+  const runs = currentLegacy.runs + 1;
+  const carryRate = getCarryRate(runs);
+  const carriedStats = {
+    money: Math.max(0, Math.round((finalGame.money ?? 0) * carryRate * 0.12)),
+    health: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate)),
+    marriage: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate)),
+    children: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate)),
+    stress: -Math.max(0, Math.round((100 - (finalGame.stress ?? 100)) * carryRate * 0.35))
+  };
+  const earnedSkills = {
+    grit: Math.max(1, Math.round((100 - Math.min(finalGame.stress ?? 100, 100)) * carryRate * 0.2)),
+    wellness: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate * 0.18)),
+    bonds: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate * 0.18)),
+    parenting: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate * 0.18)),
+    hustle: Math.max(0, Math.round(Math.max(finalGame.money ?? 0, 0) / 10000 * carryRate))
+  };
+
+  return {
+    runs,
+    difficulty: getDifficultyMultiplier(runs),
+    carryRate,
+    carriedStats,
+    skills: Object.fromEntries(
+      Object.keys(legacySkillConfig).map((key) => [key, Math.min(99, (currentLegacy.skills?.[key] ?? 0) + earnedSkills[key])])
+    ),
+    lastRun: {
+      age: finalGame.age,
+      week: finalGame.week,
+      stats: captureStats(finalGame),
+      reason: finalGame.gameOverReason ?? getGameOverReason(finalGame)
+    }
+  };
+};
+
+const applyLegacyBonuses = (baseStats, legacy) => {
+  const carriedStats = legacy?.carriedStats ?? {};
+
+  return {
+    ...baseStats,
+    money: Math.max(0, Math.round(baseStats.money + (carriedStats.money ?? 0))),
+    health: clamp(baseStats.health + (carriedStats.health ?? 0)),
+    marriage: clamp(baseStats.marriage + (carriedStats.marriage ?? 0)),
+    children: clamp(baseStats.children + (carriedStats.children ?? 0)),
+    stress: clamp(baseStats.stress + (carriedStats.stress ?? 0))
+  };
+};
+
+const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
+  Object.fromEntries(Object.entries(effects).map(([key, value]) => {
+    const isBad = key === "stress" ? value > 0 : value < 0;
+    const multiplier = isBad ? difficulty : Math.max(0.5, 1 - (difficulty - 1) * 0.35);
+    return [key, Math.round(value * multiplier)];
+  }));
+
 const createDefaultGame = () => ({
   age: 40,
   money: 100000,
@@ -250,6 +336,9 @@ const createDefaultGame = () => ({
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
+  gameOver: false,
+  gameOverReason: null,
+  legacy: createDefaultLegacy(),
   initialized: false
 });
 
@@ -269,7 +358,21 @@ const normalizeGame = (game) => ({
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null
+  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
+  gameOver: Boolean(game?.gameOver),
+  gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
+  legacy: {
+    ...createDefaultLegacy(),
+    ...(game?.legacy && typeof game.legacy === "object" ? game.legacy : {}),
+    skills: {
+      ...createDefaultLegacy().skills,
+      ...(game?.legacy?.skills && typeof game.legacy.skills === "object" ? game.legacy.skills : {})
+    },
+    carriedStats: {
+      ...createDefaultLegacy().carriedStats,
+      ...(game?.legacy?.carriedStats && typeof game.legacy.carriedStats === "object" ? game.legacy.carriedStats : {})
+    }
+  }
 });
 
 const loadSavedGame = () => {
@@ -341,13 +444,17 @@ export default function App() {
     if (money >= 50000) marriage += 10;
     if (money < 5000) stress += 10;
 
-    const newGame = {
-      age,
+    const baseStats = applyLegacyBonuses({
       money,
       health: clamp(health),
       marriage: clamp(marriage),
       children: clamp(children),
-      stress: clamp(stress),
+      stress: clamp(stress)
+    }, game.legacy);
+
+    const newGame = {
+      age,
+      ...baseStats,
       month: 1,
       week: 1,
       completedDecisions: [],
@@ -356,6 +463,9 @@ export default function App() {
       currentEventId: getRandomEventId(),
       eventSeed: createEventSeed(),
       weeklySummary: null,
+      gameOver: false,
+      gameOverReason: null,
+      legacy: game.legacy ?? createDefaultLegacy(),
       initialized: true
     };
 
@@ -375,12 +485,40 @@ export default function App() {
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
   };
 
+  const prepareNewGamePlus = () => {
+    setExpandedDecisionKey(null);
+    setStartAge(25);
+    setStartMoney(10000);
+    setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
+    setGame((prevGame) => ({ ...createDefaultGame(), legacy: prevGame.legacy }));
+  };
+
   const weekSchedule = useMemo(() => getWeekSchedule(game.week, game.eventSeed), [game.eventSeed, game.week]);
   const totalWeeklyDecisions = weekSchedule.reduce((total, day) => total + day.decisions.length, 0);
   const selectedChoices = game.selectedChoices ?? {};
   const completedThisWeek = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisWeek = Math.max(0, totalWeeklyDecisions - completedThisWeek);
   const currentYearProgress = Math.round((game.week / 52) * 100);
+  const legacy = game.legacy ?? createDefaultLegacy();
+  const runNumber = getRunNumber(legacy);
+  const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
+
+  const finishRunIfNeeded = (nextState, prevGame) => {
+    const gameOverReason = getGameOverReason(nextState);
+
+    if (!gameOverReason) {
+      return nextState;
+    }
+
+    const gameOverState = { ...nextState, gameOver: true, gameOverReason };
+    const nextLegacy = buildNextLegacy(prevGame.legacy, gameOverState);
+
+    return {
+      ...gameOverState,
+      legacy: nextLegacy,
+      memories: [...(nextState.memories ?? []), `Run ${getRunNumber(prevGame.legacy)} ended: ${gameOverReason}`].slice(-8)
+    };
+  };
 
   const applyEffects = (baseState, effects) => {
     const next = { ...baseState };
@@ -400,19 +538,20 @@ export default function App() {
 
   const handleChoice = (choice, decision, dayName) => {
     setGame((prevGame) => {
+      const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
       const previousSelection = prevGame.selectedChoices?.[decision.key];
       const undoEffects = previousSelection
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
         : null;
       const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
-      const nextState = applyEffects(stateBeforeChoice, choice.effects);
+      const nextState = applyEffects(stateBeforeChoice, adjustedEffects);
       const selectedChoices = {
         ...(prevGame.selectedChoices ?? {}),
         [decision.key]: {
           dayName,
           eventTitle: decision.title,
           label: choice.label,
-          effects: choice.effects,
+          effects: adjustedEffects,
           memory: choice.memory
         }
       };
@@ -429,19 +568,19 @@ export default function App() {
         memories: [...prevGame.memories, `${timestamp}: ${memoryAction}`].slice(-8)
       };
 
-      return {
+      return finishRunIfNeeded({
         ...updatedGame,
         weekStartStats: weekComplete ? captureStats(updatedGame) : prevGame.weekStartStats ?? captureStats(prevGame),
         weeklySummary: weekComplete
           ? createWeeklySummary({ previousGame: prevGame, nextState, highlights: [`${dayName}: ${decision.title} → ${choice.label}`] })
           : prevGame.weeklySummary
-      };
+      }, prevGame);
     });
   };
 
   const handleAdvanceWeek = () => {
     setExpandedDecisionKey(null);
-    setGame((prevGame) => ({
+    setGame((prevGame) => prevGame.gameOver ? prevGame : ({
       ...prevGame,
       ...getNextWeekState(prevGame.week, prevGame.age),
       completedDecisions: [],
@@ -468,7 +607,8 @@ export default function App() {
           }
 
           const choice = getRandomChoice(prevGame.eventSeed, prevGame.week, dayIndex, decisionIndex, decision.choices);
-          nextState = applyEffects(nextState, choice.effects);
+          const adjustedEffects = scaleEffectsForDifficulty(choice.effects, prevGame.legacy?.difficulty ?? 1);
+          nextState = applyEffects(nextState, adjustedEffects);
           dayResults.push(`${decision.title}: ${choice.label}`);
           summaryHighlights.push(`${day.day}: ${decision.title} → ${choice.label}`);
         });
@@ -486,27 +626,32 @@ export default function App() {
         ...nextState,
         ...getNextWeekState(prevGame.week, prevGame.age),
         completedDecisions: [],
+        selectedChoices: {},
         currentEventId: getRandomEventId(prevGame.currentEventId),
         memories: [...prevGame.memories, ...simulatedMemories].slice(-8)
       };
 
-      return {
+      return finishRunIfNeeded({
         ...advancedGame,
         weekStartStats: captureStats(advancedGame),
         weeklySummary: createWeeklySummary({ previousGame: prevGame, nextState, highlights: summaryHighlights })
-      };
+      }, prevGame);
     });
   };
 
-  const renderEffectPreview = (effects) => (
+  const renderEffectPreview = (effects) => {
+    const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
+
+    return (
     <span className="choice-effects" aria-label="Choice effects">
-      {Object.entries(effects).map(([key, value]) => (
+      {Object.entries(adjustedEffects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
           {statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
         </span>
       ))}
     </span>
-  );
+    );
+  };
 
   const renderSummaryDelta = (key, value) => {
     const config = statConfig[key];
@@ -520,6 +665,53 @@ export default function App() {
       </span>
     );
   };
+
+  if (game.gameOver) {
+    return (
+      <main className="app-shell game-over-shell">
+        <section className="panel game-over-card">
+          <p className="eyebrow">Run {legacy.runs} game over</p>
+          <h1>New Game+ unlocked</h1>
+          <p className="subtitle">{game.gameOverReason}</p>
+          <div className="legacy-meta-grid">
+            <span><strong>{legacy.difficulty.toFixed(2)}×</strong> Next difficulty</span>
+            <span><strong>{Math.round((legacy.carryRate ?? 0) * 100)}%</strong> Carryover rate</span>
+            <span><strong>{legacy.runs}</strong> Runs completed</span>
+          </div>
+          <div className="legacy-stat-grid" aria-label="Scaled stat carryover">
+            {summaryStatKeys.map((key) => (
+              <article key={key}>
+                <span>{statConfig[key].icon}</span>
+                <strong>{statConfig[key].label}</strong>
+                <em>{formatSummaryDelta(key, legacy.carriedStats?.[key] ?? 0)}</em>
+              </article>
+            ))}
+          </div>
+          <div className="actions">
+            <button onClick={prepareNewGamePlus}>Start New Game+</button>
+            <button type="button" className="secondary" onClick={resetGame}>Wipe Legacy</button>
+          </div>
+        </section>
+        <aside className="panel legacy-card">
+          <div className="section-heading">
+            <h2>Legacy skills</h2>
+            <span>scaled, not OP</span>
+          </div>
+          <div className="skill-list">
+            {Object.entries(legacySkillConfig).map(([key, skill]) => (
+              <article key={key}>
+                <span aria-hidden="true">{skill.icon}</span>
+                <div>
+                  <strong>{skill.label} Lv. {legacy.skills?.[key] ?? 0}</strong>
+                  <small>{skill.description}</small>
+                </div>
+              </article>
+            ))}
+          </div>
+        </aside>
+      </main>
+    );
+  }
 
   if (!game.initialized) {
     return (
@@ -570,6 +762,20 @@ export default function App() {
             <label><input type="radio" name="social" checked={quiz.social === "weak"} onChange={() => setQuiz((q) => ({ ...q, social: "weak" }))} /> Weak</label>
           </fieldset>
 
+          {legacy.runs > 0 ? (
+            <section className="legacy-preview" aria-label="New Game Plus bonuses">
+              <div>
+                <strong>New Game+ Run {runNumber}</strong>
+                <span>{difficultyMultiplier.toFixed(2)}× difficulty · {Math.round((legacy.carryRate ?? 0) * 100)}% carryover</span>
+              </div>
+              <div className="legacy-preview-stats">
+                {summaryStatKeys.map((key) => (
+                  <span key={key}>{statConfig[key].icon} {formatSummaryDelta(key, legacy.carriedStats?.[key] ?? 0)}</span>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           <div className="actions">
             <button type="submit">Start Game</button>
             <button type="button" className="secondary" onClick={resetGame}>Reset</button>
@@ -583,7 +789,7 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
+          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · Week {game.week} · {monthNames[game.month - 1]} · Age {game.age}</p>
           <h1>Weekly Life Map</h1>
         </div>
         <div className="topbar-actions">
@@ -732,7 +938,7 @@ export default function App() {
                 <span>Age {game.age}</span>
               </div>
             </div>
-            <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday.</p>
+            <p>Use Simulate Week to automatically resolve Monday through Sunday. Week 52 adds a new birthday. If a core stat collapses, the run ends and scaled legacy bonuses roll into New Game+.</p>
           </section>
 
           {game.weeklySummary ? (

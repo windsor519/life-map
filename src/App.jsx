@@ -460,13 +460,13 @@ export default function App() {
               <p className="eyebrow">This week</p>
               <h2>Simulate your week</h2>
             </div>
-            <span>{pendingThisWeek} flow events pending</span>
+            <span>{pendingThisWeek} random decisions left</span>
           </div>
           <p className="calendar-intro">You do not have to pick every option. Press Simulate Week to go with the flow, then Monday through Sunday will resolve with random choices and random minor, moderate, or major events.</p>
           <div className="flow-panel">
             <div>
               <strong>Default mode: go with the flow</strong>
-              <span>Manual choices are optional; the simulator will randomly handle anything left pending.</span>
+              <span>{completedThisWeek}/{totalWeeklyDecisions} decisions made. {pendingThisWeek} will go with the flow.</span>
             </div>
             <button onClick={handleSimulateWeek}>Simulate Week</button>
           </div>

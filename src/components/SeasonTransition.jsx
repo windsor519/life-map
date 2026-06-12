@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSeasonAnimation } from "../seasonAnimations/index.js";
 
 const winterPalette = {
@@ -197,12 +197,14 @@ export function SeasonBackground({ seasonId }) {
   );
 }
 
-export default function SeasonTransition({ previousSeasonId, targetSeasonId, onComplete }) {
+export default function SeasonTransition({ previousSeasonId, targetSeasonId, wisdom, onComplete }) {
   const canvasRef = useRef(null);
+  const [animationDone, setAnimationDone] = useState(false);
   const animation = useMemo(() => getSeasonAnimation(targetSeasonId), [targetSeasonId]);
   const previousAnimation = useMemo(() => getSeasonAnimation(previousSeasonId), [previousSeasonId]);
 
   useEffect(() => {
+    setAnimationDone(false);
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
 
@@ -234,7 +236,7 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, onC
       if (rawProgress < 1) {
         frameId = window.requestAnimationFrame(render);
       } else {
-        window.setTimeout(onComplete, 350);
+        setAnimationDone(true);
       }
     };
 
@@ -246,7 +248,7 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, onC
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
     };
-  }, [animation, onComplete, previousAnimation.palette, previousSeasonId, targetSeasonId]);
+  }, [animation, previousAnimation.palette, previousSeasonId, targetSeasonId]);
 
   return (
     <div className="season-transition" role="status" aria-live="polite">
@@ -258,7 +260,31 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, onC
         <p className="eyebrow">Season changed</p>
         <h2>{animation.headline}</h2>
         <p>{animation.subheadline}</p>
-        <button className="secondary" type="button" onClick={onComplete}>Skip animation</button>
+        {wisdom ? (
+          <section className="season-transition-wisdom" aria-label="Family wisdom for the next season">
+            <div className="season-transition-wisdom-header">
+              <span aria-hidden="true">{wisdom.statIcon}</span>
+              <div>
+                <p className="eyebrow">{wisdom.kicker}</p>
+                <h3>{wisdom.title}</h3>
+              </div>
+            </div>
+            <p className="season-transition-wisdom-context">{wisdom.context}</p>
+            <p>{wisdom.summary}</p>
+            <p>{wisdom.ageSummary}</p>
+            <div className="season-transition-wisdom-grid">
+              <span><strong>{wisdom.ageRangeLabel}</strong><small>{wisdom.ageTitle}</small></span>
+              <span><strong>{wisdom.statValue}</strong><small>{wisdom.statLabel} · {wisdom.statDeltaLabel}</small></span>
+            </div>
+            <div className="season-transition-wisdom-note">
+              <span>Expect</span>
+              <strong>{wisdom.expect}</strong>
+            </div>
+            <small>{wisdom.focus}</small>
+          </section>
+        ) : null}
+        <p className="season-transition-next-copy">Read the family wisdom, then press Next to continue.</p>
+        <button className="secondary" type="button" onClick={onComplete}>{animationDone ? "Next" : "Skip to wisdom / Next"}</button>
       </div>
     </div>
   );

@@ -55,14 +55,13 @@ const getSpouseField = (familyInput, field) => {
   return "";
 };
 
-// 🎨 Clean, localized inline styles to skip writing external CSS
 const styles = {
   sectionGroup: {
-    background: "rgba(255, 255, 255, 0.04)",
+    background: "linear-gradient(145deg, rgba(15, 23, 42, 0.58), rgba(255, 255, 255, 0.075))",
     padding: "1rem",
-    borderRadius: "8px",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    marginBottom: "1rem",
+    borderRadius: "18px",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08)",
     display: "flex",
     flexDirection: "column",
     gap: "0.75rem"
@@ -74,8 +73,8 @@ const styles = {
   },
   title: {
     margin: 0,
-    fontSize: "1.1rem",
-    fontWeight: "600"
+    fontSize: "1.02rem",
+    fontWeight: "850"
   },
   badge: {
     fontSize: "0.85rem",
@@ -88,9 +87,10 @@ const styles = {
     gap: "0.5rem"
   },
   inlineRow: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "minmax(130px, 2fr) 76px minmax(94px, 1fr) auto",
     alignItems: "center",
-    gap: "0.5rem",
+    gap: "0.55rem",
     width: "100%"
   },
   nameInput: {
@@ -105,12 +105,13 @@ const styles = {
     minWidth: "90px"
   },
   removeBtn: {
-    background: "transparent",
-    color: "#ff6b6b",
-    border: "none",
-    fontSize: "1.1rem",
+    background: "rgba(248, 113, 113, 0.12)",
+    color: "#fecdd3",
+    border: "1px solid rgba(248, 113, 113, 0.28)",
+    boxShadow: "none",
+    fontSize: "1rem",
     cursor: "pointer",
-    padding: "4px 8px",
+    padding: "0.45rem 0.65rem",
     lineHeight: 1
   },
   addBtn: {
@@ -186,7 +187,6 @@ const DynamicFamilySection = ({ label, groupKey, maxCount, description, members 
 
 export default function StartScreen({
   familyInput = { grandparents: [], greatGrandparents: [], spouse: { name: '', age: '', sex: '' }, kids: [] },
-  onOpenSettings,
   onStartGame,
   setFamilyInput,
   setStartingStats,
@@ -247,11 +247,16 @@ export default function StartScreen({
 
   return (
     <main className="app-shell setup-shell">
-      <section className="hero-card">
+      <section className="hero-card startup-hero">
         <div>
           <p className="eyebrow">Life simulator</p>
-          <h1>Navigate a challenging phase of life.</h1>
-          <p className="subtitle">With kids, aging grandparents, and hard choices—can you make it through?</p>
+          <h1>Map a life that keeps moving.</h1>
+          <p className="subtitle">Build your character, add the people who matter, and guide one season at a time through messy, funny, high-stakes family life.</p>
+          <div className="startup-highlights" aria-label="Game highlights">
+            <span>🌦️ Seasonal choices</span>
+            <span>👥 Aging family</span>
+            <span>🎲 Surprise events</span>
+          </div>
         </div>
         <div className="life-board" aria-hidden="true">
           <span className="board-node node-heart">💞</span>
@@ -261,10 +266,10 @@ export default function StartScreen({
         </div>
       </section>
 
-      <form className="panel setup-form" onSubmit={onStartGame}>
+      <form className="panel setup-form startup-form" onSubmit={onStartGame}>
         
         {/* PLAYER IDENTITY SECTION */}
-        <section className="player-panel" aria-label="Your character setup">
+        <section className="startup-section player-panel" aria-label="Your character setup">
           <p className="eyebrow">The Protagonist</p>
           <h2>About You</h2>
           <div className="form-grid">
@@ -289,7 +294,7 @@ export default function StartScreen({
         </section>
 
         {/* REFACTORED FAMILY INPUTS */}
-        <section className="family-panel" aria-label="Family setup">
+        <section className="startup-section family-panel" aria-label="Family setup">
           <div className="randomizer-heading">
             <div>
               <p className="eyebrow">Family first</p>
@@ -299,7 +304,7 @@ export default function StartScreen({
           </div>
 
           {/* Wrapper to stack the styled sub-sections */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+          <div className="startup-family-stack">
             <DynamicFamilySection 
               label="Grandparents" 
               groupKey="grandparents" 
@@ -368,20 +373,8 @@ export default function StartScreen({
           </div>
         </section>
 
-        {/* SETTINGS PANEL */}
-        <section className="custom-events-panel compact-settings-panel" aria-label="Settings setup">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Settings</p>
-              <h2>Music, morbid mode, and AI-made events</h2>
-            </div>
-          </div>
-          <p>Open settings to use icon-based music controls, set master volume, toggle morbid surprises, or paste AI-made custom events.</p>
-          <button className="secondary" type="button" onClick={onOpenSettings}>⚙️ Open Settings</button>
-        </section>
-
         {/* STARTING STATS PANEL */}
-        <section className="starting-stats-panel" aria-label="Starting stats">
+        <section className="startup-section starting-stats-panel" aria-label="Starting stats">
           <div className="section-heading">
             <div>
               <p className="eyebrow">Starting balance</p>

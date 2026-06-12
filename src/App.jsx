@@ -422,6 +422,7 @@ const getNextSeasonState = (month, age) => {
 };
 
 const RANDOM_EVENT_CHANCE = 0.067;
+const MAX_SEASON_DECISIONS = 7;
 const UNEXPECTED_EVENT_CHANCE = 0.093;
 const surpriseEvents = unexpectedEventRecords.map((event) => ({
   ...event,
@@ -512,6 +513,30 @@ const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameS
     };
   });
 };
+
+const limitSeasonSchedule = (schedule, maxDecisions = MAX_SEASON_DECISIONS) => {
+  let decisionsSeen = 0;
+
+  return schedule.map((day) => {
+    if (day.decisions.length === 0) {
+      return day;
+    }
+
+    const remainingSlots = Math.max(0, maxDecisions - decisionsSeen);
+    const decisions = day.decisions.slice(0, remainingSlots);
+    decisionsSeen += decisions.length;
+
+    return {
+      ...day,
+      decisions
+    };
+  });
+};
+
+const getSeasonSchedule = (season, year, eventSeed, age, eventList = events, gameState = null) =>
+  limitSeasonSchedule(
+    season.months.flatMap((month) => getMonthSchedule(month, year, eventSeed, age, eventList, gameState))
+  );
 
 const summaryCopy = {
   chaos: {
@@ -673,10 +698,16 @@ function FamilyStage({ family, currentAge, currentMonth }) {
               style={{ "--avatar-height": `${calculateFamilyHeight(member.role, member.age, member.sex)}px` }}
               aria-hidden="true"
             >
-              <span>{member.symbol}</span>
+              <span className="family-head">{member.symbol}</span>
+              <span className="family-neck" />
+              <span className="family-torso" />
+              <span className="family-arm family-arm-left" />
+              <span className="family-arm family-arm-right" />
+              <span className="family-leg family-leg-left" />
+              <span className="family-leg family-leg-right" />
             </div>
             <strong>{member.name}</strong>
-            <small>{member.ageLabel}</small>
+            <small>{member.groupLabel} · {member.ageLabel}</small>
           </article>
         ))}
       </div>
@@ -994,7 +1025,7 @@ export default function App() {
   }, [activeSeason.id, musicPlaying]);
 
   const seasonSchedule = useMemo(
-    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game)),
+    () => getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game),
     [activeSeason, game, currentCalendarYear, playableEvents]
   );
   const seasonDecisions = useMemo(
@@ -1155,7 +1186,7 @@ export default function App() {
 
     setActiveDecisionContext(null);
 
-    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game));
+    const schedule = getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game);
     let nextState = game;
     const steps = [];
     const simulatedMemories = [];
@@ -1424,10 +1455,6 @@ export default function App() {
       {settingsModal}
       <StartScreen
         familyInput={familyInput}
-        formatSummaryDelta={formatSummaryDelta}
-        legacy={legacy}
-        onOpenSettings={() => setSettingsOpen(true)}
-        onResetGame={resetGame}
         onStartGame={startNewGame}
         setFamilyInput={setFamilyInput}
         setStartingStats={setStartingStats}
@@ -1439,7 +1466,6 @@ export default function App() {
         startSex={startSex}
         startingStats={startingStats}
         statConfig={statConfig}
-        totalLegacyBonuses={totalLegacyBonuses}
       />
       </>
     );

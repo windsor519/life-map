@@ -15,13 +15,13 @@ Each event must use this shape:
     "choices": [
       {
         "label": "Choice text",
-        "effects": { "health": 0, "marriage": 0, "children": 0, "stress": 0 },
+        "effects": { "wellbeing": 0, "marriage": 0, "children": 0, "wallet": 0 },
         "memory": "Past-tense memory of what happened."
       }
     ]
   }
 ]
-Rules: do not include money, debt, budgets, prices, or currency. Use only health, marriage, children, and stress effects between -20 and 20. Make each choice emotionally distinct.`;
+Rules: use only wellbeing, marriage, children, and wallet effects between -20 and 20. Optional event.condition may gate an event by one of those stats with op gt, gte, lt, lte, eq, or neq. Make each choice emotionally distinct.`;
 
 const familyInputs = [
   { key: "grandparents", label: "Grandparents", placeholder: "Example: Nana Rose, Grandpa Lee", type: "textarea" },
@@ -88,9 +88,10 @@ export default function StartScreen({
   };
 
   const legacyPreviewStats = [
-    { key: "wellbeing", icon: "🌿", delta: Math.round(((totalLegacyBonuses.health ?? 0) - (totalLegacyBonuses.stress ?? 0)) / 2) },
+    { key: "wellbeing", icon: statConfig.wellbeing.icon, delta: totalLegacyBonuses.wellbeing ?? 0 },
     { key: "marriage", icon: statConfig.marriage.icon, delta: totalLegacyBonuses.marriage ?? 0 },
-    { key: "children", icon: statConfig.children.icon, delta: totalLegacyBonuses.children ?? 0 }
+    { key: "children", icon: statConfig.children.icon, delta: totalLegacyBonuses.children ?? 0 },
+    { key: "wallet", icon: statConfig.wallet.icon, delta: totalLegacyBonuses.wallet ?? 0 }
   ];
 
   return (
@@ -158,10 +159,10 @@ export default function StartScreen({
             </div>
             <span>{customEventsText.trim() ? "Ready to import" : "Optional"}</span>
           </div>
-          <p>Paste JSON events from an AI assistant to personalize the season around your family. Money effects are ignored so the game stays focused on relationships, health, family, and stress.</p>
+          <p>Paste JSON events from an AI assistant to personalize the season around your family. Use wellbeing, relationship, family bond, and wallet scores for effects.</p>
           <label>
             <span>Custom events JSON</span>
-            <textarea value={customEventsText} onChange={(event) => setCustomEventsText(event.target.value)} placeholder='[{"id":"teen-driving-lesson","title":"Driving Lesson Nerves","description":"Your teen asks for practice before a big milestone.","severity":"moderate","icon":"🚗","accent":"teal","tags":["general"],"choices":[{"label":"Practice patiently","effects":{"children":8,"stress":4},"memory":"You practiced driving patiently."}]}]' rows={8} />
+            <textarea value={customEventsText} onChange={(event) => setCustomEventsText(event.target.value)} placeholder='[{"id":"teen-driving-lesson","title":"Driving Lesson Nerves","description":"Your teen asks for practice before a big milestone.","severity":"moderate","icon":"🚗","accent":"teal","tags":["general"],"condition":{"stat":"wallet","op":"gte","value":30},"choices":[{"label":"Practice patiently","effects":{"children":8,"wellbeing":-2},"memory":"You practiced driving patiently."}]}]' rows={8} />
           </label>
           {customEventError ? <p className="form-error" role="alert">{customEventError}</p> : null}
           <details className="prompt-guide">

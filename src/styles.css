@@ -719,6 +719,39 @@ textarea:focus {
   gap: 1rem;
 }
 
+.game-sidebar {
+  align-self: start;
+  position: sticky;
+  top: 1rem;
+}
+
+.game-sidebar .family-stage-card {
+  grid-column: auto;
+  padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.game-sidebar .family-stage-card .section-heading {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.game-sidebar .family-stage-card h2 {
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.game-sidebar .family-stage {
+  min-height: 24rem;
+  overflow: auto;
+  padding: 1rem 0.85rem;
+}
+
+.game-sidebar .family-tree {
+  min-width: max-content;
+}
+
 .event-card {
   min-height: 540px;
   isolation: isolate;
@@ -1203,6 +1236,20 @@ textarea:focus {
   background:
     radial-gradient(circle at 100% 0, rgba(251, 191, 36, 0.22), transparent 13rem),
     linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+}
+
+.inline-wisdom-card {
+  border: 1px solid rgba(251, 191, 36, 0.24);
+  border-radius: 1.45rem;
+  margin: 0 0 1rem;
+  padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.inline-wisdom-card .summary-heading h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  letter-spacing: -0.03em;
 }
 
 .new-year-wisdom-card p,
@@ -1744,11 +1791,21 @@ textarea:focus {
 }
 
 .game-layout {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
 }
 
 .side-stack {
-  grid-template-columns: minmax(260px, 0.8fr) minmax(300px, 1.2fr);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 940px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .game-sidebar {
+    position: static;
+  }
 }
 
 @media (max-width: 760px) {

@@ -1686,8 +1686,6 @@ export default function App() {
       </section>
 
       <div className="game-layout">
-        <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} character={game.character} />
-
         <section className={`panel season-card season-${activeSeason.id}`}>
           <div className="section-heading calendar-heading">
             <div>
@@ -1696,7 +1694,25 @@ export default function App() {
             </div>
             <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
           </div>
-          <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this season, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
+          <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
+          {game.newYearWisdom ? (
+            <section className="new-year-wisdom-card inline-wisdom-card" aria-live="polite">
+              <div className="section-heading summary-heading">
+                <div>
+                  <p className="eyebrow">New year wisdom</p>
+                  <h2>{game.newYearWisdom.title}</h2>
+                </div>
+                <span>✨</span>
+              </div>
+              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
+              <p>{game.newYearWisdom.summary}</p>
+              <div className="wisdom-expect">
+                <span>Expect</span>
+                <strong>{game.newYearWisdom.expect}</strong>
+              </div>
+              <small>{game.newYearWisdom.focus}</small>
+            </section>
+          ) : null}
           <div className="flow-panel">
             <div>
               <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
@@ -1780,25 +1796,8 @@ export default function App() {
           </div>
         </section>
 
-        <aside className="side-stack">
-          {game.newYearWisdom ? (
-            <section className="panel new-year-wisdom-card" aria-live="polite">
-              <div className="section-heading summary-heading">
-                <div>
-                  <p className="eyebrow">New year wisdom</p>
-                  <h2>{game.newYearWisdom.title}</h2>
-                </div>
-                <span>✨</span>
-              </div>
-              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
-              <p>{game.newYearWisdom.summary}</p>
-              <div className="wisdom-expect">
-                <span>Expect</span>
-                <strong>{game.newYearWisdom.expect}</strong>
-              </div>
-              <small>{game.newYearWisdom.focus}</small>
-            </section>
-          ) : null}
+        <aside className="side-stack game-sidebar" aria-label="Family and recap sidebar">
+          <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} character={game.character} />
           {game.weeklySummary ? (
             <section className="panel monthly-summary-card compact-summary-card" aria-live="polite">
               <div className="section-heading summary-heading">

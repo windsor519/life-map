@@ -1,28 +1,3 @@
-import { getFamilySummary } from "../game/family.js";
-
-const EVENT_PROMPT_GUIDE = `Create 3-5 Life Map custom events for this family. Return ONLY a JSON array.
-Each event must use this shape:
-[
-  {
-    "id": "unique-kebab-case-id",
-    "title": "Short event title",
-    "category": "Family / Health / Relationship / Community / School / Work",
-    "description": "A specific situation using the player's family names and ages.",
-    "severity": "minor | moderate | major",
-    "icon": "emoji",
-    "accent": "blue | green | rose | amber | teal | violet | indigo",
-    "tags": ["general"],
-    "choices": [
-      {
-        "label": "Choice text",
-        "effects": { "wellbeing": 0, "marriage": 0, "children": 0, "wallet": 0 },
-        "memory": "Past-tense memory of what happened."
-      }
-    ]
-  }
-]
-Rules: use only wellbeing, marriage, children, and wallet effects between -20 and 20. Optional event.condition may gate an event by one of those stats with op gt, gte, lt, lte, eq, or neq. Make each choice emotionally distinct.`;
-
 const familyInputs = [
   { key: "grandparents", label: "Grandparents", placeholder: "Example: Nana Rose, Grandpa Lee", type: "textarea" },
   { key: "grandparentsAges", label: "Grandparents ages", placeholder: "Example: 72, 74", type: "textarea" },
@@ -63,15 +38,13 @@ const quizSections = [
 ];
 
 export default function StartScreen({
-  customEventError,
-  customEventsText,
   familyInput,
   formatSummaryDelta,
   legacy,
+  onOpenSettings,
   onResetGame,
   onStartGame,
   quiz,
-  setCustomEventsText,
   setFamilyInput,
   setQuiz,
   setStartAge,
@@ -151,25 +124,16 @@ export default function StartScreen({
           </label>
         </div>
 
-        <section className="custom-events-panel" aria-label="Custom events setup">
+        <section className="custom-events-panel compact-settings-panel" aria-label="Settings setup">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Custom events</p>
-              <h2>Add AI-made events</h2>
+              <p className="eyebrow">Settings</p>
+              <h2>Music, morbid mode, and AI-made events</h2>
             </div>
-            <span>{customEventsText.trim() ? "Ready to import" : "Optional"}</span>
+            <span>Popup</span>
           </div>
-          <p>Paste JSON events from an AI assistant to personalize the season around your family. Use wellbeing, relationship, family bond, and wallet scores for effects.</p>
-          <label>
-            <span>Custom events JSON</span>
-            <textarea value={customEventsText} onChange={(event) => setCustomEventsText(event.target.value)} placeholder='[{"id":"teen-driving-lesson","title":"Driving Lesson Nerves","description":"Your teen asks for practice before a big milestone.","severity":"moderate","icon":"🚗","accent":"teal","tags":["general"],"condition":{"stat":"wallet","op":"gte","value":30},"choices":[{"label":"Practice patiently","effects":{"children":8,"wellbeing":-2},"memory":"You practiced driving patiently."}]}]' rows={8} />
-          </label>
-          {customEventError ? <p className="form-error" role="alert">{customEventError}</p> : null}
-          <details className="prompt-guide">
-            <summary>Prompt guide for AI</summary>
-            <p>Copy this prompt into an AI assistant, then paste the JSON result above.</p>
-            <textarea readOnly value={`${EVENT_PROMPT_GUIDE}\n\nPlayer family: ${getFamilySummary(familyInput)}\nPlayer age: ${startAge}`} rows={12} />
-          </details>
+          <p>Open settings to use icon-based music controls, set master volume, toggle morbid surprises, or paste AI-made custom events.</p>
+          <button className="secondary" type="button" onClick={onOpenSettings}>⚙️ Open Settings</button>
         </section>
 
         {quizSections.map((section) => (
@@ -204,6 +168,7 @@ export default function StartScreen({
 
         <div className="actions">
           <button type="submit">Start Game</button>
+          <button type="button" className="secondary" onClick={onOpenSettings}>⚙️ Settings</button>
           <button type="button" className="secondary" onClick={onResetGame}>Reset</button>
         </div>
       </form>

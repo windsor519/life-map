@@ -3,9 +3,40 @@ import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
+import Setting from "./setting.js";
 import { countFamilyNames, createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
+const SETTINGS_KEY = "life-map-settings";
+const createDefaultSettings = () => ({
+  morbid: false,
+  masterVolume: 55,
+  aiMadeEvents: true
+});
+
+const normalizeSettings = (settings) => {
+  const defaultSettings = createDefaultSettings();
+  return {
+    morbid: Boolean(settings?.morbid ?? defaultSettings.morbid),
+    masterVolume: clamp(Number(settings?.masterVolume ?? defaultSettings.masterVolume), 0, 100),
+    aiMadeEvents: Boolean(settings?.aiMadeEvents ?? defaultSettings.aiMadeEvents)
+  };
+};
+
+const loadSavedSettings = () => {
+  if (typeof window === "undefined") {
+    return createDefaultSettings();
+  }
+
+  try {
+    const saved = window.localStorage.getItem(SETTINGS_KEY);
+    return saved ? normalizeSettings(JSON.parse(saved)) : createDefaultSettings();
+  } catch {
+    window.localStorage.removeItem(SETTINGS_KEY);
+    return createDefaultSettings();
+  }
+};
+
 const createIdleSimulationState = () => ({
   phase: "idle",
   steps: [],
@@ -361,8 +392,47 @@ const surpriseEvents = unexpectedEventRecords.map((event) => ({
   severity: getSeverity(event),
   visual: { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Unexpected" }
 }));
-const getUnexpectedEventForMonth = (eventSeed, month, year, gameState) => {
-  const eligibleSurpriseEvents = surpriseEvents.filter((event) => isEventConditionMet(event, gameState));
+const morbidUnexpectedEvents = [
+  {
+    id: "funeral-call",
+    title: "Funeral Call",
+    severity: "major",
+    category: "Morbid surprise",
+    icon: "🕯️",
+    accent: "violet",
+    description: "A late-night call brings news of a death in the extended family, and everyone looks to you for logistics and comfort.",
+    effects: sanitizeEffects({ wellbeing: -12, marriage: -4, children: -5, wallet: -6 }),
+    memory: "A funeral call pulled the family into grief, travel plans, and hard conversations.",
+    visual: { icon: "🕯️", accent: "violet", label: "Morbid surprise" }
+  },
+  {
+    id: "pet-goodbye",
+    title: "Pet Goodbye",
+    severity: "moderate",
+    category: "Morbid surprise",
+    icon: "🐾",
+    accent: "rose",
+    description: "The family pet takes a sudden turn, forcing an emotional decision nobody feels ready to make.",
+    effects: sanitizeEffects({ wellbeing: -9, children: -7, wallet: -3 }),
+    memory: "Saying goodbye to the family pet became a tender, awful family milestone.",
+    visual: { icon: "🐾", accent: "rose", label: "Morbid surprise" }
+  },
+  {
+    id: "estate-paperwork",
+    title: "Estate Paperwork",
+    severity: "moderate",
+    category: "Morbid surprise",
+    icon: "📜",
+    accent: "amber",
+    description: "A relative's old estate issue resurfaces with confusing forms, deadlines, and unresolved family feelings.",
+    effects: sanitizeEffects({ wellbeing: -7, marriage: -2, children: -2, wallet: -4 }),
+    memory: "Old estate paperwork resurfaced and brought stress, expense, and family history with it.",
+    visual: { icon: "📜", accent: "amber", label: "Morbid surprise" }
+  }
+];
+const getUnexpectedEventForMonth = (eventSeed, month, year, gameState, settings = createDefaultSettings()) => {
+  const surpriseEventPool = settings.morbid ? [...surpriseEvents, ...morbidUnexpectedEvents] : surpriseEvents;
+  const eligibleSurpriseEvents = surpriseEventPool.filter((event) => isEventConditionMet(event, gameState));
 
   if (eligibleSurpriseEvents.length === 0) {
     return null;
@@ -637,6 +707,8 @@ export default function App() {
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
   const [seasonTransition, setSeasonTransition] = useState(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -645,7 +717,19 @@ export default function App() {
     }
   }, [game]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+  }, [settings]);
+
   useEffect(() => () => stopZenMusic(false), []);
+
+  useEffect(() => {
+    if (audioRef.current?.master) {
+      audioRef.current.master.gain.value = (settings.masterVolume / 100) * 0.09;
+    }
+  }, [settings.masterVolume]);
 
   const stopZenMusic = (updateState = true) => {
     const audio = audioRef.current;
@@ -684,7 +768,7 @@ export default function App() {
     const nodes = [];
     const padFrequencies = [174, 261.63, 329.63, 392];
 
-    master.gain.value = 0.05;
+    master.gain.value = (settings.masterVolume / 100) * 0.09;
     padGain.gain.value = 0.18;
     padGain.connect(master);
     master.connect(context.destination);
@@ -723,7 +807,7 @@ export default function App() {
     const chimeTimer = window.setInterval(playChime, 5400);
     playChime();
 
-    audioRef.current = { chimeTimer, context, nodes };
+    audioRef.current = { chimeTimer, context, master, nodes };
     setMusicPlaying(true);
   };
 
@@ -743,7 +827,7 @@ export default function App() {
     let customEvents = [];
 
     try {
-      customEvents = normalizeCustomEvents(customEventsText);
+      customEvents = settings.aiMadeEvents ? normalizeCustomEvents(customEventsText) : [];
       setCustomEventError("");
     } catch (error) {
       setCustomEventError(error.message);
@@ -850,7 +934,7 @@ export default function App() {
   };
 
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
-  const playableEvents = useMemo(() => [...events, ...(Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents]);
+  const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
   const seasonSchedule = useMemo(
     () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game)),
@@ -1063,7 +1147,7 @@ export default function App() {
       }
     });
 
-    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState);
+    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState, settings);
     let unexpectedStep = null;
 
     if (unexpectedEvent) {
@@ -1235,9 +1319,25 @@ export default function App() {
   const activeMonthlySummary = simulationState.phase === "summary"
     ? simulationState.summary?.monthlySummary ?? simulationState.summary?.finalGame?.weeklySummary
     : null;
+  const settingsModal = (
+    <Setting
+      customEventError={customEventError}
+      customEventsText={customEventsText}
+      isOpen={settingsOpen}
+      musicPlaying={musicPlaying}
+      onClose={() => setSettingsOpen(false)}
+      onResetGame={resetGame}
+      onSetCustomEventsText={setCustomEventsText}
+      onSettingsChange={(nextSettings) => setSettings(normalizeSettings(nextSettings))}
+      onToggleMusic={toggleZenMusic}
+      settings={settings}
+    />
+  );
 
   if (game.gameOver) {
     return (
+      <>
+      {settingsModal}
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
           <p className="eyebrow">Game over</p>
@@ -1259,6 +1359,7 @@ export default function App() {
           </div>
           <div className="actions">
             <button onClick={prepareNewGamePlus}>Start New Game+</button>
+            <button type="button" className="secondary" onClick={() => setSettingsOpen(true)}>⚙️ Settings</button>
             <button type="button" className="secondary" onClick={resetGame}>Wipe Legacy</button>
           </div>
         </section>
@@ -1280,21 +1381,22 @@ export default function App() {
           </div>
         </aside>
       </main>
+      </>
     );
   }
 
   if (!game.initialized) {
     return (
+      <>
+      {settingsModal}
       <StartScreen
-        customEventError={customEventError}
-        customEventsText={customEventsText}
         familyInput={familyInput}
         formatSummaryDelta={formatSummaryDelta}
         legacy={legacy}
+        onOpenSettings={() => setSettingsOpen(true)}
         onResetGame={resetGame}
         onStartGame={startNewGame}
         quiz={quiz}
-        setCustomEventsText={setCustomEventsText}
         setFamilyInput={setFamilyInput}
         setQuiz={setQuiz}
         setStartAge={setStartAge}
@@ -1302,11 +1404,13 @@ export default function App() {
         statConfig={statConfig}
         totalLegacyBonuses={totalLegacyBonuses}
       />
+      </>
     );
   }
 
   return (
     <main className="app-shell">
+      {settingsModal}
       {seasonTransition ? (
         <SeasonTransition
           previousSeasonId={seasonTransition.previousSeasonId}
@@ -1327,7 +1431,10 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-actions">
-          <button className="secondary music-toggle" onClick={toggleZenMusic}>{musicPlaying ? "Pause Zen" : "Play Zen"}</button>
+          <button className="secondary music-toggle" aria-label={musicPlaying ? "Music playing" : "Music paused"} onClick={() => setSettingsOpen(true)}>
+            <span aria-hidden="true">{musicPlaying ? "🎵" : "🔇"}</span>
+            Settings
+          </button>
           <button className="secondary" onClick={resetGame}>Restart Setup</button>
         </div>
       </header>

@@ -63,6 +63,44 @@ function drawParticle(ctx, particle, particleStyle, alpha) {
   ctx.fill();
 }
 
+function renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, particles, flora) {
+  const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  skyGradient.addColorStop(0, blendColors(sourcePalette.skyTop, animation.palette.skyTop, progress));
+  skyGradient.addColorStop(1, blendColors(sourcePalette.skyBot, animation.palette.skyBot, progress));
+  ctx.fillStyle = skyGradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = blendColors(sourcePalette.ground, animation.palette.ground, progress);
+  ctx.beginPath();
+  ctx.ellipse(canvas.width / 2, canvas.height + 100, canvas.width * 0.82, 250, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = blendColors(sourcePalette.grass, animation.palette.grass, progress);
+  ctx.fillRect(0, canvas.height - 26, canvas.width, 26);
+
+  drawFlora(ctx, flora, animation, progress);
+
+  particles.forEach((particle) => {
+    particle.y += particle.speedY + progress * 0.6;
+    particle.angle += 0.025 + progress * 0.02;
+    particle.x += particle.speedX + Math.sin(particle.angle) * (progress * 0.7);
+
+    if (particle.y > canvas.height + 12) {
+      particle.y = -12;
+      particle.x = Math.random() * canvas.width;
+    }
+    if (particle.x > canvas.width + 12) particle.x = -12;
+    if (particle.x < -12) particle.x = canvas.width + 12;
+
+    if (progress < 0.58) {
+      drawParticle(ctx, particle, animation.particles.from, (0.58 - progress) / 0.58);
+    }
+    if (progress > 0.25) {
+      drawParticle(ctx, particle, animation.particles.to, clampProgress((progress - 0.25) / 0.75));
+    }
+  });
+}
+
 function drawFlora(ctx, flora, animation, progress) {
   flora.forEach((plant) => {
     if (progress <= plant.delay) {
@@ -107,6 +145,51 @@ function drawFlora(ctx, flora, animation, progress) {
   });
 }
 
+export function SeasonBackground({ seasonId }) {
+  const canvasRef = useRef(null);
+  const animation = useMemo(() => getSeasonAnimation(seasonId), [seasonId]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+
+    if (!canvas || !ctx) {
+      return undefined;
+    }
+
+    let frameId;
+    let particles = [];
+    let flora = [];
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = Array.from({ length: 96 }, () => createParticle(canvas.width, canvas.height));
+      flora = createFlora(animation, canvas.width, canvas.height);
+    };
+
+    const render = () => {
+      renderSeasonScene(ctx, canvas, animation, animation.palette, 1, particles, flora);
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    frameId = window.requestAnimationFrame(render);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", resize);
+    };
+  }, [animation]);
+
+  return (
+    <div className="season-background" aria-hidden="true">
+      <canvas ref={canvasRef} />
+    </div>
+  );
+}
+
 export default function SeasonTransition({ previousSeasonId, targetSeasonId, onComplete }) {
   const canvasRef = useRef(null);
   const animation = useMemo(() => getSeasonAnimation(targetSeasonId), [targetSeasonId]);
@@ -139,41 +222,7 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, onC
       const rawProgress = clampProgress((timestamp - startedAt) / duration);
       const progress = 1 - Math.pow(1 - rawProgress, 3);
 
-      const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      skyGradient.addColorStop(0, blendColors(sourcePalette.skyTop, animation.palette.skyTop, progress));
-      skyGradient.addColorStop(1, blendColors(sourcePalette.skyBot, animation.palette.skyBot, progress));
-      ctx.fillStyle = skyGradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = blendColors(sourcePalette.ground, animation.palette.ground, progress);
-      ctx.beginPath();
-      ctx.ellipse(canvas.width / 2, canvas.height + 100, canvas.width * 0.82, 250, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = blendColors(sourcePalette.grass, animation.palette.grass, progress);
-      ctx.fillRect(0, canvas.height - 26, canvas.width, 26);
-
-      drawFlora(ctx, flora, animation, progress);
-
-      particles.forEach((particle) => {
-        particle.y += particle.speedY + progress * 0.6;
-        particle.angle += 0.025 + progress * 0.02;
-        particle.x += particle.speedX + Math.sin(particle.angle) * (progress * 0.7);
-
-        if (particle.y > canvas.height + 12) {
-          particle.y = -12;
-          particle.x = Math.random() * canvas.width;
-        }
-        if (particle.x > canvas.width + 12) particle.x = -12;
-        if (particle.x < -12) particle.x = canvas.width + 12;
-
-        if (progress < 0.58) {
-          drawParticle(ctx, particle, animation.particles.from, (0.58 - progress) / 0.58);
-        }
-        if (progress > 0.25) {
-          drawParticle(ctx, particle, animation.particles.to, clampProgress((progress - 0.25) / 0.75));
-        }
-      });
+      renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, particles, flora);
 
       if (rawProgress < 1) {
         frameId = window.requestAnimationFrame(render);

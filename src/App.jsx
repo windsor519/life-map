@@ -4,7 +4,7 @@ import unexpectedEventRecords from "./data/unexpected_events.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
 import Setting from "./setting.js";
-import { countFamilyNames, createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
+import { calculateFamilyHeight, countFamilyNames, createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const SETTINGS_KEY = "life-map-settings";
@@ -618,6 +618,42 @@ const buildNextLegacy = (legacy, finalGame) => {
   };
 };
 
+
+function FamilyStage({ family, currentAge, currentMonth }) {
+  const members = getFamilyMembers(family, currentAge, currentMonth);
+
+  if (members.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="panel family-stage-card" aria-label="Family view">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">Family view</p>
+          <h2>Your people grow with the seasons</h2>
+        </div>
+        <span>{members.length} shown</span>
+      </div>
+      <div className="family-stage" role="list">
+        {members.map((member) => (
+          <article className={`family-member family-${member.role} family-${member.sex}`} key={member.id} role="listitem">
+            <div
+              className="family-avatar"
+              style={{ "--avatar-height": `${calculateFamilyHeight(member.role, member.age, member.sex)}px` }}
+              aria-hidden="true"
+            >
+              <span>{member.symbol}</span>
+            </div>
+            <strong>{member.name}</strong>
+            <small>{member.ageLabel}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 const applyLegacyBonuses = (baseStats, legacy) => {
   const legacyBonuses = getTotalLegacyBonuses(legacy);
 
@@ -695,6 +731,8 @@ const loadSavedGame = () => {
 export default function App() {
   const [game, setGame] = useState(loadSavedGame);
   const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
+  const [startName, setStartName] = useState(game.character?.name ?? "");
+  const [startSex, setStartSex] = useState(game.character?.sex ?? "");
   const [quiz, setQuiz] = useState({
     exercise: "sometimes",
     stableJob: "no",
@@ -834,7 +872,7 @@ export default function App() {
       return;
     }
 
-    const family = normalizeFamily(familyInput);
+    const family = { ...normalizeFamily(familyInput), startAge: age, startMonth: 1 };
     const kidsCount = countFamilyNames(family.kids);
     const hasSpouse = countFamilyNames(family.spouse) > 0;
     const extendedFamilyCount = countFamilyNames(family.grandparents) + countFamilyNames(family.greatGrandparents);
@@ -896,7 +934,7 @@ export default function App() {
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
-      character: null,
+      character: { name: startName.trim(), sex: startSex.trim() },
       initialized: true
     };
 
@@ -917,6 +955,8 @@ export default function App() {
     setGame(createDefaultGame());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
+    setStartName("");
+    setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
@@ -927,6 +967,8 @@ export default function App() {
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
+    setStartName("");
+    setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
     setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
@@ -1400,7 +1442,11 @@ export default function App() {
         setFamilyInput={setFamilyInput}
         setQuiz={setQuiz}
         setStartAge={setStartAge}
+        setStartName={setStartName}
+        setStartSex={setStartSex}
         startAge={startAge}
+        startName={startName}
+        startSex={startSex}
         statConfig={statConfig}
         totalLegacyBonuses={totalLegacyBonuses}
       />
@@ -1483,6 +1529,8 @@ export default function App() {
       </section>
 
       <div className="game-layout">
+        <FamilyStage family={game.family} currentAge={game.age} currentMonth={game.month} />
+
         <section className={`panel season-card season-${activeSeason.id}`}>
           <div className="section-heading calendar-heading">
             <div>

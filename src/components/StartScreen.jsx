@@ -1,12 +1,16 @@
 const familyInputs = [
-  { key: "grandparents", label: "Grandparents", placeholder: "Example: Nana Rose, Grandpa Lee", type: "textarea" },
+  { key: "grandparents", label: "Grandparents (up to 4)", placeholder: "Example: Nana Rose, Grandpa Lee", type: "textarea" },
   { key: "grandparentsAges", label: "Grandparents ages", placeholder: "Example: 72, 74", type: "textarea" },
-  { key: "greatGrandparents", label: "Great-grandparents (if any)", placeholder: "Optional names, separated by commas", type: "textarea" },
+  { key: "grandparentsSexes", label: "Grandparents sex", placeholder: "Example: female, male", type: "textarea" },
+  { key: "greatGrandparents", label: "Great-grandparents (up to 4)", placeholder: "Optional names, separated by commas", type: "textarea" },
   { key: "greatGrandparentsAges", label: "Great-grandparents ages", placeholder: "Optional ages, same order", type: "textarea" },
-  { key: "spouse", label: "Spouse / partner", placeholder: "Optional", type: "input" },
+  { key: "greatGrandparentsSexes", label: "Great-grandparents sex", placeholder: "Example: male, female", type: "textarea" },
+  { key: "spouse", label: "Spouse / partner name", placeholder: "Optional", type: "input" },
   { key: "spouseAge", label: "Spouse / partner age", placeholder: "Optional age", type: "input" },
-  { key: "kids", label: "Kids", placeholder: "Optional names, separated by commas", type: "textarea" },
-  { key: "kidsAges", label: "Kids ages", placeholder: "Optional ages, same order", type: "textarea" }
+  { key: "spouseSex", label: "Spouse / partner sex", placeholder: "Optional: male or female", type: "input" },
+  { key: "kids", label: "Kids (up to 6)", placeholder: "Optional names, separated by commas", type: "textarea" },
+  { key: "kidsAges", label: "Kids ages", placeholder: "Optional ages, same order", type: "textarea" },
+  { key: "kidsSexes", label: "Kids sex", placeholder: "Example: boy, girl, boy", type: "textarea" }
 ];
 
 const quizSections = [
@@ -48,7 +52,11 @@ export default function StartScreen({
   setFamilyInput,
   setQuiz,
   setStartAge,
+  setStartName,
+  setStartSex,
   startAge,
+  startName,
+  startSex,
   statConfig,
   totalLegacyBonuses
 }) {
@@ -89,7 +97,7 @@ export default function StartScreen({
             <div>
               <p className="eyebrow">Family first</p>
               <h2>Enter your family</h2>
-              <p>No premade characters. Start by naming the people in your life—grandparents, great-grandparents if you have them, spouse or partner, and kids.</p>
+              <p>No premade characters. Add optional names, ages, and sex markers so the family view can size everyone and grow kids by season.</p>
             </div>
           </div>
 
@@ -119,8 +127,16 @@ export default function StartScreen({
 
         <div className="form-grid">
           <label>
+            <span>Your name (optional)</span>
+            <input type="text" value={startName} onChange={(event) => setStartName(event.target.value)} placeholder="What should the story call you?" />
+          </label>
+          <label>
             <span>Starting age</span>
             <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} />
+          </label>
+          <label>
+            <span>Your sex</span>
+            <input type="text" value={startSex} onChange={(event) => setStartSex(event.target.value)} placeholder="Optional: male or female" />
           </label>
         </div>
 

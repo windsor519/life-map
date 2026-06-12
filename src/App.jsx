@@ -3,8 +3,9 @@ import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
+import FamilyPhoto from "./components/FamilyPhoto.jsx";
 import Setting from "./setting.js";
-import { calculateFamilyHeight, createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
+import { createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const SETTINGS_KEY = "life-map-settings";
@@ -673,47 +674,6 @@ const buildNextLegacy = (legacy, finalGame) => {
   };
 };
 
-
-function FamilyStage({ family, currentAge, currentMonth }) {
-  const members = getFamilyMembers(family, currentAge, currentMonth);
-
-  if (members.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="panel family-stage-card" aria-label="Family view">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Family view</p>
-          <h2>Your people grow with the seasons</h2>
-        </div>
-        <span>{members.length} shown</span>
-      </div>
-      <div className="family-stage" role="list">
-        {members.map((member) => (
-          <article className={`family-member family-${member.role} family-${member.sex}`} key={member.id} role="listitem">
-            <div
-              className="family-avatar"
-              style={{ "--avatar-height": `${calculateFamilyHeight(member.role, member.age, member.sex)}px` }}
-              aria-hidden="true"
-            >
-              <span className="family-head">{member.symbol}</span>
-              <span className="family-neck" />
-              <span className="family-torso" />
-              <span className="family-arm family-arm-left" />
-              <span className="family-arm family-arm-right" />
-              <span className="family-leg family-leg-left" />
-              <span className="family-leg family-leg-right" />
-            </div>
-            <strong>{member.name}</strong>
-            <small>{member.groupLabel} · {member.ageLabel}</small>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 const applyLegacyBonuses = (baseStats, legacy) => {
   const legacyBonuses = getTotalLegacyBonuses(legacy);
@@ -1546,7 +1506,7 @@ export default function App() {
       </section>
 
       <div className="game-layout">
-        <FamilyStage family={game.family} currentAge={game.age} currentMonth={game.month} />
+        <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} />
 
         <section className={`panel season-card season-${activeSeason.id}`}>
           <div className="section-heading calendar-heading">

@@ -1587,7 +1587,7 @@ export default function App() {
       </section>
 
       <div className="game-layout">
-        <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} />
+        <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} character={game.character} />
 
         <section className={`panel season-card season-${activeSeason.id}`}>
           <div className="section-heading calendar-heading">

@@ -3540,3 +3540,115 @@ textarea:focus {
     padding: 0.85rem 1.25rem 1.25rem;
   }
 }
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  min-width: 0;
+}
+
+.brand-lockup img {
+  width: clamp(2.4rem, 5vw, 3.7rem);
+  height: clamp(2.4rem, 5vw, 3.7rem);
+  flex: 0 0 auto;
+  border-radius: 0.9rem;
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.startup-brand {
+  margin-bottom: 1.1rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.startup-brand img {
+  width: 3rem;
+  height: 3rem;
+}
+
+.game-sidebar .family-stage {
+  min-height: auto;
+  max-height: none;
+  overflow: visible;
+  padding: 0.72rem;
+}
+
+.game-sidebar .family-tree {
+  min-width: 0;
+  gap: 0.55rem;
+}
+
+.game-sidebar .family-tree-row {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.46rem;
+  padding-bottom: 0.34rem;
+}
+
+.game-sidebar .family-tree-row::before,
+.game-sidebar .family-tree-row::after {
+  display: none;
+}
+
+.game-sidebar .family-tree-node {
+  min-width: 5.7rem;
+  max-width: 6.45rem;
+  flex: 1 1 5.7rem;
+  gap: 0.25rem;
+  padding: 0.42rem 0.34rem 0.45rem;
+  border-radius: 0.88rem;
+}
+
+.game-sidebar .family-portrait {
+  width: 3.65rem;
+  height: clamp(4.45rem, calc(var(--family-scale) * 3.05rem), 5.15rem);
+  border-radius: 1.55rem 1.55rem 0.72rem 0.72rem;
+}
+
+.game-sidebar .family-bust {
+  width: calc(var(--family-scale) * 2.35rem);
+  min-width: 2.35rem;
+  max-width: 3.15rem;
+  height: calc(var(--family-scale) * 3.72rem);
+  min-height: 3.72rem;
+  max-height: 4.75rem;
+  margin-bottom: -0.7rem;
+}
+
+.game-sidebar .family-sex-marker {
+  top: 0.36rem;
+  right: 0.36rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  font-size: 0.58rem;
+}
+
+.game-sidebar .family-member-badge {
+  min-height: 1rem;
+  padding: 0.06rem 0.32rem;
+  font-size: 0.54rem;
+}
+
+.game-sidebar .family-tree-node strong,
+.game-sidebar .family-member strong {
+  max-width: 5.7rem;
+  font-size: 0.68rem;
+}
+
+.game-sidebar .family-tree-node small,
+.game-sidebar .family-member small {
+  max-width: 5.7rem;
+  font-size: 0.58rem;
+  line-height: 1.15;
+}
+
+@media (max-width: 720px) {
+  .brand-lockup img {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}

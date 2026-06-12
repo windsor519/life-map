@@ -709,7 +709,7 @@ textarea:focus {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
 }
@@ -720,9 +720,69 @@ textarea:focus {
 }
 
 .game-sidebar {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 55;
+  width: min(28rem, calc(100vw - 2rem));
   align-self: start;
-  position: sticky;
-  top: 1rem;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1.6rem;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(125, 211, 252, 0.18), transparent 16rem),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(7, 12, 25, 0.94));
+  box-shadow: -24px 0 90px rgba(0, 0, 0, 0.48);
+  padding: 1rem;
+  pointer-events: none;
+  transform: translateX(calc(100% + 2rem));
+  visibility: hidden;
+  transition: transform 240ms ease, visibility 240ms ease;
+  backdrop-filter: blur(22px) saturate(1.15);
+}
+
+.game-sidebar.open {
+  pointer-events: auto;
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  border: 0;
+  border-radius: 0;
+  background: rgba(3, 7, 18, 0.55);
+  box-shadow: none;
+  padding: 0;
+  cursor: default;
+}
+
+.sidebar-backdrop:hover,
+.sidebar-backdrop:focus-visible {
+  background: rgba(3, 7, 18, 0.62);
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  letter-spacing: -0.04em;
+}
+
+.sidebar-close {
+  padding: 0.65rem 0.9rem;
 }
 
 .game-sidebar .family-stage-card {
@@ -1791,7 +1851,7 @@ textarea:focus {
 }
 
 .game-layout {
-  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .side-stack {
@@ -1804,7 +1864,9 @@ textarea:focus {
   }
 
   .game-sidebar {
-    position: static;
+    right: max(0.75rem, env(safe-area-inset-right));
+    left: max(0.75rem, env(safe-area-inset-left));
+    width: auto;
   }
 }
 

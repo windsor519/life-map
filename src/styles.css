@@ -2328,6 +2328,66 @@ textarea:focus {
   text-transform: uppercase;
 }
 
+
+.starting-stats-panel {
+  display: grid;
+  gap: 0.9rem;
+  border: 1px solid rgba(251, 113, 133, 0.22);
+  border-radius: 1.3rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(251, 113, 133, 0.16), transparent 12rem),
+    rgba(255, 255, 255, 0.07);
+  padding: 1rem;
+}
+
+.starting-stats-panel > p {
+  margin: 0;
+  color: #c8d3e9;
+  line-height: 1.55;
+}
+
+.starting-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.starting-stat-slider {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem;
+  background: rgba(2, 6, 23, 0.24);
+  padding: 0.9rem;
+}
+
+.starting-stat-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.starting-stat-heading strong {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.starting-stat-slider input[type="range"] {
+  width: 100%;
+  accent-color: var(--stat-accent, #7dd3fc);
+}
+
+.starting-stat-slider small {
+  color: #b9c6df;
+  line-height: 1.45;
+}
+
+.starting-stat-slider.stat-wellbeing { --stat-accent: #34d399; }
+.starting-stat-slider.stat-marriage { --stat-accent: #fb7185; }
+.starting-stat-slider.stat-children { --stat-accent: #22d3ee; }
+.starting-stat-slider.stat-wallet { --stat-accent: #f59e0b; }
+
 .custom-events-panel {
   display: grid;
   gap: 0.9rem;
@@ -3103,4 +3163,10 @@ textarea:focus {
 .family-member small {
   color: #bfdbfe;
   font-size: 0.72rem;
+}
+
+@media (max-width: 720px) {
+  .starting-stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

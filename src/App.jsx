@@ -4,7 +4,7 @@ import unexpectedEventRecords from "./data/unexpected_events.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
 import Setting from "./setting.js";
-import { calculateFamilyHeight, countFamilyNames, createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
+import { calculateFamilyHeight, createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const SETTINGS_KEY = "life-map-settings";
@@ -78,8 +78,8 @@ const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[
 
 const statConfig = {
   wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
-  marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Connection" },
-  children: { label: "Family bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Home base" },
+  marriage: { label: "Spousal relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / partner" },
+  children: { label: "Children bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Kids / parenting" },
   wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" }
 };
 
@@ -668,6 +668,13 @@ const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
   }));
 
 
+const defaultStartingStats = {
+  wellbeing: 70,
+  marriage: 60,
+  children: 35,
+  wallet: 55
+};
+
 const createDefaultGame = () => ({
   age: 38,
   wellbeing: 80,
@@ -733,11 +740,13 @@ export default function App() {
   const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
   const [startName, setStartName] = useState(game.character?.name ?? "");
   const [startSex, setStartSex] = useState(game.character?.sex ?? "");
-  const [quiz, setQuiz] = useState({
-    exercise: "sometimes",
-    stableJob: "no",
-    social: "weak"
-  });
+  const [startingStats, setStartingStats] = useState(() => ({
+    ...defaultStartingStats,
+    wellbeing: game.initialized ? game.wellbeing : defaultStartingStats.wellbeing,
+    marriage: game.initialized ? game.marriage : defaultStartingStats.marriage,
+    children: game.initialized ? game.children : defaultStartingStats.children,
+    wallet: game.initialized ? game.wallet : defaultStartingStats.wallet
+  }));
   const [familyInput, setFamilyInput] = useState(() => normalizeFamily(game.family));
   const [customEventsText, setCustomEventsText] = useState("");
   const [customEventError, setCustomEventError] = useState("");
@@ -873,49 +882,12 @@ export default function App() {
     }
 
     const family = { ...normalizeFamily(familyInput), startAge: age, startMonth: 1 };
-    const kidsCount = countFamilyNames(family.kids);
-    const hasSpouse = countFamilyNames(family.spouse) > 0;
-    const extendedFamilyCount = countFamilyNames(family.grandparents) + countFamilyNames(family.greatGrandparents);
-
-    let wellbeing = 70;
-    let marriage = hasSpouse ? 60 : 40;
-    let children = kidsCount > 0 ? 35 + kidsCount * 12 : 10;
-    let wallet = 55;
-
-    if (quiz.exercise === "regularly") {
-      wellbeing += 12;
-    } else if (quiz.exercise === "never") {
-      wellbeing -= 12;
-    }
-
-    if (quiz.stableJob === "yes") {
-      wallet += 20;
-      marriage += 5;
-    } else {
-      wallet -= 12;
-      wellbeing -= 6;
-    }
-
-    if (quiz.social === "strong") {
-      marriage += 30;
-      children += 20;
-      wellbeing += 5;
-    } else {
-      marriage -= 10;
-      wellbeing -= 5;
-    }
-
-    if (hasSpouse) marriage += 10;
-    if (kidsCount > 0) wellbeing -= Math.min(8, kidsCount * 2);
-    if (extendedFamilyCount > 0) children += Math.min(12, extendedFamilyCount * 2);
-
-    if (age >= 25 && age <= 40) marriage += 10;
 
     const baseStats = applyLegacyBonuses({
-      wellbeing: clamp(wellbeing),
-      marriage: clamp(marriage),
-      children: clamp(children),
-      wallet: clamp(wallet)
+      wellbeing: clamp(startingStats.wellbeing),
+      marriage: clamp(startingStats.marriage),
+      children: clamp(startingStats.children),
+      wallet: clamp(startingStats.wallet)
     }, game.legacy);
 
     const newGame = {
@@ -959,7 +931,7 @@ export default function App() {
     setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
-    setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
+    setStartingStats({ ...defaultStartingStats });
   };
 
   const prepareNewGamePlus = () => {
@@ -971,7 +943,7 @@ export default function App() {
     setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
-    setQuiz({ exercise: "sometimes", stableJob: "no", social: "weak" });
+    setStartingStats({ ...defaultStartingStats });
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
@@ -1438,15 +1410,15 @@ export default function App() {
         onOpenSettings={() => setSettingsOpen(true)}
         onResetGame={resetGame}
         onStartGame={startNewGame}
-        quiz={quiz}
         setFamilyInput={setFamilyInput}
-        setQuiz={setQuiz}
+        setStartingStats={setStartingStats}
         setStartAge={setStartAge}
         setStartName={setStartName}
         setStartSex={setStartSex}
         startAge={startAge}
         startName={startName}
         startSex={startSex}
+        startingStats={startingStats}
         statConfig={statConfig}
         totalLegacyBonuses={totalLegacyBonuses}
       />

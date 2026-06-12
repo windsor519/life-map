@@ -13,34 +13,12 @@ const familyInputs = [
   { key: "kidsSexes", label: "Kids sex", placeholder: "Example: boy, girl, boy", type: "textarea" }
 ];
 
-const quizSections = [
-  {
-    legend: "How often do you exercise?",
-    name: "exercise",
-    options: [
-      { value: "regularly", label: "Regularly" },
-      { value: "sometimes", label: "Sometimes" },
-      { value: "never", label: "Rarely / Never" }
-    ]
-  },
-  {
-    legend: "Do you have a stable job?",
-    name: "stableJob",
-    options: [
-      { value: "yes", label: "Yes" },
-      { value: "no", label: "No" }
-    ]
-  },
-  {
-    legend: "Social circle",
-    name: "social",
-    options: [
-      { value: "strong", label: "Strong" },
-      { value: "weak", label: "Weak" }
-    ]
-  }
+const startingStatSliders = [
+  { key: "wellbeing", description: "Your starting physical health, emotional margin, and day-to-day calm." },
+  { key: "marriage", description: "Your starting spouse / partner connection, not general friendships." },
+  { key: "children", description: "Your starting bond with your children and parenting home base." },
+  { key: "wallet", description: "Your starting financial cushion and resource stability." }
 ];
-
 export default function StartScreen({
   familyInput,
   formatSummaryDelta,
@@ -48,24 +26,20 @@ export default function StartScreen({
   onOpenSettings,
   onResetGame,
   onStartGame,
-  quiz,
   setFamilyInput,
-  setQuiz,
+  setStartingStats,
   setStartAge,
   setStartName,
   setStartSex,
   startAge,
   startName,
   startSex,
+  startingStats,
   statConfig,
   totalLegacyBonuses
 }) {
   const updateFamilyField = (key, value) => {
     setFamilyInput((family) => ({ ...family, [key]: value }));
-  };
-
-  const updateQuiz = (name, value) => {
-    setQuiz((currentQuiz) => ({ ...currentQuiz, [name]: value }));
   };
 
   const legacyPreviewStats = [
@@ -152,21 +126,40 @@ export default function StartScreen({
           <button className="secondary" type="button" onClick={onOpenSettings}>⚙️ Open Settings</button>
         </section>
 
-        {quizSections.map((section) => (
-          <fieldset key={section.name}>
-            <legend>{section.legend}</legend>
-            {section.options.map((option) => (
-              <label key={option.value}>
-                <input
-                  type="radio"
-                  name={section.name}
-                  checked={quiz[section.name] === option.value}
-                  onChange={() => updateQuiz(section.name, option.value)}
-                /> {option.label}
-              </label>
-            ))}
-          </fieldset>
-        ))}
+        <section className="starting-stats-panel" aria-label="Starting stats">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Starting balance</p>
+              <h2>Set your starting stats</h2>
+            </div>
+            <span>Sliders</span>
+          </div>
+          <p>Skip the intake questions and choose the starting point directly. Relationship means spouse / partner connection; family bond means your children.</p>
+          <div className="starting-stats-grid">
+            {startingStatSliders.map((stat) => {
+              const config = statConfig[stat.key];
+              const value = startingStats[stat.key];
+
+              return (
+                <label key={stat.key} className={`starting-stat-slider stat-${stat.key}`}>
+                  <span className="starting-stat-heading">
+                    <span>{config.icon} {config.label}</span>
+                    <strong>{value}</strong>
+                  </span>
+                  <input
+                    type="range"
+                    min="0"
+                    max={config.max}
+                    value={value}
+                    onChange={(event) => setStartingStats((stats) => ({ ...stats, [stat.key]: Number(event.target.value) }))}
+                    aria-label={`Starting ${config.label}`}
+                  />
+                  <small>{stat.description}</small>
+                </label>
+              );
+            })}
+          </div>
+        </section>
 
         {legacy.runs > 0 ? (
           <section className="legacy-preview" aria-label="New Game Plus bonuses">

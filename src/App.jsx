@@ -46,40 +46,18 @@ const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => sea
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
 const statConfig = {
-  health: { label: "Health", icon: "💪", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Vitality" },
+  wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
   marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Connection" },
   children: { label: "Family bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Home base" },
-  stress: { label: "Stress", icon: "⚡", max: 100, tone: "bad", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.36)", signal: "Pressure" }
+  wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" }
 };
 
 const summaryStatKeys = Object.keys(statConfig);
-const displayStatConfig = {
-  wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
-  marriage: statConfig.marriage,
-  children: statConfig.children
-};
-const displayStatKeys = Object.keys(displayStatConfig);
-const getWellbeingValue = (game) => clamp(((game.health ?? 0) + (100 - (game.stress ?? 0))) / 2);
-const getWellbeingDelta = (deltas) => Math.round(((deltas.health ?? 0) - (deltas.stress ?? 0)) / 2);
-const getDisplayStatValue = (game, key) => key === "wellbeing" ? getWellbeingValue(game) : game[key];
-const getDisplayDeltaValue = (deltas, key) => key === "wellbeing" ? getWellbeingDelta(deltas) : deltas[key] ?? 0;
-const getDisplayEffectEntries = (effects) => {
-  const sanitizedEffects = sanitizeEffects(effects);
-  const entries = [];
-  const wellbeingDelta = getWellbeingDelta(sanitizedEffects);
-
-  if ("health" in sanitizedEffects || "stress" in sanitizedEffects) {
-    entries.push(["wellbeing", wellbeingDelta]);
-  }
-
-  ["marriage", "children"].forEach((key) => {
-    if (key in sanitizedEffects) {
-      entries.push([key, sanitizedEffects[key]]);
-    }
-  });
-
-  return entries;
-};
+const displayStatConfig = statConfig;
+const displayStatKeys = summaryStatKeys;
+const getDisplayStatValue = (game, key) => game[key] ?? 0;
+const getDisplayDeltaValue = (deltas, key) => deltas[key] ?? 0;
+const getDisplayEffectEntries = (effects) => Object.entries(sanitizeEffects(effects));
 const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
 
@@ -104,11 +82,24 @@ const createDefaultLegacy = () => ({
 
 
 const allowedEffectKeys = new Set(summaryStatKeys);
-const sanitizeEffects = (effects) => Object.fromEntries(
-  Object.entries(effects ?? {})
-    .filter(([key, value]) => allowedEffectKeys.has(key) && Number.isFinite(Number(value)))
-    .map(([key, value]) => [key, Math.round(Number(value))])
-);
+const normalizeEffectKey = (key) => ({ money: "wallet", welling: "wellbeing", health: "wellbeing", stress: "wellbeing" })[key] ?? key;
+const normalizeEffectValue = (key, value) => key === "stress" ? -value : value;
+const sanitizeEffects = (effects) => {
+  const sanitizedEffects = {};
+
+  Object.entries(effects ?? {}).forEach(([rawKey, rawValue]) => {
+    const numericValue = Number(rawValue);
+    const key = normalizeEffectKey(rawKey);
+
+    if (!allowedEffectKeys.has(key) || !Number.isFinite(numericValue)) {
+      return;
+    }
+
+    sanitizedEffects[key] = (sanitizedEffects[key] ?? 0) + Math.round(normalizeEffectValue(rawKey, numericValue));
+  });
+
+  return sanitizedEffects;
+};
 const normalizeCustomEvents = (input) => {
   if (!input.trim()) {
     return [];
@@ -159,6 +150,11 @@ const normalizeLegacy = (legacy) => {
   });
 
   summaryStatKeys.forEach((key) => {
+    if (key === "wellbeing" && legacy?.carriedStats?.wellbeing === undefined) {
+      carriedStats[key] = Math.round(((toFiniteNumber(legacy?.carriedStats?.health) - toFiniteNumber(legacy?.carriedStats?.stress)) / 2));
+      return;
+    }
+
     carriedStats[key] = Math.round(toFiniteNumber(legacy?.carriedStats?.[key]));
   });
 
@@ -246,14 +242,57 @@ const seededRandom = (...values) => {
   return ((hash >>> 0) % 10000) / 10000;
 };
 const getRandomEventId = (excludeId, eventList = events) => {
+  if (eventList.length === 0) {
+    return null;
+  }
+
   const availableEvents = eventList.filter((event) => event.id !== excludeId);
   const pool = availableEvents.length > 0 ? availableEvents : eventList;
-  return pool[Math.floor(Math.random() * pool.length)].id;
+  return pool[Math.floor(Math.random() * pool.length)]?.id ?? null;
 };
 
 
-const excludedMoneyEventIds = new Set(["grocery-budget", "side-hustle", "investment-choice", "scholarship-deadline", "school-fundraiser"]);
-const isMoneyFreeEvent = (event) => !excludedMoneyEventIds.has(event.id) && String(event.category ?? "").toLowerCase() !== "money";
+const conditionComparators = {
+  gt: (current, target) => current > target,
+  gte: (current, target) => current >= target,
+  lt: (current, target) => current < target,
+  lte: (current, target) => current <= target,
+  eq: (current, target) => current === target,
+  neq: (current, target) => current !== target
+};
+const getConditionStatValue = (gameState, stat) => gameState?.[normalizeEffectKey(stat)] ?? 0;
+const isSingleConditionMet = (condition, gameState) => {
+  const stat = normalizeEffectKey(condition?.stat);
+  const comparator = conditionComparators[condition?.op];
+  const targetValue = Number(condition?.value);
+
+  if (!allowedEffectKeys.has(stat) || !comparator || !Number.isFinite(targetValue)) {
+    return false;
+  }
+
+  return comparator(getConditionStatValue(gameState, stat), targetValue);
+};
+const isEventConditionMet = (event, gameState) => {
+  const condition = event?.condition;
+
+  if (!condition) {
+    return true;
+  }
+
+  if (Array.isArray(condition.conditions)) {
+    const conditions = condition.conditions;
+
+    if (conditions.length === 0) {
+      return true;
+    }
+
+    return condition.conditionOp === "OR"
+      ? conditions.some((nestedCondition) => isSingleConditionMet(nestedCondition, gameState))
+      : conditions.every((nestedCondition) => isSingleConditionMet(nestedCondition, gameState));
+  }
+
+  return isSingleConditionMet(condition, gameState);
+};
 
 const getAgePriorityTags = (age) => {
   if (age >= 35 && age <= 45) {
@@ -262,9 +301,9 @@ const getAgePriorityTags = (age) => {
   return ["general"];
 };
 
-const getAgeRelevantEvents = (age, eventList = events) => {
+const getAgeRelevantEvents = (age, eventList = events, gameState = null) => {
   const priorityTags = getAgePriorityTags(age);
-  const scheduledEvents = eventList.filter((event) => !event.surprise && isMoneyFreeEvent(event));
+  const scheduledEvents = eventList.filter((event) => !event.surprise && isEventConditionMet(event, gameState));
   const relevantEvents = scheduledEvents.filter((event) => {
     const tags = event.tags ?? ["general"];
     return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
@@ -316,13 +355,16 @@ const getNextSeasonState = (month, age) => {
 
 const RANDOM_EVENT_CHANCE = 0.067;
 const UNEXPECTED_EVENT_CHANCE = 0.093;
-const surpriseEvents = unexpectedEventRecords.filter(isMoneyFreeEvent).map((event) => ({
+const surpriseEvents = unexpectedEventRecords.map((event) => ({
   ...event,
+  effects: sanitizeEffects(event.effects),
   severity: getSeverity(event),
   visual: { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Unexpected" }
 }));
-const getUnexpectedEventForMonth = (eventSeed, month, year) => {
-  if (surpriseEvents.length === 0) {
+const getUnexpectedEventForMonth = (eventSeed, month, year, gameState) => {
+  const eligibleSurpriseEvents = surpriseEvents.filter((event) => isEventConditionMet(event, gameState));
+
+  if (eligibleSurpriseEvents.length === 0) {
     return null;
   }
 
@@ -331,8 +373,8 @@ const getUnexpectedEventForMonth = (eventSeed, month, year) => {
     return null;
   }
 
-  const eventIndex = Math.floor(seededRandom(eventSeed, month, year, "unexpected-event-choice") * surpriseEvents.length);
-  return surpriseEvents[Math.min(eventIndex, surpriseEvents.length - 1)];
+  const eventIndex = Math.floor(seededRandom(eventSeed, month, year, "unexpected-event-choice") * eligibleSurpriseEvents.length);
+  return eligibleSurpriseEvents[Math.min(eventIndex, eligibleSurpriseEvents.length - 1)];
 };
 const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => ({
   ...event,
@@ -341,14 +383,14 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getMonthSchedule = (month, year, eventSeed, age, eventList = events) => {
-  const eventPool = getAgeRelevantEvents(age, eventList);
+const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameState = null) => {
+  const eventPool = getAgeRelevantEvents(age, eventList, gameState);
   const daysInMonth = getMonthLength(month, year);
 
   return Array.from({ length: daysInMonth }, (_, index) => {
     const date = new Date(year, month - 1, index + 1);
     const dayLabel = `${monthNames[month - 1]} ${index + 1}`;
-    const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < RANDOM_EVENT_CHANCE;
+    const hasEvent = eventPool.length > 0 && seededRandom(eventSeed, month, year, index, "has-event") < RANDOM_EVENT_CHANCE;
     const decisions = hasEvent
       ? [getDecoratedEvent(chooseAgeRelevantEvent(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
       : [];
@@ -404,17 +446,19 @@ const summaryCopy = {
 };
 
 const getSummaryTone = (deltas) => {
-  if (deltas.stress >= 12) return "chaos";
-  if (deltas.health >= 8) return "glow";
+  if (deltas.wellbeing <= -12) return "chaos";
+  if (deltas.wellbeing >= 8) return "glow";
+  if (deltas.wallet >= 8) return "legend";
   if (deltas.marriage >= 8) return "romance";
   if (deltas.children >= 8) return "family";
-  if (summaryStatKeys.every((key) => deltas[key] >= 0 || key === "stress") && deltas.stress <= 0) return "legend";
+  if (summaryStatKeys.every((key) => deltas[key] >= 0)) return "legend";
   return "survived";
 };
 
 const getLifeWeather = (deltas) => {
-  if (deltas.stress >= 12) return "Thunderstorms with a chance of overthinking ⚡";
-  if (deltas.health >= 8) return "Sunny with gains and suspiciously clean sneakers 💪";
+  if (deltas.wellbeing <= -12) return "Thunderstorms with a chance of overthinking ⚡";
+  if (deltas.wellbeing >= 8) return "Sunny with gains and suspiciously clean sneakers 💪";
+  if (deltas.wallet >= 8) return "Clear skies with a padded-wallet breeze 👛";
   if (deltas.marriage >= 8) return "Warm rom-com breeze from the relationship department 💞";
   if (deltas.children >= 8) return "High-pressure family hugs with snack gusts 🌱";
   return "Partly chaotic, clearing by next Monday 😵‍💫";
@@ -445,10 +489,10 @@ const formatSummaryDelta = (_key, value) => {
 };
 
 const getGameOverReason = (game) => {
-  if (game.health <= 0) return "Your health hit zero. The run collapsed into a cautionary smoothie ad.";
+  if (game.wellbeing <= 0) return "Wellbeing hit zero. The run collapsed into a cautionary smoothie ad.";
   if (game.marriage <= 0) return "The relationship meter bottomed out. The couch has entered witness protection.";
   if (game.children <= 0) return "Family bond hit zero. The snack-based legacy needs a reboot.";
-  if (game.stress >= 100) return "Stress hit 100. The calendar became sentient and demanded a rematch.";
+  if (game.wallet <= 0) return "Wallet hit zero. The budget goblin demanded a rematch.";
   return null;
 };
 
@@ -456,10 +500,10 @@ const getLegacySkillBonuses = (legacy) => {
   const skills = legacy?.skills ?? createEmptySkills();
 
   return {
-    health: Math.min(20, Math.floor((skills.wellness ?? 0) / 2)),
+    wellbeing: Math.min(20, Math.floor(((skills.wellness ?? 0) + (skills.grit ?? 0)) / 3)),
     marriage: Math.min(20, Math.floor((skills.bonds ?? 0) / 2)),
     children: Math.min(20, Math.floor((skills.parenting ?? 0) / 2)),
-    stress: -Math.min(20, Math.floor((skills.grit ?? 0) / 2))
+    wallet: 0
   };
 };
 
@@ -475,14 +519,14 @@ const buildNextLegacy = (legacy, finalGame) => {
   const runs = currentLegacy.runs + 1;
   const carryRate = getCarryRate(runs);
   const carriedStats = {
-    health: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate)),
+    wellbeing: Math.max(0, Math.round((finalGame.wellbeing ?? 0) * carryRate)),
     marriage: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate)),
     children: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate)),
-    stress: -Math.max(0, Math.round((100 - (finalGame.stress ?? 100)) * carryRate * 0.35))
+    wallet: Math.max(0, Math.round((finalGame.wallet ?? 0) * carryRate))
   };
   const earnedSkills = {
-    grit: Math.max(1, Math.round((100 - Math.min(finalGame.stress ?? 100, 100)) * carryRate * 0.2)),
-    wellness: Math.max(0, Math.round((finalGame.health ?? 0) * carryRate * 0.18)),
+    grit: Math.max(1, Math.round((finalGame.wellbeing ?? 0) * carryRate * 0.1)),
+    wellness: Math.max(0, Math.round((finalGame.wellbeing ?? 0) * carryRate * 0.18)),
     bonds: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate * 0.18)),
     parenting: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate * 0.18))
   };
@@ -507,18 +551,12 @@ const buildNextLegacy = (legacy, finalGame) => {
 const applyLegacyBonuses = (baseStats, legacy) => {
   const legacyBonuses = getTotalLegacyBonuses(legacy);
 
-  return {
-    ...baseStats,
-    health: clamp(baseStats.health + (legacyBonuses.health ?? 0)),
-    marriage: clamp(baseStats.marriage + (legacyBonuses.marriage ?? 0)),
-    children: clamp(baseStats.children + (legacyBonuses.children ?? 0)),
-    stress: clamp(baseStats.stress + (legacyBonuses.stress ?? 0))
-  };
+  return Object.fromEntries(summaryStatKeys.map((key) => [key, clamp((baseStats[key] ?? 0) + (legacyBonuses[key] ?? 0))]));
 };
 
 const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
   Object.fromEntries(Object.entries(sanitizeEffects(effects)).map(([key, value]) => {
-    const isBad = key === "stress" ? value > 0 : value < 0;
+    const isBad = value < 0;
     const multiplier = isBad ? difficulty : Math.max(0.5, 1 - (difficulty - 1) * 0.35);
     return [key, Math.round(value * multiplier)];
   }));
@@ -526,15 +564,15 @@ const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
 
 const createDefaultGame = () => ({
   age: 38,
-  health: 80,
+  wellbeing: 80,
   marriage: 75,
   children: 35,
-  stress: 30,
+  wallet: 60,
   month: 1,
   completedDecisions: [],
   selectedChoices: {},
   memories: [],
-  currentEventId: getRandomEventId(undefined, events.filter(isMoneyFreeEvent)),
+  currentEventId: getRandomEventId(undefined, events),
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
@@ -551,10 +589,10 @@ const normalizeGame = (game) => ({
   ...createDefaultGame(),
   ...game,
   age: clamp(Number(game?.age ?? 25), 12, 100),
-  health: clamp(Number(game?.health ?? 70)),
+  wellbeing: clamp(Number(game?.wellbeing ?? ((Number(game?.health ?? 70) + (100 - Number(game?.stress ?? 30))) / 2))),
   marriage: clamp(Number(game?.marriage ?? 40)),
   children: clamp(Number(game?.children ?? 0)),
-  stress: clamp(Number(game?.stress ?? 30)),
+  wallet: clamp(Number(game?.wallet ?? 60)),
   month: clamp(Number(game?.month ?? 1), 1, 12),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
@@ -717,46 +755,45 @@ export default function App() {
     const hasSpouse = countFamilyNames(family.spouse) > 0;
     const extendedFamilyCount = countFamilyNames(family.grandparents) + countFamilyNames(family.greatGrandparents);
 
-    let health = 70;
+    let wellbeing = 70;
     let marriage = hasSpouse ? 60 : 40;
     let children = kidsCount > 0 ? 35 + kidsCount * 12 : 10;
-    let stress = 30;
+    let wallet = 55;
 
     if (quiz.exercise === "regularly") {
-      health += 10;
-      stress -= 5;
+      wellbeing += 12;
     } else if (quiz.exercise === "never") {
-      health -= 10;
-      stress += 5;
+      wellbeing -= 12;
     }
 
     if (quiz.stableJob === "yes") {
-      stress -= 10;
+      wallet += 20;
       marriage += 5;
     } else {
-      stress += 15;
+      wallet -= 12;
+      wellbeing -= 6;
     }
 
     if (quiz.social === "strong") {
       marriage += 30;
       children += 20;
-      stress -= 5;
+      wellbeing += 5;
     } else {
       marriage -= 10;
-      stress += 5;
+      wellbeing -= 5;
     }
 
     if (hasSpouse) marriage += 10;
-    if (kidsCount > 0) stress += Math.min(12, kidsCount * 3);
+    if (kidsCount > 0) wellbeing -= Math.min(8, kidsCount * 2);
     if (extendedFamilyCount > 0) children += Math.min(12, extendedFamilyCount * 2);
 
     if (age >= 25 && age <= 40) marriage += 10;
 
     const baseStats = applyLegacyBonuses({
-      health: clamp(health),
+      wellbeing: clamp(wellbeing),
       marriage: clamp(marriage),
       children: clamp(children),
-      stress: clamp(stress)
+      wallet: clamp(wallet)
     }, game.legacy);
 
     const newGame = {
@@ -769,7 +806,7 @@ export default function App() {
       memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
       family,
       customEvents,
-      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter(isMoneyFreeEvent)),
+      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventConditionMet(eventItem, baseStats))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
       gameOver: false,
@@ -816,8 +853,8 @@ export default function App() {
   const playableEvents = useMemo(() => [...events, ...(Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents]);
   const activeSeason = getSeasonForMonth(game.month);
   const seasonSchedule = useMemo(
-    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents)),
-    [activeSeason, game.eventSeed, game.age, currentCalendarYear, playableEvents]
+    () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game)),
+    [activeSeason, game, currentCalendarYear, playableEvents]
   );
   const seasonDecisions = useMemo(
     () => seasonSchedule.flatMap((day) => day.decisions.map((decision, decisionIndex) => ({ ...decision, day, decisionIndex }))),
@@ -860,12 +897,12 @@ export default function App() {
     const talentId = baseState.character?.talent?.id;
     const nextEffects = { ...effects };
 
-    if (talentId === "stress-armor" && nextEffects.stress > 0) {
-      nextEffects.stress = Math.ceil(nextEffects.stress * 0.75);
+    if (talentId === "stress-armor" && nextEffects.wellbeing < 0) {
+      nextEffects.wellbeing = Math.ceil(nextEffects.wellbeing * 0.75);
     }
 
-    if (talentId === "iron-routine" && nextEffects.health > 0) {
-      nextEffects.health += 2;
+    if (talentId === "iron-routine" && nextEffects.wellbeing > 0) {
+      nextEffects.wellbeing += 2;
     }
 
     if (talentId === "npc-whisperer" && nextEffects.marriage > 0) {
@@ -895,10 +932,7 @@ export default function App() {
 
     return {
       ...next,
-      health: clamp(next.health),
-      marriage: clamp(next.marriage),
-      children: clamp(next.children),
-      stress: clamp(next.stress)
+      ...Object.fromEntries(summaryStatKeys.map((key) => [key, clamp(next[key])]))
     };
   };
 
@@ -980,7 +1014,7 @@ export default function App() {
 
     setActiveDecisionContext(null);
 
-    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents));
+    const schedule = activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game));
     let nextState = game;
     const steps = [];
     const simulatedMemories = [];
@@ -1029,7 +1063,7 @@ export default function App() {
       }
     });
 
-    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear);
+    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState);
     let unexpectedStep = null;
 
     if (unexpectedEvent) {
@@ -1184,7 +1218,7 @@ export default function App() {
 
   const renderSummaryDelta = (key, value) => {
     const config = displayStatConfig[key] ?? statConfig[key];
-    const isGoodChange = key === "stress" ? value <= 0 : value >= 0;
+    const isGoodChange = value >= 0;
 
     return (
       <span className={`summary-delta ${isGoodChange ? "positive" : "negative"}`} key={key}>
@@ -1489,8 +1523,8 @@ export default function App() {
           >
             <div className="summary-confetti" aria-hidden="true">
               <span>{activeMonthlySummary.mood}</span>
-              <span>⚡</span>
-              <span>💪</span>
+              <span>🌿</span>
+              <span>👛</span>
             </div>
             <div className="section-heading summary-heading">
               <div>

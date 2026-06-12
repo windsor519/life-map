@@ -7,6 +7,135 @@ const startingStatSliders = [
   { key: "wallet", description: "Your starting financial cushion and resource stability." }
 ];
 
+// 🎨 Clean, localized inline styles to skip writing external CSS
+const styles = {
+  sectionGroup: {
+    background: "rgba(255, 255, 255, 0.04)",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    marginBottom: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.75rem"
+  },
+  meta: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  title: {
+    margin: 0,
+    fontSize: "1.1rem",
+    fontWeight: "600"
+  },
+  badge: {
+    fontSize: "0.85rem",
+    opacity: 0.6,
+    fontWeight: "normal"
+  },
+  rowContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem"
+  },
+  inlineRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    width: "100%"
+  },
+  nameInput: {
+    flex: "2 1 0%"
+  },
+  ageInput: {
+    width: "75px",
+    flexShrink: 0
+  },
+  selectInput: {
+    flex: "1 1 0%",
+    minWidth: "90px"
+  },
+  removeBtn: {
+    background: "transparent",
+    color: "#ff6b6b",
+    border: "none",
+    fontSize: "1.1rem",
+    cursor: "pointer",
+    padding: "4px 8px",
+    lineHeight: 1
+  },
+  addBtn: {
+    alignSelf: "flex-start",
+    padding: "0.4rem 0.8rem",
+    fontSize: "0.85rem",
+    marginTop: "0.25rem",
+    cursor: "pointer"
+  }
+};
+
+const DynamicFamilySection = ({ label, groupKey, maxCount, description, members = [], onUpdate, onAdd, onRemove }) => {
+  return (
+    <div style={styles.sectionGroup}>
+      <div style={styles.meta}>
+        <h3 style={styles.title}>
+          {label} <span style={styles.badge}>({members.length}/{maxCount})</span>
+        </h3>
+      </div>
+      {description && <p style={{ fontSize: "0.85rem", margin: "0 0 0.25rem 0", opacity: 0.7 }}>{description}</p>}
+      
+      <div style={styles.rowContainer}>
+        {members.map((member, index) => (
+          <div key={index} style={styles.inlineRow}>
+            <input
+              type="text"
+              placeholder="Name"
+              style={styles.nameInput}
+              value={member.name || ""}
+              onChange={(e) => onUpdate(groupKey, index, "name", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Age"
+              style={styles.ageInput}
+              value={member.age || ""}
+              onChange={(e) => onUpdate(groupKey, index, "age", e.target.value)}
+            />
+            <select
+              style={styles.selectInput}
+              value={member.sex || "female"}
+              onChange={(e) => onUpdate(groupKey, index, "sex", e.target.value)}
+            >
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+            <button 
+              type="button" 
+              style={styles.removeBtn}
+              onClick={() => onRemove(groupKey, index)}
+              aria-label="Remove member"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {members.length < maxCount && (
+        <button 
+          type="button" 
+          className="secondary"
+          style={styles.addBtn}
+          onClick={() => onAdd(groupKey, maxCount)}
+        >
+          + Add {label.split(" ")[0].replace(/s$/, '')}
+        </button>
+      )}
+    </div>
+  );
+};
+
 export default function StartScreen({
   familyInput = { grandparents: [], greatGrandparents: [], spouse: { name: '', age: '', sex: '' }, kids: [] },
   onOpenSettings,
@@ -23,7 +152,6 @@ export default function StartScreen({
   statConfig
 }) {
 
-  // Helper to update specific family lists (kids, grandparents, etc.)
   const updateFamilyMember = (groupKey, index, field, value) => {
     setFamilyInput((prev) => {
       const updatedGroup = [...(prev[groupKey] || [])];
@@ -55,65 +183,6 @@ export default function StartScreen({
       ...prev,
       spouse: { ...prev.spouse, [field]: value }
     }));
-  };
-
-  // Helper component to render dynamic rows beautifully
-  const DynamicFamilySection = ({ label, groupKey, maxCount, description }) => {
-    const members = familyInput[groupKey] || [];
-    return (
-      <div className="family-section-group">
-        <div className="section-meta">
-          <h3>{label} <span className="count-badge">({members.length}/{maxCount})</span></h3>
-          {description && <p className="field-desc">{description}</p>}
-        </div>
-        
-        <div className="member-rows">
-          {members.map((member, index) => (
-            <div key={index} className="member-row-inline">
-              <input
-                type="text"
-                placeholder="Name"
-                value={member.name || ""}
-                onChange={(e) => updateFamilyMember(groupKey, index, "name", e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Age"
-                className="age-input"
-                value={member.age || ""}
-                onChange={(e) => updateFamilyMember(groupKey, index, "age", e.target.value)}
-              />
-              <select
-                value={member.sex || "female"}
-                onChange={(e) => updateFamilyMember(groupKey, index, "sex", e.target.value)}
-              >
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-                <option value="other">Other</option>
-              </select>
-              <button 
-                type="button" 
-                className="remove-row-btn" 
-                onClick={() => removeFamilyMember(groupKey, index)}
-                aria-label="Remove member"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {members.length < maxCount && (
-          <button 
-            type="button" 
-            className="add-row-btn secondary" 
-            onClick={() => addFamilyMember(groupKey, maxCount)}
-          >
-            + Add {label.split(" ")[0].replace(/s$/, '')}
-          </button>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -169,29 +238,53 @@ export default function StartScreen({
             </div>
           </div>
 
-          <div className="dynamic-family-container">
-            {/* Dynamic Groups */}
-            <DynamicFamilySection label="Grandparents" groupKey="grandparents" maxCount={4} />
-            <DynamicFamilySection label="Great-Grandparents" groupKey="greatGrandparents" maxCount={4} description="Optional bonus family ties" />
+          {/* Wrapper to stack the styled sub-sections */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+            <DynamicFamilySection 
+              label="Grandparents" 
+              groupKey="grandparents" 
+              maxCount={4} 
+              members={familyInput.grandparents}
+              onUpdate={updateFamilyMember}
+              onAdd={addFamilyMember}
+              onRemove={removeFamilyMember}
+            />
+            
+            <DynamicFamilySection 
+              label="Great-Grandparents" 
+              groupKey="greatGrandparents" 
+              maxCount={4} 
+              description="Optional bonus family ties" 
+              members={familyInput.greatGrandparents}
+              onUpdate={updateFamilyMember}
+              onAdd={addFamilyMember}
+              onRemove={removeFamilyMember}
+            />
             
             {/* Spouse */}
-            <div className="family-section-group spouse-group">
-              <h3>Spouse / Partner <span className="optional-tag">(Optional)</span></h3>
-              <div className="member-row-inline">
+            <div style={styles.sectionGroup}>
+              <div style={styles.meta}>
+                <h3 style={styles.title}>
+                  Spouse / Partner <span style={{ ...styles.badge, fontStyle: "italic" }}>(Optional)</span>
+                </h3>
+              </div>
+              <div style={styles.inlineRow}>
                 <input
                   type="text"
                   placeholder="Partner's Name"
+                  style={styles.nameInput}
                   value={familyInput.spouse?.name || ""}
                   onChange={(e) => updateSpouse("name", e.target.value)}
                 />
                 <input
                   type="number"
                   placeholder="Age"
-                  className="age-input"
+                  style={styles.ageInput}
                   value={familyInput.spouse?.age || ""}
                   onChange={(e) => updateSpouse("age", e.target.value)}
                 />
                 <select
+                  style={styles.selectInput}
                   value={familyInput.spouse?.sex || ""}
                   onChange={(e) => updateSpouse("sex", e.target.value)}
                 >
@@ -203,7 +296,15 @@ export default function StartScreen({
               </div>
             </div>
 
-            <DynamicFamilySection label="Kids" groupKey="kids" maxCount={6} />
+            <DynamicFamilySection 
+              label="Kids" 
+              groupKey="kids" 
+              maxCount={6} 
+              members={familyInput.kids}
+              onUpdate={updateFamilyMember}
+              onAdd={addFamilyMember}
+              onRemove={removeFamilyMember}
+            />
           </div>
         </section>
 
@@ -253,6 +354,11 @@ export default function StartScreen({
             })}
           </div>
         </section>
+
+        {/* ACTIONS */}
+        <div className="actions">
+          <button type="submit">Start Game</button>
+        </div>
       </form>
     </main>
   );

@@ -12,31 +12,35 @@
       "choices": [
         {
           "label": "Attend the recital",
+          "memory": "You showed up for your daughter's recital.",
           "effects": {
-            "money": -100,
-            "children": 12,
-            "stress": -5
-          },
-          "memory": "You showed up for your daughter's recital."
+            "wallet": -1,
+            "wellbeing": 5,
+            "children": 12
+          }
         },
         {
           "label": "Work overtime",
+          "memory": "You took the overtime call and missed the recital.",
           "effects": {
-            "money": 500,
-            "children": -8,
-            "stress": 7
-          },
-          "memory": "You took the overtime call and missed the recital."
+            "wallet": 3,
+            "wellbeing": -7,
+            "children": -8
+          }
         },
         {
           "label": "Split the evening",
+          "memory": "You caught part of the recital before returning to work.",
           "effects": {
-            "money": 180,
-            "children": 5,
-            "stress": 4
-          },
-          "memory": "You caught part of the recital before returning to work."
+            "wallet": 1,
+            "wellbeing": -4,
+            "children": 5
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "fall"
       ]
     },
     {
@@ -51,32 +55,39 @@
       "choices": [
         {
           "label": "Book the appointment",
+          "memory": "You made time for a preventive health checkup.",
           "effects": {
-            "money": -180,
-            "health": 8,
-            "stress": -3
-          },
-          "memory": "You made time for a preventive health checkup."
+            "wallet": -1,
+            "wellbeing": 11
+          }
         },
         {
           "label": "Put it off",
+          "memory": "You postponed your annual checkup again.",
           "effects": {
-            "money": 120,
-            "health": -5,
-            "stress": 2
-          },
-          "memory": "You postponed your annual checkup again."
+            "wallet": 1,
+            "wellbeing": -7
+          }
         },
         {
           "label": "Use telehealth",
+          "memory": "You handled your checkup through a quick telehealth visit.",
           "effects": {
-            "money": -60,
-            "health": 4,
-            "stress": -1
-          },
-          "memory": "You handled your checkup through a quick telehealth visit."
+            "wellbeing": 5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "weekend-getaway",
@@ -90,32 +101,43 @@
       "choices": [
         {
           "label": "Plan the trip",
+          "memory": "You planned a weekend getaway and reconnected.",
           "effects": {
-            "money": -650,
-            "marriage": 12,
-            "stress": -8
-          },
-          "memory": "You planned a weekend getaway and reconnected."
+            "wallet": -4,
+            "wellbeing": 8,
+            "marriage": 12
+          }
         },
         {
           "label": "Stay home and save",
+          "memory": "You stayed home to protect the budget.",
           "effects": {
-            "money": 250,
-            "marriage": -4,
-            "stress": 3
-          },
-          "memory": "You stayed home to protect the budget."
+            "wallet": 2,
+            "wellbeing": -3,
+            "marriage": -4
+          }
         },
         {
           "label": "Do a day trip",
+          "memory": "You chose a smaller day trip that still felt special.",
           "effects": {
-            "money": -180,
-            "marriage": 7,
-            "stress": -4
-          },
-          "memory": "You chose a smaller day trip that still felt special."
+            "wallet": -1,
+            "wellbeing": 4,
+            "marriage": 7
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "marriage",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "online-course",
@@ -129,30 +151,32 @@
       "choices": [
         {
           "label": "Enroll",
+          "memory": "You enrolled in a career course and invested in yourself.",
           "effects": {
-            "money": -400,
-            "stress": 6,
-            "health": -1
-          },
-          "memory": "You enrolled in a career course and invested in yourself."
+            "wallet": -3,
+            "wellbeing": -7
+          }
         },
         {
           "label": "Keep evenings free",
+          "memory": "You protected your evenings instead of adding coursework.",
           "effects": {
-            "stress": -4,
-            "health": 2
-          },
-          "memory": "You protected your evenings instead of adding coursework."
+            "wellbeing": 6
+          }
         },
         {
           "label": "Audit free lessons",
+          "memory": "You sampled free lessons before committing.",
           "effects": {
-            "money": -30,
-            "stress": 2,
-            "health": 1
-          },
-          "memory": "You sampled free lessons before committing."
+            "wellbeing": -1
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -167,31 +191,41 @@
       "choices": [
         {
           "label": "Go out",
+          "memory": "You invested in a relaxed date night.",
           "effects": {
-            "money": -120,
-            "marriage": 10,
-            "stress": -4
-          },
-          "memory": "You invested in a relaxed date night."
+            "wallet": -1,
+            "wellbeing": 4,
+            "marriage": 10
+          }
         },
         {
           "label": "Movie at home",
+          "memory": "You kept date night cozy at home.",
           "effects": {
-            "money": -20,
-            "marriage": 5,
-            "stress": -2
-          },
-          "memory": "You kept date night cozy at home."
+            "wellbeing": 2,
+            "marriage": 5
+          }
         },
         {
           "label": "Reschedule",
+          "memory": "You rescheduled date night again.",
           "effects": {
-            "marriage": -5,
-            "stress": 3
-          },
-          "memory": "You rescheduled date night again."
+            "wellbeing": -3,
+            "marriage": -5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "marriage",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "side-hustle",
@@ -205,33 +239,44 @@
       "choices": [
         {
           "label": "Accept it",
+          "memory": "You accepted a demanding side hustle.",
           "effects": {
-            "money": 750,
-            "stress": 9,
+            "wallet": 5,
+            "wellbeing": -9,
             "marriage": -4,
             "children": -3
-          },
-          "memory": "You accepted a demanding side hustle."
+          }
         },
         {
           "label": "Negotiate scope",
+          "memory": "You negotiated a smaller freelance project.",
           "effects": {
-            "money": 420,
-            "stress": 4,
+            "wallet": 3,
+            "wellbeing": -4,
             "marriage": -1
-          },
-          "memory": "You negotiated a smaller freelance project."
+          }
         },
         {
           "label": "Decline",
+          "memory": "You declined extra work to protect home life.",
           "effects": {
-            "stress": -5,
+            "wellbeing": 5,
             "marriage": 3,
             "children": 2
-          },
-          "memory": "You declined extra work to protect home life."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "therapy-session",
@@ -245,30 +290,38 @@
       "choices": [
         {
           "label": "Take the slot",
+          "memory": "You used therapy to process a hard week.",
           "effects": {
-            "money": -150,
-            "health": 4,
-            "stress": -10
-          },
-          "memory": "You used therapy to process a hard week."
+            "wallet": -1,
+            "wellbeing": 14
+          }
         },
         {
           "label": "Journal instead",
+          "memory": "You journaled through your feelings.",
           "effects": {
-            "health": 2,
-            "stress": -4
-          },
-          "memory": "You journaled through your feelings."
+            "wellbeing": 6
+          }
         },
         {
           "label": "Push through",
+          "memory": "You pushed through stress without support.",
           "effects": {
-            "stress": 6,
-            "health": -2
-          },
-          "memory": "You pushed through stress without support."
+            "wellbeing": -8
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "kids-sports",
@@ -282,31 +335,33 @@
       "choices": [
         {
           "label": "Sign up",
+          "memory": "You signed up for a busy sports season.",
           "effects": {
-            "money": -240,
-            "children": 9,
-            "stress": 4
-          },
-          "memory": "You signed up for a busy sports season."
+            "wallet": -2,
+            "wellbeing": -4,
+            "children": 9
+          }
         },
         {
           "label": "Find scholarship",
+          "memory": "You searched for a scholarship to make sports possible.",
           "effects": {
-            "money": -60,
-            "children": 7,
-            "stress": 6
-          },
-          "memory": "You searched for a scholarship to make sports possible."
+            "wellbeing": -6,
+            "children": 7
+          }
         },
         {
           "label": "Wait a season",
+          "memory": "You waited on sports registration this season.",
           "effects": {
-            "money": 0,
-            "children": -5,
-            "stress": -2
-          },
-          "memory": "You waited on sports registration this season."
+            "wellbeing": 2,
+            "children": -5
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "spring"
       ]
     },
     {
@@ -321,30 +376,41 @@
       "choices": [
         {
           "label": "Invest extra",
+          "memory": "You moved extra cash toward future savings.",
           "effects": {
-            "money": 260,
-            "stress": 2
-          },
-          "memory": "You moved extra cash toward future savings."
+            "wallet": 2,
+            "wellbeing": -2
+          }
         },
         {
           "label": "Buy something fun",
+          "memory": "You spent extra cash on a fun purchase.",
           "effects": {
-            "money": -220,
-            "stress": -5,
+            "wallet": -1,
+            "wellbeing": 5,
             "marriage": 2
-          },
-          "memory": "You spent extra cash on a fun purchase."
+          }
         },
         {
           "label": "Emergency fund",
+          "memory": "You strengthened the emergency fund.",
           "effects": {
-            "money": 120,
-            "stress": -4
-          },
-          "memory": "You strengthened the emergency fund."
+            "wallet": 1,
+            "wellbeing": 4
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "gte",
+        "value": 55
+      }
     },
     {
       "id": "parent-teacher-conference",
@@ -355,30 +421,39 @@
       "choices": [
         {
           "label": "Attend in person",
+          "memory": "You attended the conference and made a school plan.",
           "effects": {
-            "children": 10,
-            "stress": 4,
-            "money": -80
-          },
-          "memory": "You attended the conference and made a school plan."
+            "wallet": -1,
+            "wellbeing": -4,
+            "children": 10
+          }
         },
         {
           "label": "Schedule a video call",
+          "memory": "You handled the teacher conference by video.",
           "effects": {
-            "children": 6,
-            "stress": 1
-          },
-          "memory": "You handled the teacher conference by video."
+            "wellbeing": -1,
+            "children": 6
+          }
         },
         {
           "label": "Miss the meeting",
+          "memory": "You missed the teacher conference and the issue lingered.",
           "effects": {
-            "children": -8,
-            "stress": 6
-          },
-          "memory": "You missed the teacher conference and the issue lingered."
+            "wellbeing": -6,
+            "children": -8
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "bullying-report",
@@ -389,32 +464,40 @@
       "choices": [
         {
           "label": "Meet the principal",
+          "memory": "You pushed the school for a safety plan after bullying.",
           "effects": {
-            "children": 14,
-            "stress": 9,
-            "money": -120
-          },
-          "memory": "You pushed the school for a safety plan after bullying."
+            "wallet": -1,
+            "wellbeing": -9,
+            "children": 14
+          }
         },
         {
           "label": "Coach coping skills",
+          "memory": "You helped your child practice responses to bullying.",
           "effects": {
-            "children": 5,
-            "health": 1,
-            "stress": 3
-          },
-          "memory": "You helped your child practice responses to bullying."
+            "wellbeing": -2,
+            "children": 5
+          }
         },
         {
           "label": "Wait and observe",
+          "memory": "You waited on the bullying report and your child felt alone.",
           "effects": {
-            "children": -12,
-            "stress": 6,
-            "health": -2
-          },
-          "memory": "You waited on the bullying report and your child felt alone."
+            "wellbeing": -8,
+            "children": -12
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "honor-roll-invite",
@@ -425,31 +508,39 @@
       "choices": [
         {
           "label": "Celebrate loudly",
+          "memory": "You celebrated academic progress and boosted confidence.",
           "effects": {
-            "money": -60,
-            "children": 9,
-            "stress": -3
-          },
-          "memory": "You celebrated academic progress and boosted confidence."
+            "wellbeing": 3,
+            "children": 9
+          }
         },
         {
           "label": "Quiet congratulations",
+          "memory": "You gave heartfelt praise for the honor roll invite.",
           "effects": {
-            "children": 5,
-            "stress": -1
-          },
-          "memory": "You gave heartfelt praise for the honor roll invite."
+            "wellbeing": 1,
+            "children": 5
+          }
         },
         {
           "label": "Too busy to attend",
+          "memory": "You missed the honor roll celebration because work ran long.",
           "effects": {
-            "children": -5,
-            "money": 120,
-            "stress": 2
-          },
-          "memory": "You missed the honor roll celebration because work ran long."
+            "wallet": 1,
+            "wellbeing": -2,
+            "children": -5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "gte",
+        "value": 55
+      }
     },
     {
       "id": "school-play-audition",
@@ -459,30 +550,38 @@
       "choices": [
         {
           "label": "Support the audition",
+          "memory": "You supported the school play audition despite the schedule crunch.",
           "effects": {
-            "children": 9,
-            "stress": 4,
-            "money": -55
-          },
-          "memory": "You supported the school play audition despite the schedule crunch."
+            "wellbeing": -4,
+            "children": 9
+          }
         },
         {
           "label": "Set homework rules",
+          "memory": "You balanced theater excitement with homework expectations.",
           "effects": {
-            "children": 5,
-            "stress": 1
-          },
-          "memory": "You balanced theater excitement with homework expectations."
+            "wellbeing": -1,
+            "children": 5
+          }
         },
         {
           "label": "Say not this time",
+          "memory": "You passed on the school play to keep evenings simpler.",
           "effects": {
-            "children": -7,
-            "stress": -3
-          },
-          "memory": "You passed on the school play to keep evenings simpler."
+            "wellbeing": 3,
+            "children": -7
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "gte",
+        "value": 45
+      }
     },
     {
       "id": "scholarship-deadline",
@@ -492,32 +591,41 @@
       "choices": [
         {
           "label": "Work on it together",
+          "memory": "You completed a scholarship application as a team.",
           "effects": {
-            "money": 900,
-            "children": 8,
-            "stress": 8
-          },
-          "memory": "You completed a scholarship application as a team."
+            "wallet": 6,
+            "wellbeing": -8,
+            "children": 8
+          }
         },
         {
           "label": "Hire essay help",
+          "memory": "You paid for application help and met the scholarship deadline.",
           "effects": {
-            "money": 550,
-            "children": 4,
-            "stress": 3
-          },
-          "memory": "You paid for application help and met the scholarship deadline."
+            "wallet": 4,
+            "wellbeing": -3,
+            "children": 4
+          }
         },
         {
           "label": "Let it pass",
+          "memory": "You missed the scholarship deadline and lost an opportunity.",
           "effects": {
-            "money": -300,
-            "children": -4,
-            "stress": -2
-          },
-          "memory": "You missed the scholarship deadline and lost an opportunity."
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": -4
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "detention-call",
@@ -527,31 +635,41 @@
       "choices": [
         {
           "label": "Talk it through",
+          "memory": "You used detention as a chance to talk through conflict.",
           "effects": {
-            "children": 7,
-            "stress": 4
-          },
-          "memory": "You used detention as a chance to talk through conflict."
+            "wellbeing": -4,
+            "children": 7
+          }
         },
         {
           "label": "Strict consequences",
+          "memory": "You responded to detention with firm consequences.",
           "effects": {
-            "children": -3,
-            "stress": 6,
-            "marriage": 1
-          },
-          "memory": "You responded to detention with firm consequences."
+            "wellbeing": -6,
+            "marriage": 1,
+            "children": -3
+          }
         },
         {
           "label": "Blame the school",
+          "memory": "You blamed the school and the conflict escalated.",
           "effects": {
-            "children": 2,
-            "stress": 8,
-            "marriage": -2
-          },
-          "memory": "You blamed the school and the conflict escalated."
+            "wellbeing": -8,
+            "marriage": -2,
+            "children": 2
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "car-breakdown",
@@ -569,31 +687,35 @@
       "choices": [
         {
           "label": "Tow and repair it",
+          "memory": "You handled a sudden car breakdown with a tow and repair.",
           "effects": {
-            "money": -1800,
-            "stress": 9,
-            "health": -1
-          },
-          "memory": "You handled a sudden car breakdown with a tow and repair."
+            "wallet": -12,
+            "wellbeing": -10
+          }
         },
         {
           "label": "Use emergency fund",
+          "memory": "You used savings to keep the car breakdown from taking over the week.",
           "effects": {
-            "money": -1200,
-            "stress": 4
-          },
-          "memory": "You used savings to keep the car breakdown from taking over the week."
+            "wallet": -8,
+            "wellbeing": -4
+          }
         },
         {
           "label": "Delay and juggle rides",
+          "memory": "You delayed the repair and spent the week juggling rides.",
           "effects": {
-            "money": -250,
-            "stress": 12,
+            "wallet": -2,
+            "wellbeing": -12,
             "marriage": -3,
             "children": -2
-          },
-          "memory": "You delayed the repair and spent the week juggling rides."
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
       ]
     },
     {
@@ -608,31 +730,33 @@
       "choices": [
         {
           "label": "Replace it now",
+          "memory": "You replaced the furnace before the house got unsafe.",
           "effects": {
-            "money": -5200,
-            "stress": 10,
-            "health": 3
-          },
-          "memory": "You replaced the furnace before the house got unsafe."
+            "wallet": -35,
+            "wellbeing": -7
+          }
         },
         {
           "label": "Finance the furnace",
+          "memory": "You financed a furnace replacement to protect cash flow.",
           "effects": {
-            "money": -1200,
-            "stress": 8,
+            "wallet": -8,
+            "wellbeing": -8,
             "marriage": -2
-          },
-          "memory": "You financed a furnace replacement to protect cash flow."
+          }
         },
         {
           "label": "Patch and wait",
+          "memory": "You patched the failing furnace and hoped it would last.",
           "effects": {
-            "money": -650,
-            "stress": 14,
-            "health": -5
-          },
-          "memory": "You patched the failing furnace and hoped it would last."
+            "wallet": -4,
+            "wellbeing": -19
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -646,31 +770,37 @@
       "choices": [
         {
           "label": "Give the full tithe",
+          "memory": "You gave the full tithe even during a tight month.",
           "effects": {
-            "money": -350,
-            "stress": 2,
+            "wallet": -2,
+            "wellbeing": -2,
             "marriage": 3
-          },
-          "memory": "You gave the full tithe even during a tight month."
+          }
         },
         {
           "label": "Give what you can",
+          "memory": "You gave a smaller amount with a full heart.",
           "effects": {
-            "money": -120,
-            "stress": -1,
+            "wallet": -1,
+            "wellbeing": 1,
             "marriage": 2
-          },
-          "memory": "You gave a smaller amount with a full heart."
+          }
         },
         {
           "label": "Skip this month",
+          "memory": "You held back the tithe to cover bills.",
           "effects": {
-            "money": 350,
-            "stress": 4,
+            "wallet": 2,
+            "wellbeing": -4,
             "marriage": -2
-          },
-          "memory": "You held back the tithe to cover bills."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -684,32 +814,33 @@
       "choices": [
         {
           "label": "Full family Easter",
+          "memory": "You made Easter a full, meaningful family celebration.",
           "effects": {
-            "money": -200,
-            "children": 10,
+            "wallet": -1,
+            "wellbeing": -5,
             "marriage": 6,
-            "stress": 5
-          },
-          "memory": "You made Easter a full, meaningful family celebration."
+            "children": 10
+          }
         },
         {
           "label": "Service only",
+          "memory": "You kept Easter simple with just the church service.",
           "effects": {
-            "money": -40,
-            "marriage": 3,
-            "stress": -2
-          },
-          "memory": "You kept Easter simple with just the church service."
+            "wellbeing": 2,
+            "marriage": 3
+          }
         },
         {
           "label": "Low-key at home",
+          "memory": "You had a quiet Easter at home with the kids.",
           "effects": {
-            "money": -60,
-            "children": 4,
-            "stress": -4
-          },
-          "memory": "You had a quiet Easter at home with the kids."
+            "wellbeing": 4,
+            "children": 4
+          }
         }
+      ],
+      "seasons": [
+        "spring"
       ]
     },
     {
@@ -723,34 +854,38 @@
       "choices": [
         {
           "label": "Set a budget and stick to it",
+          "memory": "You planned Christmas with a clear budget and kept the meaning intact.",
           "effects": {
-            "money": -600,
-            "children": 8,
+            "wallet": -4,
+            "wellbeing": -4,
             "marriage": 6,
-            "stress": 4
-          },
-          "memory": "You planned Christmas with a clear budget and kept the meaning intact."
+            "children": 8
+          }
         },
         {
           "label": "Go all out",
+          "memory": "You went all out for Christmas and loved every moment.",
           "effects": {
-            "money": -1800,
-            "children": 12,
-            "stress": 10,
-            "marriage": 3
-          },
-          "memory": "You went all out for Christmas and loved every moment."
+            "wallet": -12,
+            "wellbeing": -10,
+            "marriage": 3,
+            "children": 12
+          }
         },
         {
           "label": "Simplify this year",
+          "memory": "You simplified Christmas and everyone felt the relief.",
           "effects": {
-            "money": -250,
-            "children": 5,
-            "stress": -5,
-            "marriage": 4
-          },
-          "memory": "You simplified Christmas and everyone felt the relief."
+            "wallet": -2,
+            "wellbeing": 5,
+            "marriage": 4,
+            "children": 5
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -764,32 +899,40 @@
       "choices": [
         {
           "label": "Sign up and fundraise",
+          "memory": "You committed to the mission trip and started fundraising.",
           "effects": {
-            "money": -800,
-            "stress": 7,
-            "marriage": 5,
-            "health": 3
-          },
-          "memory": "You committed to the mission trip and started fundraising."
+            "wallet": -5,
+            "wellbeing": -4,
+            "marriage": 5
+          }
         },
         {
           "label": "Donate to send someone else",
+          "memory": "You supported the mission trip financially instead of going.",
           "effects": {
-            "money": -200,
-            "stress": -1,
+            "wallet": -1,
+            "wellbeing": 1,
             "marriage": 2
-          },
-          "memory": "You supported the mission trip financially instead of going."
+          }
         },
         {
           "label": "Pass this year",
+          "memory": "You decided not to join the mission trip this cycle.",
           "effects": {
-            "stress": -3,
+            "wellbeing": 3,
             "marriage": -1
-          },
-          "memory": "You decided not to join the mission trip this cycle."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "gte",
+        "value": 30
+      }
     },
     {
       "id": "faith-and-doubt",
@@ -802,31 +945,39 @@
       "choices": [
         {
           "label": "Talk to your pastor",
+          "memory": "You opened up about your doubts and found an honest conversation.",
           "effects": {
-            "stress": -6,
-            "health": 3,
+            "wellbeing": 9,
             "marriage": 3
-          },
-          "memory": "You opened up about your doubts and found an honest conversation."
+          }
         },
         {
           "label": "Read and journal privately",
+          "memory": "You worked through doubt quietly through reading and journaling.",
           "effects": {
-            "stress": -2,
-            "health": 2
-          },
-          "memory": "You worked through doubt quietly through reading and journaling."
+            "wellbeing": 4
+          }
         },
         {
           "label": "Keep it to yourself",
+          "memory": "You kept your doubts bottled up and the weight grew.",
           "effects": {
-            "stress": 6,
-            "health": -2,
+            "wellbeing": -8,
             "marriage": -2
-          },
-          "memory": "You kept your doubts bottled up and the weight grew."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "marriage-conflict",
@@ -839,29 +990,40 @@
       "choices": [
         {
           "label": "Initiate the conversation",
+          "memory": "You broke the silence and worked through the conflict.",
           "effects": {
-            "stress": -4,
+            "wellbeing": 4,
             "marriage": 10
-          },
-          "memory": "You broke the silence and worked through the conflict."
+          }
         },
         {
           "label": "Write a letter first",
+          "memory": "You wrote out your feelings before talking it through.",
           "effects": {
-            "stress": -2,
+            "wellbeing": 2,
             "marriage": 7
-          },
-          "memory": "You wrote out your feelings before talking it through."
+          }
         },
         {
           "label": "Let more time pass",
+          "memory": "You avoided the conversation and the tension grew.",
           "effects": {
-            "stress": 5,
+            "wellbeing": -5,
             "marriage": -8
-          },
-          "memory": "You avoided the conversation and the tension grew."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "marriage",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "anniversary",
@@ -874,30 +1036,35 @@
       "choices": [
         {
           "label": "Plan a special dinner",
+          "memory": "You made your anniversary feel special with a real dinner out.",
           "effects": {
-            "money": -180,
-            "marriage": 12,
-            "stress": -3
-          },
-          "memory": "You made your anniversary feel special with a real dinner out."
+            "wallet": -1,
+            "wellbeing": 3,
+            "marriage": 12
+          }
         },
         {
           "label": "Cook at home together",
+          "memory": "You cooked a meaningful dinner at home for your anniversary.",
           "effects": {
-            "money": -60,
-            "marriage": 9,
-            "stress": -4
-          },
-          "memory": "You cooked a meaningful dinner at home for your anniversary."
+            "wellbeing": 4,
+            "marriage": 9
+          }
         },
         {
           "label": "Forget until it's over",
+          "memory": "You forgot your anniversary until it was too late.",
           "effects": {
-            "marriage": -10,
-            "stress": 6
-          },
-          "memory": "You forgot your anniversary until it was too late."
+            "wellbeing": -6,
+            "marriage": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -911,31 +1078,41 @@
       "choices": [
         {
           "label": "Book a session together",
+          "memory": "You and your spouse started marriage counseling.",
           "effects": {
-            "money": -180,
-            "marriage": 12,
-            "stress": -5
-          },
-          "memory": "You and your spouse started marriage counseling."
+            "wallet": -1,
+            "wellbeing": 5,
+            "marriage": 12
+          }
         },
         {
           "label": "Read a marriage book first",
+          "memory": "You read a marriage book and started applying the ideas.",
           "effects": {
-            "money": -25,
-            "marriage": 5,
-            "stress": -2
-          },
-          "memory": "You read a marriage book and started applying the ideas."
+            "wellbeing": 2,
+            "marriage": 5
+          }
         },
         {
           "label": "Dismiss the suggestion",
+          "memory": "You brushed off the counseling suggestion.",
           "effects": {
-            "marriage": -6,
-            "stress": 4
-          },
-          "memory": "You brushed off the counseling suggestion."
+            "wellbeing": -4,
+            "marriage": -6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "marriage",
+        "op": "lte",
+        "value": 40
+      }
     },
     {
       "id": "spouse-hard-week",
@@ -948,30 +1125,35 @@
       "choices": [
         {
           "label": "Take over the house for the evening",
+          "memory": "You took over dinner, kids, and dishes so your spouse could rest.",
           "effects": {
+            "wellbeing": -3,
             "marriage": 10,
-            "stress": 3,
             "children": 3
-          },
-          "memory": "You took over dinner, kids, and dishes so your spouse could rest."
+          }
         },
         {
           "label": "Order food and watch a show together",
+          "memory": "You gave your spouse an easy evening with takeout and a show.",
           "effects": {
-            "money": -45,
-            "marriage": 6,
-            "stress": -2
-          },
-          "memory": "You gave your spouse an easy evening with takeout and a show."
+            "wellbeing": 2,
+            "marriage": 6
+          }
         },
         {
           "label": "Don't notice until too late",
+          "memory": "You missed your spouse's hard week and they felt invisible.",
           "effects": {
-            "marriage": -6,
-            "stress": 3
-          },
-          "memory": "You missed your spouse's hard week and they felt invisible."
+            "wellbeing": -3,
+            "marriage": -6
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -985,30 +1167,34 @@
       "choices": [
         {
           "label": "Prepare and welcome them",
+          "memory": "You prepped the house and hosted a good visit with the in-laws.",
           "effects": {
-            "money": -150,
-            "marriage": 7,
-            "stress": 5
-          },
-          "memory": "You prepped the house and hosted a good visit with the in-laws."
+            "wallet": -1,
+            "wellbeing": -5,
+            "marriage": 7
+          }
         },
         {
           "label": "Keep it short and simple",
+          "memory": "You managed a low-key in-law visit without drama.",
           "effects": {
-            "money": -60,
-            "marriage": 4,
-            "stress": 2
-          },
-          "memory": "You managed a low-key in-law visit without drama."
+            "wellbeing": -2,
+            "marriage": 4
+          }
         },
         {
           "label": "Let tensions fester",
+          "memory": "The in-law visit turned into a source of real tension.",
           "effects": {
-            "marriage": -8,
-            "stress": 9
-          },
-          "memory": "The in-law visit turned into a source of real tension."
+            "wellbeing": -9,
+            "marriage": -8
+          }
         }
+      ],
+      "seasons": [
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1023,30 +1209,36 @@
       "choices": [
         {
           "label": "Discuss a transition plan",
+          "memory": "You and your spouse mapped out a realistic career transition plan.",
           "effects": {
-            "money": -200,
-            "marriage": 10,
-            "stress": 4
-          },
-          "memory": "You and your spouse mapped out a realistic career transition plan."
+            "wallet": -1,
+            "wellbeing": -4,
+            "marriage": 10
+          }
         },
         {
           "label": "Express concern but support",
+          "memory": "You shared your worries honestly and stood behind your spouse.",
           "effects": {
-            "marriage": 7,
-            "stress": 3
-          },
-          "memory": "You shared your worries honestly and stood behind your spouse."
+            "wellbeing": -3,
+            "marriage": 7
+          }
         },
         {
           "label": "Push back hard",
+          "memory": "You resisted the career change and damaged trust in the process.",
           "effects": {
-            "money": 400,
-            "marriage": -10,
-            "stress": 8
-          },
-          "memory": "You resisted the career change and damaged trust in the process."
+            "wallet": 3,
+            "wellbeing": -8,
+            "marriage": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1061,31 +1253,41 @@
       "choices": [
         {
           "label": "Name it and plan a reconnect",
+          "memory": "You named the distance and planned a real reconnect.",
           "effects": {
-            "marriage": 12,
-            "stress": -4
-          },
-          "memory": "You named the distance and planned a real reconnect."
+            "wellbeing": 4,
+            "marriage": 12
+          }
         },
         {
           "label": "Plan a surprise date",
+          "memory": "You surprised your spouse with an intentional evening together.",
           "effects": {
-            "money": -100,
-            "marriage": 9,
-            "stress": -2
-          },
-          "memory": "You surprised your spouse with an intentional evening together."
+            "wallet": -1,
+            "wellbeing": 2,
+            "marriage": 9
+          }
         },
         {
           "label": "Hope it fixes itself",
+          "memory": "You ignored the distance and the gap quietly widened.",
           "effects": {
-            "marriage": -8,
-            "stress": 5,
-            "health": -1
-          },
-          "memory": "You ignored the distance and the gap quietly widened."
+            "wellbeing": -6,
+            "marriage": -8
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "marriage",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "screen-time-battle",
@@ -1099,30 +1301,39 @@
       "choices": [
         {
           "label": "Create family screen rules together",
+          "memory": "You created a family screen-time agreement everyone signed.",
           "effects": {
-            "children": 9,
-            "stress": -3,
-            "marriage": 4
-          },
-          "memory": "You created a family screen-time agreement everyone signed."
+            "wellbeing": 3,
+            "marriage": 4,
+            "children": 9
+          }
         },
         {
           "label": "Install parental controls",
+          "memory": "You set up parental controls and reduced the daily arguments.",
           "effects": {
-            "children": 5,
-            "stress": -2
-          },
-          "memory": "You set up parental controls and reduced the daily arguments."
+            "wellbeing": 2,
+            "children": 5
+          }
         },
         {
           "label": "Keep fighting about it",
+          "memory": "Screen time stayed a daily battleground.",
           "effects": {
-            "children": -6,
-            "stress": 8
-          },
-          "memory": "Screen time stayed a daily battleground."
+            "wellbeing": -8,
+            "children": -6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "summer",
+        "fall"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "teenager-attitude",
@@ -1136,30 +1347,41 @@
       "choices": [
         {
           "label": "Stay curious and ask questions",
+          "memory": "You stayed curious about what was behind your teen's attitude.",
           "effects": {
-            "children": 10,
-            "stress": 2
-          },
-          "memory": "You stayed curious about what was behind your teen's attitude."
+            "wellbeing": -2,
+            "children": 10
+          }
         },
         {
           "label": "Set clear expectations calmly",
+          "memory": "You addressed the attitude directly without escalating.",
           "effects": {
-            "children": 6,
-            "stress": 3
-          },
-          "memory": "You addressed the attitude directly without escalating."
+            "wellbeing": -3,
+            "children": 6
+          }
         },
         {
           "label": "Match the energy and escalate",
+          "memory": "The argument with your teenager blew up.",
           "effects": {
-            "children": -9,
-            "stress": 10,
-            "marriage": -3
-          },
-          "memory": "The argument with your teenager blew up."
+            "wellbeing": -10,
+            "marriage": -3,
+            "children": -9
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "childs-birthday-party",
@@ -1173,31 +1395,36 @@
       "choices": [
         {
           "label": "Host a real party",
+          "memory": "You threw a birthday party your child talked about for weeks.",
           "effects": {
-            "money": -350,
-            "children": 12,
-            "stress": 6
-          },
-          "memory": "You threw a birthday party your child talked about for weeks."
+            "wallet": -2,
+            "wellbeing": -6,
+            "children": 12
+          }
         },
         {
           "label": "Small gathering of close friends",
+          "memory": "You kept the birthday intimate and meaningful.",
           "effects": {
-            "money": -120,
-            "children": 9,
-            "stress": 2
-          },
-          "memory": "You kept the birthday intimate and meaningful."
+            "wallet": -1,
+            "wellbeing": -2,
+            "children": 9
+          }
         },
         {
           "label": "Low-key family only",
+          "memory": "You kept the birthday small and easy.",
           "effects": {
-            "money": -60,
-            "children": 5,
-            "stress": -3
-          },
-          "memory": "You kept the birthday small and easy."
+            "wellbeing": 3,
+            "children": 5
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1212,31 +1439,41 @@
       "choices": [
         {
           "label": "Create a chore chart with consequences",
+          "memory": "You launched a family chore system that actually stuck.",
           "effects": {
-            "children": 7,
-            "stress": -4,
-            "marriage": 3
-          },
-          "memory": "You launched a family chore system that actually stuck."
+            "wellbeing": 4,
+            "marriage": 3,
+            "children": 7
+          }
         },
         {
           "label": "Assign simple daily tasks",
+          "memory": "You started small with a couple of daily chores each.",
           "effects": {
-            "children": 5,
-            "stress": -2
-          },
-          "memory": "You started small with a couple of daily chores each."
+            "wellbeing": 2,
+            "children": 5
+          }
         },
         {
           "label": "Keep doing it yourself",
+          "memory": "You stayed the only one doing housework and burned out.",
           "effects": {
-            "children": -3,
-            "stress": 5,
-            "health": -1
-          },
-          "memory": "You stayed the only one doing housework and burned out."
+            "wellbeing": -6,
+            "children": -3
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "child-mental-health",
@@ -1250,31 +1487,40 @@
       "choices": [
         {
           "label": "Schedule a pediatric evaluation",
+          "memory": "You got your child evaluated and started the path to support.",
           "effects": {
-            "money": -220,
-            "children": 12,
-            "stress": 5
-          },
-          "memory": "You got your child evaluated and started the path to support."
+            "wallet": -1,
+            "wellbeing": -5,
+            "children": 12
+          }
         },
         {
           "label": "Talk to the school counselor",
+          "memory": "You looped in the school counselor and made a plan.",
           "effects": {
-            "children": 8,
-            "stress": 3
-          },
-          "memory": "You looped in the school counselor and made a plan."
+            "wellbeing": -3,
+            "children": 8
+          }
         },
         {
           "label": "Wait and hope it passes",
+          "memory": "You waited on your child's distress and it grew.",
           "effects": {
-            "children": -10,
-            "stress": 7,
-            "health": -2
-          },
-          "memory": "You waited on your child's distress and it grew."
+            "wellbeing": -9,
+            "children": -10
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "adult-child-moving-out",
@@ -1288,33 +1534,42 @@
       "choices": [
         {
           "label": "Help them set up their place",
+          "memory": "You helped your oldest move out and felt proud doing it.",
           "effects": {
-            "money": -300,
-            "children": 12,
-            "stress": 4,
-            "marriage": 5
-          },
-          "memory": "You helped your oldest move out and felt proud doing it."
+            "wallet": -2,
+            "wellbeing": -4,
+            "marriage": 5,
+            "children": 12
+          }
         },
         {
           "label": "Celebrate the milestone",
+          "memory": "You marked the launch with a real celebration.",
           "effects": {
-            "money": -100,
-            "children": 9,
-            "marriage": 4
-          },
-          "memory": "You marked the launch with a real celebration."
+            "wallet": -1,
+            "marriage": 4,
+            "children": 9
+          }
         },
         {
           "label": "Struggle to let go",
+          "memory": "You had a hard time letting your child go and it showed.",
           "effects": {
-            "children": -5,
-            "stress": 8,
-            "marriage": -3
-          },
-          "memory": "You had a hard time letting your child go and it showed."
+            "wellbeing": -8,
+            "marriage": -3,
+            "children": -5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "summer",
+        "fall"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "gte",
+        "value": 40
+      }
     },
     {
       "id": "summer-camp-decision",
@@ -1328,31 +1583,39 @@
       "choices": [
         {
           "label": "Register for the full week",
+          "memory": "You sent your child to church camp and they came home changed.",
           "effects": {
-            "money": -480,
-            "children": 11,
-            "stress": 2
-          },
-          "memory": "You sent your child to church camp and they came home changed."
+            "wallet": -3,
+            "wellbeing": -2,
+            "children": 11
+          }
         },
         {
           "label": "Attend a day program",
+          "memory": "You found a day camp option that worked for the budget.",
           "effects": {
-            "money": -150,
-            "children": 7,
-            "stress": -1
-          },
-          "memory": "You found a day camp option that worked for the budget."
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 7
+          }
         },
         {
           "label": "Skip this year",
+          "memory": "You skipped camp to protect the summer budget.",
           "effects": {
-            "children": -5,
-            "stress": -2
-          },
-          "memory": "You skipped camp to protect the summer budget."
+            "wellbeing": 2,
+            "children": -5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "gte",
+        "value": 40
+      }
     },
     {
       "id": "college-talk",
@@ -1366,32 +1629,42 @@
       "choices": [
         {
           "label": "Map it out together honestly",
+          "memory": "You had an honest college planning conversation with your teenager.",
           "effects": {
-            "money": 300,
-            "children": 9,
-            "stress": 4
-          },
-          "memory": "You had an honest college planning conversation with your teenager."
+            "wallet": 2,
+            "wellbeing": -4,
+            "children": 9
+          }
         },
         {
           "label": "Start a college savings push",
+          "memory": "You opened or boosted a college savings account.",
           "effects": {
-            "money": -400,
-            "children": 7,
-            "stress": 3
-          },
-          "memory": "You opened or boosted a college savings account."
+            "wallet": -3,
+            "wellbeing": -3,
+            "children": 7
+          }
         },
         {
           "label": "Avoid the topic for now",
+          "memory": "You avoided the college money talk and it will cost you later.",
           "effects": {
-            "children": -6,
-            "money": -500,
-            "stress": 5
-          },
-          "memory": "You avoided the college money talk and it will cost you later."
+            "wallet": -3,
+            "wellbeing": -5,
+            "children": -6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "children",
+        "op": "gte",
+        "value": 40
+      }
     },
     {
       "id": "aging-parent-health",
@@ -1406,31 +1679,36 @@
       "choices": [
         {
           "label": "Attend the appointment with them",
+          "memory": "You went to the doctor with your parent and advocated for them.",
           "effects": {
-            "money": -80,
-            "children": 5,
-            "stress": 5,
-            "marriage": 3
-          },
-          "memory": "You went to the doctor with your parent and advocated for them."
+            "wallet": -1,
+            "wellbeing": -5,
+            "marriage": 3,
+            "children": 5
+          }
         },
         {
           "label": "Call the doctor yourself for a briefing",
+          "memory": "You called the doctor to understand your parent's situation.",
           "effects": {
-            "stress": 3,
+            "wellbeing": -3,
             "children": 4
-          },
-          "memory": "You called the doctor to understand your parent's situation."
+          }
         },
         {
           "label": "Leave it to your parent to handle",
+          "memory": "You stayed on the sidelines of your parent's health scare.",
           "effects": {
-            "children": -5,
-            "stress": 6,
-            "health": -1
-          },
-          "memory": "You stayed on the sidelines of your parent's health scare."
+            "wellbeing": -7,
+            "children": -5
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1446,30 +1724,35 @@
       "choices": [
         {
           "label": "Have the honest conversation",
+          "memory": "You had the difficult driving conversation with your parent.",
           "effects": {
-            "stress": 5,
-            "children": 8,
-            "marriage": 4
-          },
-          "memory": "You had the difficult driving conversation with your parent."
+            "wellbeing": -5,
+            "marriage": 4,
+            "children": 8
+          }
         },
         {
           "label": "Suggest a driving evaluation",
+          "memory": "You steered your parent toward a professional driving evaluation.",
           "effects": {
-            "stress": 3,
+            "wellbeing": -3,
             "children": 5
-          },
-          "memory": "You steered your parent toward a professional driving evaluation."
+          }
         },
         {
           "label": "Avoid the topic",
+          "memory": "You avoided the driving conversation and the risk remained.",
           "effects": {
-            "children": -8,
-            "stress": 8,
-            "health": -3
-          },
-          "memory": "You avoided the driving conversation and the risk remained."
+            "wellbeing": -11,
+            "children": -8
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1485,33 +1768,38 @@
       "choices": [
         {
           "label": "Research care facilities together",
+          "memory": "You led the family through a thoughtful care facility search.",
           "effects": {
-            "money": -500,
-            "stress": 8,
+            "wallet": -3,
+            "wellbeing": -8,
             "marriage": 5,
             "children": 7
-          },
-          "memory": "You led the family through a thoughtful care facility search."
+          }
         },
         {
           "label": "Explore moving them in with you",
+          "memory": "You brought your parent home and took on the caregiving role.",
           "effects": {
-            "money": -800,
-            "stress": 12,
+            "wallet": -5,
+            "wellbeing": -12,
             "marriage": -4,
             "children": 6
-          },
-          "memory": "You brought your parent home and took on the caregiving role."
+          }
         },
         {
           "label": "Delay the decision",
+          "memory": "You delayed the care decision and the situation deteriorated.",
           "effects": {
-            "stress": 10,
-            "children": -6,
-            "health": -3
-          },
-          "memory": "You delayed the care decision and the situation deteriorated."
+            "wellbeing": -13,
+            "children": -6
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1526,31 +1814,34 @@
       "choices": [
         {
           "label": "Set up weekly visits",
+          "memory": "You committed to weekly visits with your lonely parent.",
           "effects": {
-            "money": -80,
-            "children": 8,
-            "stress": 3,
-            "marriage": 3
-          },
-          "memory": "You committed to weekly visits with your lonely parent."
+            "wallet": -1,
+            "wellbeing": -3,
+            "marriage": 3,
+            "children": 8
+          }
         },
         {
           "label": "Connect them with a senior group",
+          "memory": "You helped your parent find a senior community group.",
           "effects": {
-            "money": -30,
-            "children": 6,
-            "stress": 1
-          },
-          "memory": "You helped your parent find a senior community group."
+            "wellbeing": -1,
+            "children": 6
+          }
         },
         {
           "label": "Send more texts and calls",
+          "memory": "You increased your digital check-ins with your parent.",
           "effects": {
-            "children": 4,
-            "stress": -1
-          },
-          "memory": "You increased your digital check-ins with your parent."
+            "wellbeing": 1,
+            "children": 4
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1566,31 +1857,37 @@
       "choices": [
         {
           "label": "Call a family meeting",
+          "memory": "You called a family meeting and worked toward a caregiving agreement.",
           "effects": {
-            "stress": 5,
+            "wellbeing": -5,
             "marriage": 3,
             "children": 6
-          },
-          "memory": "You called a family meeting and worked toward a caregiving agreement."
+          }
         },
         {
           "label": "Bring in a social worker to mediate",
+          "memory": "You brought in a professional mediator for the caregiving dispute.",
           "effects": {
-            "money": -200,
-            "stress": 3,
+            "wallet": -1,
+            "wellbeing": -3,
             "children": 7
-          },
-          "memory": "You brought in a professional mediator for the caregiving dispute."
+          }
         },
         {
           "label": "Let resentment build",
+          "memory": "The sibling dispute over your parent's care festered without resolution.",
           "effects": {
-            "stress": 10,
-            "children": -8,
-            "marriage": -4
-          },
-          "memory": "The sibling dispute over your parent's care festered without resolution."
+            "wellbeing": -10,
+            "marriage": -4,
+            "children": -8
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1606,32 +1903,38 @@
       "choices": [
         {
           "label": "Consult an elder law attorney",
+          "memory": "You got the legal documents in order while there was still time.",
           "effects": {
-            "money": -400,
-            "stress": 4,
-            "children": 8,
-            "marriage": 4
-          },
-          "memory": "You got the legal documents in order while there was still time."
+            "wallet": -3,
+            "wellbeing": -4,
+            "marriage": 4,
+            "children": 8
+          }
         },
         {
           "label": "Use an online template",
+          "memory": "You used a legal template to get basic documents completed.",
           "effects": {
-            "money": -80,
-            "stress": 2,
+            "wallet": -1,
+            "wellbeing": -2,
             "children": 5
-          },
-          "memory": "You used a legal template to get basic documents completed."
+          }
         },
         {
           "label": "Assume it can wait",
+          "memory": "You delayed the legal planning and it caused a crisis later.",
           "effects": {
-            "stress": 8,
-            "children": -7,
-            "money": -600
-          },
-          "memory": "You delayed the legal planning and it caused a crisis later."
+            "wallet": -4,
+            "wellbeing": -8,
+            "children": -7
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1645,29 +1948,39 @@
       "choices": [
         {
           "label": "Auto-transfer monthly to savings",
+          "memory": "You automated monthly contributions to rebuild your emergency fund.",
           "effects": {
-            "money": -300,
-            "stress": -5
-          },
-          "memory": "You automated monthly contributions to rebuild your emergency fund."
+            "wallet": -2,
+            "wellbeing": 5
+          }
         },
         {
           "label": "Cut one expense and redirect it",
+          "memory": "You found one budget cut and started funneling it into savings.",
           "effects": {
-            "money": -120,
-            "stress": -2
-          },
-          "memory": "You found one budget cut and started funneling it into savings."
+            "wallet": -1,
+            "wellbeing": 2
+          }
         },
         {
           "label": "Keep it for later",
+          "memory": "You acknowledged the gap in your emergency fund and did nothing.",
           "effects": {
-            "stress": 5,
-            "health": -1
-          },
-          "memory": "You acknowledged the gap in your emergency fund and did nothing."
+            "wellbeing": -6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "credit-card-debt",
@@ -1680,29 +1993,38 @@
       "choices": [
         {
           "label": "Start an aggressive paydown plan",
+          "memory": "You attacked the credit card balance with a focused paydown plan.",
           "effects": {
-            "money": -400,
-            "stress": 2
-          },
-          "memory": "You attacked the credit card balance with a focused paydown plan."
+            "wallet": -3,
+            "wellbeing": -2
+          }
         },
         {
           "label": "Transfer to a 0% card",
+          "memory": "You moved your balance to a lower-rate card and got ahead of it.",
           "effects": {
-            "money": -80,
-            "stress": -1
-          },
-          "memory": "You moved your balance to a lower-rate card and got ahead of it."
+            "wallet": -1,
+            "wellbeing": 1
+          }
         },
         {
           "label": "Keep paying the minimum",
+          "memory": "You kept paying minimum balances and watched the interest climb.",
           "effects": {
-            "money": -90,
-            "stress": 4
-          },
-          "memory": "You kept paying minimum balances and watched the interest climb."
+            "wallet": -1,
+            "wellbeing": -4
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 40
+      }
     },
     {
       "id": "unexpected-tax-bill",
@@ -1716,29 +2038,38 @@
       "choices": [
         {
           "label": "Pay it and adjust withholding",
+          "memory": "You paid the tax bill and corrected your withholding going forward.",
           "effects": {
-            "money": -900,
-            "stress": 3
-          },
-          "memory": "You paid the tax bill and corrected your withholding going forward."
+            "wallet": -6,
+            "wellbeing": -3
+          }
         },
         {
           "label": "Set up an installment plan with the IRS",
+          "memory": "You set up a payment plan with the IRS to manage the bill.",
           "effects": {
-            "money": -250,
-            "stress": 1
-          },
-          "memory": "You set up a payment plan with the IRS to manage the bill."
+            "wallet": -2,
+            "wellbeing": -1
+          }
         },
         {
           "label": "Ignore it past the deadline",
+          "memory": "You ignored the tax bill and faced penalties on top of it.",
           "effects": {
-            "money": -1400,
-            "stress": 12
-          },
-          "memory": "You ignored the tax bill and faced penalties on top of it."
+            "wallet": -9,
+            "wellbeing": -12
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 55
+      }
     },
     {
       "id": "life-insurance-review",
@@ -1752,29 +2083,35 @@
       "choices": [
         {
           "label": "Meet with an advisor",
+          "memory": "You reviewed your coverage and updated it for where your family is now.",
           "effects": {
-            "money": -200,
-            "stress": -4,
+            "wallet": -1,
+            "wellbeing": 4,
             "marriage": 5
-          },
-          "memory": "You reviewed your coverage and updated it for where your family is now."
+          }
         },
         {
           "label": "Run the numbers yourself",
+          "memory": "You did a self-audit of your life insurance needs.",
           "effects": {
-            "stress": -2,
+            "wellbeing": 2,
             "marriage": 3
-          },
-          "memory": "You did a self-audit of your life insurance needs."
+          }
         },
         {
           "label": "Put it off again",
+          "memory": "You postponed the insurance review for another year.",
           "effects": {
-            "stress": 4,
+            "wellbeing": -4,
             "marriage": -2
-          },
-          "memory": "You postponed the insurance review for another year."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1789,27 +2126,32 @@
       "choices": [
         {
           "label": "Freeze credit and dispute immediately",
+          "memory": "You acted fast on the fraud alert and contained the damage.",
           "effects": {
-            "money": -50,
-            "stress": 5
-          },
-          "memory": "You acted fast on the fraud alert and contained the damage."
+            "wellbeing": -5
+          }
         },
         {
           "label": "Call the bank only",
+          "memory": "You disputed the charge but didn't lock down your credit.",
           "effects": {
-            "stress": 3
-          },
-          "memory": "You disputed the charge but didn't lock down your credit."
+            "wellbeing": -3
+          }
         },
         {
           "label": "Assume it's a false alarm",
+          "memory": "You ignored the fraud alert and paid a much larger price.",
           "effects": {
-            "money": -800,
-            "stress": 10
-          },
-          "memory": "You ignored the fraud alert and paid a much larger price."
+            "wallet": -5,
+            "wellbeing": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1824,32 +2166,39 @@
       "choices": [
         {
           "label": "See a physical therapist",
+          "memory": "You started physical therapy and began recovering.",
           "effects": {
-            "money": -360,
-            "health": 10,
-            "stress": -4
-          },
-          "memory": "You started physical therapy and began recovering."
+            "wallet": -2,
+            "wellbeing": 14
+          }
         },
         {
           "label": "See your GP first",
+          "memory": "You got a proper diagnosis from your doctor.",
           "effects": {
-            "money": -140,
-            "health": 5,
-            "stress": -2
-          },
-          "memory": "You got a proper diagnosis from your doctor."
+            "wallet": -1,
+            "wellbeing": 7
+          }
         },
         {
           "label": "Manage with painkillers and push through",
+          "memory": "You masked the pain with medication instead of treating it.",
           "effects": {
-            "health": -5,
-            "stress": 5,
-            "money": -80
-          },
-          "memory": "You masked the pain with medication instead of treating it."
+            "wallet": -1,
+            "wellbeing": -10
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "alcohol-habits",
@@ -1863,32 +2212,38 @@
       "choices": [
         {
           "label": "Try a dry month",
+          "memory": "You took a dry month and discovered you didn't need it as much as you thought.",
           "effects": {
-            "health": 8,
-            "stress": -2,
+            "wellbeing": 10,
             "marriage": 5
-          },
-          "memory": "You took a dry month and discovered you didn't need it as much as you thought."
+          }
         },
         {
           "label": "Cut back to weekends only",
+          "memory": "You reduced drinking to weekends and felt the improvement.",
           "effects": {
-            "health": 4,
-            "stress": -1,
+            "wellbeing": 5,
             "marriage": 3
-          },
-          "memory": "You reduced drinking to weekends and felt the improvement."
+          }
         },
         {
           "label": "Keep the current pattern",
+          "memory": "The nightly habit continued and the effects started to show.",
           "effects": {
-            "health": -4,
-            "stress": 3,
+            "wellbeing": -7,
             "marriage": -3
-          },
-          "memory": "The nightly habit continued and the effects started to show."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 45
+      }
     },
     {
       "id": "mental-burnout",
@@ -1902,32 +2257,38 @@
       "choices": [
         {
           "label": "Take a mental health day",
+          "memory": "You took a real mental health day and actually rested.",
           "effects": {
-            "health": 6,
-            "stress": -8,
-            "money": -200
-          },
-          "memory": "You took a real mental health day and actually rested."
+            "wallet": -1,
+            "wellbeing": 14
+          }
         },
         {
           "label": "Talk to a therapist",
+          "memory": "You unpacked the burnout with a therapist and started recovering.",
           "effects": {
-            "money": -150,
-            "health": 5,
-            "stress": -7
-          },
-          "memory": "You unpacked the burnout with a therapist and started recovering."
+            "wallet": -1,
+            "wellbeing": 12
+          }
         },
         {
           "label": "White-knuckle through it",
+          "memory": "You pushed through burnout and paid for it on the other side.",
           "effects": {
-            "health": -6,
-            "stress": 8,
+            "wellbeing": -14,
             "marriage": -4
-          },
-          "memory": "You pushed through burnout and paid for it on the other side."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wellbeing",
+        "op": "lte",
+        "value": 40
+      }
     },
     {
       "id": "mammogram-or-prostate",
@@ -1941,29 +2302,32 @@
       "choices": [
         {
           "label": "Schedule it this week",
+          "memory": "You scheduled and completed your preventive cancer screening.",
           "effects": {
-            "money": -180,
-            "health": 9,
-            "stress": -3
-          },
-          "memory": "You scheduled and completed your preventive cancer screening."
+            "wallet": -1,
+            "wellbeing": 12
+          }
         },
         {
           "label": "Schedule for next month",
+          "memory": "You booked the screening for next month.",
           "effects": {
-            "health": 5,
-            "stress": -1
-          },
-          "memory": "You booked the screening for next month."
+            "wellbeing": 6
+          }
         },
         {
           "label": "Skip it this year",
+          "memory": "You skipped the cancer screening and pushed the risk forward.",
           "effects": {
-            "health": -6,
-            "stress": 4
-          },
-          "memory": "You skipped the cancer screening and pushed the risk forward."
+            "wellbeing": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -1978,31 +2342,37 @@
       "choices": [
         {
           "label": "Negotiate and seriously evaluate",
+          "memory": "You entered serious negotiations on the job offer.",
           "effects": {
-            "money": 600,
-            "stress": 8,
+            "wallet": 4,
+            "wellbeing": -8,
             "marriage": -3,
             "children": -3
-          },
-          "memory": "You entered serious negotiations on the job offer."
+          }
         },
         {
           "label": "Decline and use it for a raise where you are",
+          "memory": "You used the competing offer to negotiate a raise at your current job.",
           "effects": {
-            "money": 300,
-            "stress": 3,
+            "wallet": 2,
+            "wellbeing": -3,
             "marriage": 4
-          },
-          "memory": "You used the competing offer to negotiate a raise at your current job."
+          }
         },
         {
           "label": "Decline without exploring",
+          "memory": "You turned down the offer without fully exploring it.",
           "effects": {
-            "stress": -2,
-            "money": -200
-          },
-          "memory": "You turned down the offer without fully exploring it."
+            "wallet": -1,
+            "wellbeing": 2
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2016,29 +2386,33 @@
       "choices": [
         {
           "label": "Address it directly with them",
+          "memory": "You addressed the coworker issue directly and the dynamic shifted.",
           "effects": {
-            "stress": -4,
-            "money": 100
-          },
-          "memory": "You addressed the coworker issue directly and the dynamic shifted."
+            "wallet": 1,
+            "wellbeing": 4
+          }
         },
         {
           "label": "Raise it with your manager",
+          "memory": "You looped in your manager and a path forward emerged.",
           "effects": {
-            "stress": -2,
-            "money": 50
-          },
-          "memory": "You looped in your manager and a path forward emerged."
+            "wellbeing": 2
+          }
         },
         {
           "label": "Suffer quietly and complain at home",
+          "memory": "You absorbed the coworker toxicity and brought it home with you.",
           "effects": {
-            "stress": 8,
-            "marriage": -4,
-            "health": -2
-          },
-          "memory": "You absorbed the coworker toxicity and brought it home with you."
+            "wellbeing": -10,
+            "marriage": -4
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2052,28 +2426,32 @@
       "choices": [
         {
           "label": "Document your wins and prepare",
+          "memory": "You walked into your review prepared and earned recognition.",
           "effects": {
-            "money": 500,
-            "stress": 3
-          },
-          "memory": "You walked into your review prepared and earned recognition."
+            "wallet": 3,
+            "wellbeing": -3
+          }
         },
         {
           "label": "Ask a mentor to coach you",
+          "memory": "You got coaching before your review and it showed.",
           "effects": {
-            "money": 300,
-            "stress": 2
-          },
-          "memory": "You got coaching before your review and it showed."
+            "wallet": 2,
+            "wellbeing": -2
+          }
         },
         {
           "label": "Wing it",
+          "memory": "You went into the review underprepared and it cost you.",
           "effects": {
-            "money": -100,
-            "stress": 5
-          },
-          "memory": "You went into the review underprepared and it cost you."
+            "wallet": -1,
+            "wellbeing": -5
+          }
         }
+      ],
+      "seasons": [
+        "winter",
+        "fall"
       ]
     },
     {
@@ -2088,28 +2466,32 @@
       "choices": [
         {
           "label": "Update resume and activate your network",
+          "memory": "You moved fast on the layoff news and put yourself in a strong position.",
           "effects": {
-            "money": 400,
-            "stress": 6
-          },
-          "memory": "You moved fast on the layoff news and put yourself in a strong position."
+            "wallet": 3,
+            "wellbeing": -6
+          }
         },
         {
           "label": "Have an honest conversation with your manager",
+          "memory": "You got clarity from your manager about where you stood.",
           "effects": {
-            "stress": 3,
-            "money": 200
-          },
-          "memory": "You got clarity from your manager about where you stood."
+            "wallet": 1,
+            "wellbeing": -3
+          }
         },
         {
           "label": "Hope it doesn't affect you",
+          "memory": "You did nothing and were caught flat-footed when the layoff came.",
           "effects": {
-            "money": -1500,
-            "stress": 12
-          },
-          "memory": "You did nothing and were caught flat-footed when the layoff came."
+            "wallet": -10,
+            "wellbeing": -12
+          }
         }
+      ],
+      "seasons": [
+        "winter",
+        "spring"
       ]
     },
     {
@@ -2124,31 +2506,34 @@
       "choices": [
         {
           "label": "Set a hard phone cutoff at 6pm",
+          "memory": "You set a firm evening boundary and protected family time.",
           "effects": {
-            "stress": -5,
+            "wellbeing": 5,
             "marriage": 7,
             "children": 5
-          },
-          "memory": "You set a firm evening boundary and protected family time."
+          }
         },
         {
           "label": "Talk to your manager about expectations",
+          "memory": "You had a clear conversation about after-hours expectations.",
           "effects": {
-            "stress": -3,
-            "money": 100
-          },
-          "memory": "You had a clear conversation about after-hours expectations."
+            "wallet": 1,
+            "wellbeing": 3
+          }
         },
         {
           "label": "Keep responding after hours",
+          "memory": "Work kept taking your evenings and your family felt it.",
           "effects": {
-            "stress": 7,
+            "wellbeing": -9,
             "marriage": -5,
-            "children": -4,
-            "health": -2
-          },
-          "memory": "Work kept taking your evenings and your family felt it."
+            "children": -4
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2162,30 +2547,34 @@
       "choices": [
         {
           "label": "Drop everything and be there",
+          "memory": "You showed up fully for a friend in crisis.",
           "effects": {
-            "money": -60,
-            "stress": 4,
-            "marriage": 5,
-            "health": 2
-          },
-          "memory": "You showed up fully for a friend in crisis."
+            "wellbeing": -2,
+            "marriage": 5
+          }
         },
         {
           "label": "Call and listen for an hour",
+          "memory": "You gave a friend real time and a listening ear.",
           "effects": {
-            "stress": 2,
+            "wellbeing": -2,
             "marriage": 3
-          },
-          "memory": "You gave a friend real time and a listening ear."
+          }
         },
         {
           "label": "Send a text saying you're thinking of them",
+          "memory": "You sent a check-in text but kept your distance.",
           "effects": {
-            "stress": -1,
+            "wellbeing": 1,
             "marriage": -2
-          },
-          "memory": "You sent a check-in text but kept your distance."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2199,30 +2588,34 @@
       "choices": [
         {
           "label": "Redirect with curiosity, not combat",
+          "memory": "You steered the family political conversation away from conflict.",
           "effects": {
-            "stress": -3,
+            "wellbeing": 3,
             "marriage": 4,
             "children": 3
-          },
-          "memory": "You steered the family political conversation away from conflict."
+          }
         },
         {
           "label": "Speak your view calmly and briefly",
+          "memory": "You said your piece without letting it escalate.",
           "effects": {
-            "stress": 2,
+            "wellbeing": -2,
             "marriage": 2
-          },
-          "memory": "You said your piece without letting it escalate."
+          }
         },
         {
           "label": "Engage and dig in",
+          "memory": "The family dinner became a political argument that damaged the evening.",
           "effects": {
-            "stress": 8,
+            "wellbeing": -8,
             "marriage": -5,
             "children": -4
-          },
-          "memory": "The family dinner became a political argument that damaged the evening."
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2236,35 +2629,44 @@
       "choices": [
         {
           "label": "Plan a real trip within budget",
+          "memory": "You took a planned, budgeted family vacation that everyone loved.",
           "effects": {
-            "money": -1800,
+            "wallet": -12,
+            "wellbeing": -4,
             "marriage": 10,
-            "children": 12,
-            "stress": 4
-          },
-          "memory": "You took a planned, budgeted family vacation that everyone loved."
+            "children": 12
+          }
         },
         {
           "label": "Road trip to somewhere local",
+          "memory": "You did a local road trip that punched above its weight.",
           "effects": {
-            "money": -500,
+            "wallet": -3,
+            "wellbeing": 2,
             "marriage": 8,
-            "children": 9,
-            "stress": -2
-          },
-          "memory": "You did a local road trip that punched above its weight."
+            "children": 9
+          }
         },
         {
           "label": "Stay home but plan day trips",
+          "memory": "You turned the staycation into something worth remembering.",
           "effects": {
-            "money": -200,
+            "wallet": -1,
+            "wellbeing": 4,
             "marriage": 5,
-            "children": 6,
-            "stress": -4
-          },
-          "memory": "You turned the staycation into something worth remembering."
+            "children": 6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "gte",
+        "value": 35
+      }
     },
     {
       "id": "school-choice-decision",
@@ -2278,29 +2680,33 @@
       "choices": [
         {
           "label": "Research and visit both options",
+          "memory": "You did the research and made a confident school decision.",
           "effects": {
-            "money": -80,
-            "children": 8,
-            "stress": 4
-          },
-          "memory": "You did the research and made a confident school decision."
+            "wallet": -1,
+            "wellbeing": -4,
+            "children": 8
+          }
         },
         {
           "label": "Ask your child's current teacher",
+          "memory": "You consulted your child's teacher before deciding on enrollment.",
           "effects": {
-            "children": 7,
-            "stress": 2
-          },
-          "memory": "You consulted your child's teacher before deciding on enrollment."
+            "wellbeing": -2,
+            "children": 7
+          }
         },
         {
           "label": "Default to the same school without looking",
+          "memory": "You renewed enrollment without researching alternatives.",
           "effects": {
-            "children": -2,
-            "stress": -1
-          },
-          "memory": "You renewed enrollment without researching alternatives."
+            "wellbeing": 1,
+            "children": -2
+          }
         }
+      ],
+      "seasons": [
+        "winter",
+        "spring"
       ]
     },
     {
@@ -2314,31 +2720,42 @@
       "choices": [
         {
           "label": "Replace it right away",
+          "memory": "You replaced the washing machine and got the week back on track.",
           "effects": {
-            "money": -900,
-            "stress": 3,
+            "wallet": -6,
+            "wellbeing": -3,
             "marriage": 5
-          },
-          "memory": "You replaced the washing machine and got the week back on track."
+          }
         },
         {
           "label": "Get a repair quote first",
+          "memory": "You got the washing machine repaired for far less than replacement.",
           "effects": {
-            "money": -400,
-            "stress": 2
-          },
-          "memory": "You got the washing machine repaired for far less than replacement."
+            "wallet": -3,
+            "wellbeing": -2
+          }
         },
         {
           "label": "Use the laundromat and delay",
+          "memory": "You used the laundromat while delaying the appliance decision.",
           "effects": {
-            "money": -120,
-            "stress": 8,
+            "wallet": -1,
+            "wellbeing": -8,
             "marriage": -3
-          },
-          "memory": "You used the laundromat while delaying the appliance decision."
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 60
+      }
     },
     {
       "id": "move-to-new-city",
@@ -2352,31 +2769,35 @@
       "choices": [
         {
           "label": "Visit first and evaluate together",
+          "memory": "You visited the new city as a family and made a thoughtful decision.",
           "effects": {
-            "money": -500,
-            "stress": 5,
+            "wallet": -3,
+            "wellbeing": -5,
             "marriage": 7
-          },
-          "memory": "You visited the new city as a family and made a thoughtful decision."
+          }
         },
         {
           "label": "Research extensively and weigh all factors",
+          "memory": "You put real rigor into the relocation decision.",
           "effects": {
-            "stress": 4,
+            "wellbeing": -4,
             "marriage": 6
-          },
-          "memory": "You put real rigor into the relocation decision."
+          }
         },
         {
           "label": "Accept on excitement alone",
+          "memory": "You moved without fully thinking it through and paid the price.",
           "effects": {
-            "money": -2000,
-            "stress": 12,
+            "wallet": -13,
+            "wellbeing": -12,
             "marriage": -5,
             "children": -6
-          },
-          "memory": "You moved without fully thinking it through and paid the price."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer"
       ]
     },
     {
@@ -2390,30 +2811,50 @@
       "choices": [
         {
           "label": "Attend an informational meeting",
+          "memory": "You went to the foster care info night and began the real conversation.",
           "effects": {
+            "wellbeing": -3,
             "marriage": 7,
-            "children": 4,
-            "stress": 3
-          },
-          "memory": "You went to the foster care info night and began the real conversation."
+            "children": 4
+          }
         },
         {
           "label": "Discuss deeply as a couple",
+          "memory": "You had a serious, honest conversation about what fostering would mean.",
           "effects": {
-            "marriage": 8,
-            "stress": 2
-          },
-          "memory": "You had a serious, honest conversation about what fostering would mean."
+            "wellbeing": -2,
+            "marriage": 8
+          }
         },
         {
           "label": "Dismiss it as too overwhelming",
+          "memory": "You closed the conversation before it really opened.",
           "effects": {
-            "marriage": -3,
-            "stress": -1
-          },
-          "memory": "You closed the conversation before it really opened."
+            "wellbeing": 1,
+            "marriage": -3
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "conditions": [
+          {
+            "stat": "wallet",
+            "op": "gte",
+            "value": 35
+          },
+          {
+            "stat": "marriage",
+            "op": "gte",
+            "value": 50
+          }
+        ]
+      }
     },
     {
       "id": "grief-loss",
@@ -2426,31 +2867,34 @@
       "choices": [
         {
           "label": "Accept support from your community",
+          "memory": "You let people in during your grief and didn't carry it alone.",
           "effects": {
-            "stress": -6,
-            "marriage": 6,
-            "health": 3
-          },
-          "memory": "You let people in during your grief and didn't carry it alone."
+            "wellbeing": 9,
+            "marriage": 6
+          }
         },
         {
           "label": "See a grief counselor",
+          "memory": "You got professional support to move through the grief.",
           "effects": {
-            "money": -150,
-            "stress": -5,
-            "health": 4
-          },
-          "memory": "You got professional support to move through the grief."
+            "wallet": -1,
+            "wellbeing": 9
+          }
         },
         {
           "label": "Isolate and tough it out",
+          "memory": "You grieved alone and it took a longer, harder toll.",
           "effects": {
-            "stress": 8,
-            "health": -5,
+            "wellbeing": -13,
             "marriage": -5
-          },
-          "memory": "You grieved alone and it took a longer, harder toll."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2464,31 +2908,51 @@
       "choices": [
         {
           "label": "Meet with an adoption agency",
+          "memory": "You took the first concrete step toward adoption together.",
           "effects": {
-            "money": -200,
+            "wallet": -1,
+            "wellbeing": -5,
             "marriage": 9,
-            "stress": 5,
             "children": 6
-          },
-          "memory": "You took the first concrete step toward adoption together."
+          }
         },
         {
           "label": "Read and research deeply first",
+          "memory": "You spent time researching adoption to approach it honestly.",
           "effects": {
-            "marriage": 7,
-            "stress": 3
-          },
-          "memory": "You spent time researching adoption to approach it honestly."
+            "wellbeing": -3,
+            "marriage": 7
+          }
         },
         {
           "label": "Shelve the conversation for now",
+          "memory": "You put the adoption conversation on hold indefinitely.",
           "effects": {
-            "marriage": -3,
-            "stress": 2
-          },
-          "memory": "You put the adoption conversation on hold indefinitely."
+            "wellbeing": -2,
+            "marriage": -3
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "conditions": [
+          {
+            "stat": "wallet",
+            "op": "gte",
+            "value": 35
+          },
+          {
+            "stat": "marriage",
+            "op": "gte",
+            "value": 50
+          }
+        ]
+      }
     },
     {
       "id": "church-conflict",
@@ -2501,29 +2965,34 @@
       "choices": [
         {
           "label": "Address it directly with the person",
+          "memory": "You handled the church conflict with grace and got to resolution.",
           "effects": {
-            "stress": -4,
+            "wellbeing": 4,
             "marriage": 5
-          },
-          "memory": "You handled the church conflict with grace and got to resolution."
+          }
         },
         {
           "label": "Pray about it and give it time",
+          "memory": "You stepped back and gave the conflict space to settle.",
           "effects": {
-            "stress": -2,
+            "wellbeing": 2,
             "marriage": 3
-          },
-          "memory": "You stepped back and gave the conflict space to settle."
+          }
         },
         {
           "label": "Quietly pull away from the church",
+          "memory": "You withdrew from the church rather than working through the conflict.",
           "effects": {
-            "stress": 4,
-            "marriage": -5,
-            "health": -2
-          },
-          "memory": "You withdrew from the church rather than working through the conflict."
+            "wellbeing": -6,
+            "marriage": -5
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2538,30 +3007,34 @@
       "choices": [
         {
           "label": "Book a session with a fee-only advisor",
+          "memory": "You got a real financial plan and felt more in control.",
           "effects": {
-            "money": -300,
-            "stress": -5,
+            "wallet": -2,
+            "wellbeing": 5,
             "marriage": 6
-          },
-          "memory": "You got a real financial plan and felt more in control."
+          }
         },
         {
           "label": "Do a free consultation first",
+          "memory": "You started with a free consultation to test the value.",
           "effects": {
-            "stress": -2,
+            "wellbeing": 2,
             "marriage": 3
-          },
-          "memory": "You started with a free consultation to test the value."
+          }
         },
         {
           "label": "Keep managing it yourself",
+          "memory": "You stayed self-directed on finances and gaps went unaddressed.",
           "effects": {
-            "money": -400,
-            "stress": 4,
+            "wallet": -3,
+            "wellbeing": -4,
             "marriage": -2
-          },
-          "memory": "You stayed self-directed on finances and gaps went unaddressed."
+          }
         }
+      ],
+      "seasons": [
+        "winter",
+        "spring"
       ]
     },
     {
@@ -2575,32 +3048,53 @@
       "choices": [
         {
           "label": "Call a structured family meeting",
+          "memory": "You held a family meeting that cleared the air and aligned everyone.",
           "effects": {
-            "children": 8,
+            "wellbeing": 4,
             "marriage": 7,
-            "stress": -4
-          },
-          "memory": "You held a family meeting that cleared the air and aligned everyone."
+            "children": 8
+          }
         },
         {
           "label": "Have casual dinner conversations",
+          "memory": "You opened conversations over dinner and the issues got aired.",
           "effects": {
-            "children": 5,
+            "wellbeing": 2,
             "marriage": 5,
-            "stress": -2
-          },
-          "memory": "You opened conversations over dinner and the issues got aired."
+            "children": 5
+          }
         },
         {
           "label": "Keep hoping things sort themselves",
+          "memory": "The unaddressed issues kept piling up and the tension built.",
           "effects": {
-            "children": -6,
+            "wellbeing": -7,
             "marriage": -5,
-            "stress": 7
-          },
-          "memory": "The unaddressed issues kept piling up and the tension built."
+            "children": -6
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "condition": {
+        "conditions": [
+          {
+            "stat": "marriage",
+            "op": "lte",
+            "value": 45
+          },
+          {
+            "stat": "wellbeing",
+            "op": "lte",
+            "value": 40
+          }
+        ],
+        "conditionOp": "OR"
+      }
     },
     {
       "id": "unexpected-pregnancy",
@@ -2614,30 +3108,34 @@
       "choices": [
         {
           "label": "Sit with it together and talk deeply",
+          "memory": "You and your spouse faced the unexpected news together.",
           "effects": {
-            "marriage": 10,
-            "stress": 5
-          },
-          "memory": "You and your spouse faced the unexpected news together."
+            "wellbeing": -5,
+            "marriage": 10
+          }
         },
         {
           "label": "Talk to your pastor or counselor first",
+          "memory": "You sought guidance before making any decisions.",
           "effects": {
-            "stress": -3,
-            "marriage": 8,
-            "health": 3
-          },
-          "memory": "You sought guidance before making any decisions."
+            "wellbeing": 6,
+            "marriage": 8
+          }
         },
         {
           "label": "React with fear and pull apart",
+          "memory": "Fear drove you apart at the moment you needed each other most.",
           "effects": {
-            "marriage": -10,
-            "stress": 12,
-            "health": -4
-          },
-          "memory": "Fear drove you apart at the moment you needed each other most."
+            "wellbeing": -16,
+            "marriage": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2654,33 +3152,38 @@
       "choices": [
         {
           "label": "File for benefits and activate network immediately",
+          "memory": "You acted fast after job loss and built momentum quickly.",
           "effects": {
-            "money": 500,
-            "stress": 7,
+            "wallet": 3,
+            "wellbeing": -7,
             "marriage": 5
-          },
-          "memory": "You acted fast after job loss and built momentum quickly."
+          }
         },
         {
           "label": "Take a week to regroup as a family",
+          "memory": "You took a breath with your family before launching the job search.",
           "effects": {
-            "money": -200,
+            "wallet": -1,
+            "wellbeing": 3,
             "marriage": 10,
-            "stress": -3,
             "children": 5
-          },
-          "memory": "You took a breath with your family before launching the job search."
+          }
         },
         {
           "label": "Panic and isolate",
+          "memory": "Job loss sent you into isolation and the situation worsened.",
           "effects": {
-            "money": -800,
-            "stress": 14,
-            "marriage": -8,
-            "health": -4
-          },
-          "memory": "Job loss sent you into isolation and the situation worsened."
+            "wallet": -5,
+            "wellbeing": -18,
+            "marriage": -8
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2695,32 +3198,35 @@
       "choices": [
         {
           "label": "Replace it today",
+          "memory": "You replaced the water heater before the week got more complicated.",
           "effects": {
-            "money": -1100,
-            "stress": 3,
+            "wallet": -7,
+            "wellbeing": -3,
             "marriage": 4
-          },
-          "memory": "You replaced the water heater before the week got more complicated."
+          }
         },
         {
           "label": "Get three quotes first",
+          "memory": "You shopped quotes and saved money on the water heater replacement.",
           "effects": {
-            "money": -850,
-            "stress": 2,
+            "wallet": -6,
+            "wellbeing": -2,
             "marriage": 3
-          },
-          "memory": "You shopped quotes and saved money on the water heater replacement."
+          }
         },
         {
           "label": "Cold showers for a week",
+          "memory": "You delayed replacing the water heater and everyone suffered for it.",
           "effects": {
-            "money": -200,
-            "stress": 9,
-            "marriage": -5,
-            "health": -2
-          },
-          "memory": "You delayed replacing the water heater and everyone suffered for it."
+            "wallet": -1,
+            "wellbeing": -11,
+            "marriage": -5
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2736,28 +3242,34 @@
       "choices": [
         {
           "label": "Call the billing department and negotiate",
+          "memory": "You challenged the medical bill and got a significant reduction.",
           "effects": {
-            "money": 600,
-            "stress": 4
-          },
-          "memory": "You challenged the medical bill and got a significant reduction."
+            "wallet": 4,
+            "wellbeing": -4
+          }
         },
         {
           "label": "Set up a payment plan",
+          "memory": "You arranged a manageable payment plan for the medical bill.",
           "effects": {
-            "money": -300,
-            "stress": 2
-          },
-          "memory": "You arranged a manageable payment plan for the medical bill."
+            "wallet": -2,
+            "wellbeing": -2
+          }
         },
         {
           "label": "Pay it immediately without questioning",
+          "memory": "You paid the surprise medical bill in full without pushing back.",
           "effects": {
-            "money": -2400,
-            "stress": 7
-          },
-          "memory": "You paid the surprise medical bill in full without pushing back."
+            "wallet": -16,
+            "wellbeing": -7
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2772,31 +3284,33 @@
       "choices": [
         {
           "label": "Call emergency plumber immediately",
+          "memory": "You responded fast to the burst pipe and contained the damage.",
           "effects": {
-            "money": -2200,
-            "stress": 8,
+            "wallet": -15,
+            "wellbeing": -8,
             "marriage": 3
-          },
-          "memory": "You responded fast to the burst pipe and contained the damage."
+          }
         },
         {
           "label": "Shut the water and assess damage",
+          "memory": "You shut off the main valve and managed the pipe emergency methodically.",
           "effects": {
-            "money": -1400,
-            "stress": 5,
+            "wallet": -9,
+            "wellbeing": -5,
             "marriage": 4
-          },
-          "memory": "You shut off the main valve and managed the pipe emergency methodically."
+          }
         },
         {
           "label": "Panic and delay calling",
+          "memory": "Delayed action on the burst pipe turned a bad situation into a disaster.",
           "effects": {
-            "money": -5000,
-            "stress": 14,
-            "health": -3
-          },
-          "memory": "Delayed action on the burst pipe turned a bad situation into a disaster."
+            "wallet": -33,
+            "wellbeing": -17
+          }
         }
+      ],
+      "seasons": [
+        "winter"
       ]
     },
     {
@@ -2811,32 +3325,37 @@
       "choices": [
         {
           "label": "Divide the day between both parents",
+          "memory": "You split the sick day fairly and the kid felt taken care of.",
           "effects": {
-            "children": 8,
+            "wellbeing": -4,
             "marriage": 7,
-            "stress": 4
-          },
-          "memory": "You split the sick day fairly and the kid felt taken care of."
+            "children": 8
+          }
         },
         {
           "label": "One parent takes the full day",
+          "memory": "One parent took the full sick day and covered everything.",
           "effects": {
-            "money": -200,
-            "children": 9,
-            "stress": 5,
-            "marriage": 3
-          },
-          "memory": "One parent took the full sick day and covered everything."
+            "wallet": -1,
+            "wellbeing": -5,
+            "marriage": 3,
+            "children": 9
+          }
         },
         {
           "label": "Send them anyway and hope for the best",
+          "memory": "You sent the sick child to school and got a call to come pick them up.",
           "effects": {
-            "children": -7,
-            "stress": 8,
-            "money": -100
-          },
-          "memory": "You sent the sick child to school and got a call to come pick them up."
+            "wallet": -1,
+            "wellbeing": -8,
+            "children": -7
+          }
         }
+      ],
+      "seasons": [
+        "fall",
+        "winter",
+        "spring"
       ]
     },
     {
@@ -2851,29 +3370,31 @@
       "choices": [
         {
           "label": "Join the PTA and take a role",
+          "memory": "You joined the PTA and became a presence in your child's school.",
           "effects": {
-            "children": 8,
-            "stress": 4,
-            "money": -50
-          },
-          "memory": "You joined the PTA and became a presence in your child's school."
+            "wellbeing": -4,
+            "children": 8
+          }
         },
         {
           "label": "Volunteer for specific events",
+          "memory": "You signed up for select school events and it made a difference.",
           "effects": {
-            "children": 6,
-            "stress": 2
-          },
-          "memory": "You signed up for select school events and it made a difference."
+            "wellbeing": -2,
+            "children": 6
+          }
         },
         {
           "label": "Stay uninvolved",
+          "memory": "You stayed out of school involvement and your child noticed.",
           "effects": {
-            "children": -4,
-            "stress": -2
-          },
-          "memory": "You stayed out of school involvement and your child noticed."
+            "wellbeing": 2,
+            "children": -4
+          }
         }
+      ],
+      "seasons": [
+        "fall"
       ]
     },
     {
@@ -2888,29 +3409,38 @@
       "choices": [
         {
           "label": "Max contributions and build a catch-up plan",
+          "memory": "You faced the retirement gap honestly and started a real catch-up plan.",
           "effects": {
-            "money": -600,
-            "stress": 4
-          },
-          "memory": "You faced the retirement gap honestly and started a real catch-up plan."
+            "wallet": -4,
+            "wellbeing": -4
+          }
         },
         {
           "label": "Increase contributions by 2%",
+          "memory": "You made a small but real move to close the retirement gap.",
           "effects": {
-            "money": -200,
-            "stress": -1
-          },
-          "memory": "You made a small but real move to close the retirement gap."
+            "wallet": -1,
+            "wellbeing": 1
+          }
         },
         {
           "label": "Close the tab and avoid it",
+          "memory": "You closed the retirement account screen and the gap quietly grew.",
           "effects": {
-            "money": -800,
-            "stress": 5
-          },
-          "memory": "You closed the retirement account screen and the gap quietly grew."
+            "wallet": -5,
+            "wellbeing": -5
+          }
         }
-      ]
+      ],
+      "seasons": [
+        "winter",
+        "spring"
+      ],
+      "condition": {
+        "stat": "wallet",
+        "op": "lte",
+        "value": 50
+      }
     },
     {
       "id": "parent-remarriage",
@@ -2924,30 +3454,36 @@
       "choices": [
         {
           "label": "Support them and get to know the partner",
+          "memory": "You chose to support your parent's new relationship with open arms.",
           "effects": {
-            "stress": -3,
+            "wellbeing": 3,
             "marriage": 5,
             "children": 5
-          },
-          "memory": "You chose to support your parent's new relationship with open arms."
+          }
         },
         {
           "label": "Express your concerns privately to your parent",
+          "memory": "You had an honest conversation with your parent about your concerns.",
           "effects": {
-            "stress": 3,
+            "wellbeing": -3,
             "marriage": 3
-          },
-          "memory": "You had an honest conversation with your parent about your concerns."
+          }
         },
         {
           "label": "Let resentment fester",
+          "memory": "You let the resentment about your parent's remarriage go unspoken and grow.",
           "effects": {
-            "stress": 7,
+            "wellbeing": -7,
             "marriage": -4,
             "children": -3
-          },
-          "memory": "You let the resentment about your parent's remarriage go unspoken and grow."
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -2962,32 +3498,35 @@
       "choices": [
         {
           "label": "Grieve together and lean on your community",
+          "memory": "You and your spouse grieved together and didn't carry it alone.",
           "effects": {
-            "marriage": 10,
-            "stress": -5,
-            "health": 3
-          },
-          "memory": "You and your spouse grieved together and didn't carry it alone."
+            "wellbeing": 8,
+            "marriage": 10
+          }
         },
         {
           "label": "Seek counseling as a couple",
+          "memory": "You got professional support after the loss and found your footing together.",
           "effects": {
-            "money": -300,
-            "marriage": 9,
-            "health": 4,
-            "stress": -4
-          },
-          "memory": "You got professional support after the loss and found your footing together."
+            "wallet": -2,
+            "wellbeing": 8,
+            "marriage": 9
+          }
         },
         {
           "label": "Shut down and grieve separately",
+          "memory": "You each grieved alone and the silence created distance.",
           "effects": {
-            "marriage": -10,
-            "stress": 10,
-            "health": -5
-          },
-          "memory": "You each grieved alone and the silence created distance."
+            "wellbeing": -15,
+            "marriage": -10
+          }
         }
+      ],
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
       ]
     },
     {
@@ -3002,30 +3541,34 @@
       "choices": [
         {
           "label": "Have an open conversation about online safety",
+          "memory": "You talked honestly with your child about online safety and trust.",
           "effects": {
-            "children": 9,
-            "stress": -3,
-            "marriage": 4
-          },
-          "memory": "You talked honestly with your child about online safety and trust."
+            "wellbeing": 3,
+            "marriage": 4,
+            "children": 9
+          }
         },
         {
           "label": "Set up parental filters and monitor closely",
+          "memory": "You updated the tech controls and had the conversation.",
           "effects": {
-            "children": 5,
-            "stress": -1
-          },
-          "memory": "You updated the tech controls and had the conversation."
+            "wellbeing": 1,
+            "children": 5
+          }
         },
         {
           "label": "Remove all devices as punishment",
+          "memory": "You reacted with removal instead of a real conversation.",
           "effects": {
-            "children": -6,
-            "stress": 5,
-            "marriage": -2
-          },
-          "memory": "You reacted with removal instead of a real conversation."
+            "wellbeing": -5,
+            "marriage": -2,
+            "children": -6
+          }
         }
+      ],
+      "seasons": [
+        "summer",
+        "fall"
       ]
     }
   ],

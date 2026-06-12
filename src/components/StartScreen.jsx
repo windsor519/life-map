@@ -14,6 +14,9 @@ const familyGroupFields = {
   kids: { ageKey: "kidsAges", sexKey: "kidsSexes" }
 };
 
+const elderGroupKey = "elders";
+const elderSplitIndex = 4;
+
 const splitFamilyValues = (value) =>
   String(value ?? "")
     .split(/[\n,]+/)
@@ -43,6 +46,16 @@ const getFamilyMembersForGroup = (familyInput, groupKey) => {
   }));
 };
 
+const getFamilyElders = (familyInput) => [
+  ...getFamilyMembersForGroup(familyInput, "grandparents"),
+  ...getFamilyMembersForGroup(familyInput, "greatGrandparents")
+];
+
+const splitFamilyElders = (members) => ({
+  grandparents: members.slice(0, elderSplitIndex),
+  greatGrandparents: members.slice(elderSplitIndex)
+});
+
 const getSpouseField = (familyInput, field) => {
   if (familyInput?.spouse && typeof familyInput.spouse === "object") {
     return familyInput.spouse[field] ?? "";
@@ -56,8 +69,8 @@ const getSpouseField = (familyInput, field) => {
 };
 
 const sexOptions = [
-  { value: "female", label: "F" },
-  { value: "male", label: "M" }
+  { value: "male", label: "M" },
+  { value: "female", label: "F" }
 ];
 
 const SexRadioGroup = ({ value, onChange, name, ariaLabel, style }) => (
@@ -144,7 +157,7 @@ const styles = {
   }
 };
 
-const DynamicFamilySection = ({ label, groupKey, maxCount, description, members = [], onUpdate, onAdd, onRemove }) => {
+const DynamicFamilySection = ({ label, addLabel, groupKey, maxCount, description, members = [], onUpdate, onAdd, onRemove }) => {
   return (
     <div style={styles.sectionGroup}>
       <div style={styles.meta}>
@@ -197,7 +210,7 @@ const DynamicFamilySection = ({ label, groupKey, maxCount, description, members 
           style={styles.addBtn}
           onClick={() => onAdd(groupKey, maxCount)}
         >
-          + Add {label.split(" ")[0].replace(/s$/, '')}
+          + Add {addLabel ?? label.split(" ")[0].replace(/s$/, '')}
         </button>
       )}
     </div>
@@ -220,34 +233,47 @@ export default function StartScreen({
 }) {
 
   const familyMembers = {
-    grandparents: getFamilyMembersForGroup(familyInput, "grandparents"),
-    greatGrandparents: getFamilyMembersForGroup(familyInput, "greatGrandparents"),
+    elders: getFamilyElders(familyInput),
     kids: getFamilyMembersForGroup(familyInput, "kids")
   };
 
   const updateFamilyMember = (groupKey, index, field, value) => {
     setFamilyInput((prev) => {
-      const updatedGroup = getFamilyMembersForGroup(prev, groupKey);
+      const updatedGroup = groupKey === elderGroupKey ? getFamilyElders(prev) : getFamilyMembersForGroup(prev, groupKey);
       updatedGroup[index] = { ...updatedGroup[index], [field]: value };
+
+      if (groupKey === elderGroupKey) {
+        return { ...prev, ...splitFamilyElders(updatedGroup) };
+      }
+
       return { ...prev, [groupKey]: updatedGroup };
     });
   };
 
   const addFamilyMember = (groupKey, maxCount) => {
     setFamilyInput((prev) => {
-      const currentGroup = getFamilyMembersForGroup(prev, groupKey);
+      const currentGroup = groupKey === elderGroupKey ? getFamilyElders(prev) : getFamilyMembersForGroup(prev, groupKey);
       if (currentGroup.length >= maxCount) return prev;
 
-      return {
-        ...prev,
-        [groupKey]: [...currentGroup, { name: "", age: "", sex: "female" }]
-      };
+      const updatedGroup = [...currentGroup, { name: "", age: "", sex: "female" }];
+
+      if (groupKey === elderGroupKey) {
+        return { ...prev, ...splitFamilyElders(updatedGroup) };
+      }
+
+      return { ...prev, [groupKey]: updatedGroup };
     });
   };
 
   const removeFamilyMember = (groupKey, index) => {
     setFamilyInput((prev) => {
-      const updatedGroup = getFamilyMembersForGroup(prev, groupKey).filter((_, i) => i !== index);
+      const currentGroup = groupKey === elderGroupKey ? getFamilyElders(prev) : getFamilyMembersForGroup(prev, groupKey);
+      const updatedGroup = currentGroup.filter((_, i) => i !== index);
+
+      if (groupKey === elderGroupKey) {
+        return { ...prev, ...splitFamilyElders(updatedGroup) };
+      }
+
       return { ...prev, [groupKey]: updatedGroup };
     });
   };
@@ -296,18 +322,17 @@ export default function StartScreen({
               <span>Your name (optional)</span>
               <input type="text" value={startName} onChange={(event) => setStartName(event.target.value)} placeholder="What should the story call you?" />
             </label>
-            <label>
-              <span>Starting age</span>
-              <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} />
-            </label>
             <div className="setup-question">
-              <span>Your sex</span>
-              <SexRadioGroup
-                name="start-sex"
-                ariaLabel="Your sex"
-                value={startSex}
-                onChange={setStartSex}
-              />
+              <span>Your age/sex</span>
+              <div className="age-sex-control">
+                <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} aria-label="Your age" />
+                <SexRadioGroup
+                  name="start-sex"
+                  ariaLabel="Your sex"
+                  value={startSex}
+                  onChange={setStartSex}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -317,29 +342,19 @@ export default function StartScreen({
           <div className="randomizer-heading">
             <div>
               <p className="eyebrow">Family first</p>
-              <h2>Enter your family</h2>
-              <p>Add names, ages, and sex markers so your family can age dynamically over the seasons.</p>
+              <h2>Enter family age/sex</h2>
+              <p>Add only the names, ages, and M/F markers you want in the story.</p>
             </div>
           </div>
 
           {/* Wrapper to stack the styled sub-sections */}
           <div className="startup-family-stack">
             <DynamicFamilySection 
-              label="Grandparents" 
-              groupKey="grandparents" 
-              maxCount={4} 
-              members={familyMembers.grandparents}
-              onUpdate={updateFamilyMember}
-              onAdd={addFamilyMember}
-              onRemove={removeFamilyMember}
-            />
-            
-            <DynamicFamilySection 
-              label="Great-Grandparents" 
-              groupKey="greatGrandparents" 
-              maxCount={4} 
-              description="Optional bonus family ties" 
-              members={familyMembers.greatGrandparents}
+              label="Family elders age/sex" 
+              addLabel="elder"
+              groupKey={elderGroupKey}
+              maxCount={8} 
+              members={familyMembers.elders}
               onUpdate={updateFamilyMember}
               onAdd={addFamilyMember}
               onRemove={removeFamilyMember}
@@ -349,13 +364,13 @@ export default function StartScreen({
             <div style={styles.sectionGroup}>
               <div style={styles.meta}>
                 <h3 style={styles.title}>
-                  Spouse / Partner <span style={{ ...styles.badge, fontStyle: "italic" }}>(Optional)</span>
+                  Spouse age/sex <span style={{ ...styles.badge, fontStyle: "italic" }}>(Optional)</span>
                 </h3>
               </div>
               <div style={styles.inlineRow}>
                 <input
                   type="text"
-                  placeholder="Partner's Name"
+                  placeholder="Spouse name"
                   style={styles.nameInput}
                   value={getSpouseField(familyInput, "name")}
                   onChange={(e) => updateSpouse("name", e.target.value)}
@@ -378,7 +393,8 @@ export default function StartScreen({
             </div>
 
             <DynamicFamilySection 
-              label="Kids" 
+              label="Kids age/sex" 
+              addLabel="kid"
               groupKey="kids" 
               maxCount={6} 
               members={familyMembers.kids}

@@ -3166,7 +3166,7 @@ textarea:focus {
 }
 
 .startup-form .form-grid {
-  grid-template-columns: minmax(190px, 2fr) minmax(110px, 1fr) minmax(130px, max-content);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
 }
 
@@ -3182,76 +3182,38 @@ textarea:focus {
   white-space: nowrap;
 }
 
-.sex-radio-group {
+.age-sex-control,
+.sex-radio-group,
+.sex-radio-option {
   display: inline-flex;
-  width: fit-content;
-  gap: 0.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
+  align-items: center;
+}
+
+.age-sex-control {
+  gap: 0.75rem;
   margin-top: 0.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.25rem;
+}
+
+.age-sex-control input[type="number"] {
+  max-width: 6rem;
+  margin-top: 0;
+}
+
+.sex-radio-group {
+  width: fit-content;
+  gap: 0.6rem;
 }
 
 .sex-radio-option {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sex-radio-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sex-radio-option span {
-  display: inline-grid;
-  min-width: 2.4rem;
-  min-height: 2.05rem;
-  place-items: center;
-  border-radius: 999px;
-  color: rgba(248, 251, 255, 0.74);
-  font-weight: 950;
-  line-height: 1;
-  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
-}
-
-.sex-radio-option input:checked + span {
-  background: linear-gradient(135deg, #ff7a59, #7c3aed);
-  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.28);
-  color: #fff;
-}
-
-.sex-radio-option input:focus-visible + span {
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+  gap: 0.25rem;
+  color: #d8e3f8;
+  font-weight: 850;
 }
 
 .startup-family-stack {
   display: grid;
   gap: 0.85rem;
   margin-top: 1rem;
-}
-
-.startup-form select {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 1rem;
-  margin-top: 0.5rem;
-  color: #f8fbff;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.85rem 0.95rem;
-  outline: none;
-}
-
-.startup-form select:focus {
-  border-color: rgba(125, 211, 252, 0.8);
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
-}
-
-.startup-form option {
-  color: #0f172a;
 }
 
 .startup-form .actions {

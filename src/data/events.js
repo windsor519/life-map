@@ -1,5 +1,15 @@
 import { baseEvents, generatedEventBlueprints } from "./events.json";
 import familyAgeEvents from "./family_age_events.json";
+import careerEvents from "./events/career.js";
+import communityEvents from "./events/community.js";
+import errandsEvents from "./events/errands.js";
+import familyEvents from "./events/family.js";
+import homeEvents from "./events/home.js";
+import parentingEvents from "./events/parenting.js";
+import schoolEvents from "./events/school.js";
+import unexpectedEvents from "./events/unexpected.js";
+import walletEvents from "./events/wallet.js";
+import wellbeingEvents from "./events/wellbeing.js";
 
 const generatedEvents = Array.from({ length: 279 }, (_, index) => {
   const blueprint = generatedEventBlueprints[index % generatedEventBlueprints.length];
@@ -24,6 +34,19 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
   };
 });
 
-const events = [...baseEvents, ...familyAgeEvents, ...generatedEvents];
+const refactoredEvents = [
+  ...careerEvents,
+  ...communityEvents,
+  ...errandsEvents,
+  ...familyEvents,
+  ...homeEvents,
+  ...parentingEvents,
+  ...schoolEvents,
+  ...unexpectedEvents,
+  ...walletEvents,
+  ...wellbeingEvents
+];
+
+const events = [...baseEvents, ...familyAgeEvents, ...refactoredEvents, ...generatedEvents];
 
 export default events;

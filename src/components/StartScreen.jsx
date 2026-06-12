@@ -55,6 +55,28 @@ const getSpouseField = (familyInput, field) => {
   return "";
 };
 
+const sexOptions = [
+  { value: "female", label: "F" },
+  { value: "male", label: "M" }
+];
+
+const SexRadioGroup = ({ value, onChange, name, ariaLabel, style }) => (
+  <div className="sex-radio-group" role="radiogroup" aria-label={ariaLabel} style={style}>
+    {sexOptions.map((option) => (
+      <label key={option.value} className="sex-radio-option">
+        <input
+          type="radio"
+          name={name}
+          value={option.value}
+          checked={value === option.value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+        <span>{option.label}</span>
+      </label>
+    ))}
+  </div>
+);
+
 const styles = {
   sectionGroup: {
     background: "linear-gradient(145deg, rgba(15, 23, 42, 0.58), rgba(255, 255, 255, 0.075))",
@@ -88,7 +110,7 @@ const styles = {
   },
   inlineRow: {
     display: "grid",
-    gridTemplateColumns: "minmax(130px, 2fr) 76px minmax(94px, 1fr) auto",
+    gridTemplateColumns: "minmax(130px, 2fr) 76px minmax(94px, max-content) auto",
     alignItems: "center",
     gap: "0.55rem",
     width: "100%"
@@ -100,9 +122,8 @@ const styles = {
     width: "75px",
     flexShrink: 0
   },
-  selectInput: {
-    flex: "1 1 0%",
-    minWidth: "90px"
+  sexRadioInput: {
+    minWidth: "94px"
   },
   removeBtn: {
     background: "rgba(248, 113, 113, 0.12)",
@@ -150,15 +171,13 @@ const DynamicFamilySection = ({ label, groupKey, maxCount, description, members 
               value={member.age || ""}
               onChange={(e) => onUpdate(groupKey, index, "age", e.target.value)}
             />
-            <select
-              style={styles.selectInput}
+            <SexRadioGroup
+              name={`${groupKey}-${index}-sex`}
+              ariaLabel={`${label} member ${index + 1} sex`}
+              style={styles.sexRadioInput}
               value={member.sex || "female"}
-              onChange={(e) => onUpdate(groupKey, index, "sex", e.target.value)}
-            >
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="other">Other</option>
-            </select>
+              onChange={(value) => onUpdate(groupKey, index, "sex", value)}
+            />
             <button 
               type="button" 
               style={styles.removeBtn}
@@ -281,15 +300,15 @@ export default function StartScreen({
               <span>Starting age</span>
               <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} />
             </label>
-            <label>
+            <div className="setup-question">
               <span>Your sex</span>
-              <select value={startSex} onChange={(event) => setStartSex(event.target.value)}>
-                <option value="">Select...</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
+              <SexRadioGroup
+                name="start-sex"
+                ariaLabel="Your sex"
+                value={startSex}
+                onChange={setStartSex}
+              />
+            </div>
           </div>
         </section>
 
@@ -348,16 +367,13 @@ export default function StartScreen({
                   value={getSpouseField(familyInput, "age")}
                   onChange={(e) => updateSpouse("age", e.target.value)}
                 />
-                <select
-                  style={styles.selectInput}
+                <SexRadioGroup
+                  name="spouse-sex"
+                  ariaLabel="Spouse or partner sex"
+                  style={styles.sexRadioInput}
                   value={getSpouseField(familyInput, "sex")}
-                  onChange={(e) => updateSpouse("sex", e.target.value)}
-                >
-                  <option value="">Sex...</option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                </select>
+                  onChange={(value) => updateSpouse("sex", value)}
+                />
               </div>
             </div>
 

@@ -79,7 +79,7 @@ const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => sea
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
 const createEmptySeasonHistory = () => Object.fromEntries(seasonConfig.map((season) => [season.id, []]));
-const isNewYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
+const isSpringYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
 const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month).id) => {
   const selections = Object.values(game.selectedChoices ?? {});
 
@@ -92,7 +92,7 @@ const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month)
   }));
 };
 const updateSeasonHistory = (game, nextMonth) => {
-  if (isNewYearRefresh(game.month, nextMonth)) {
+  if (isSpringYearRefresh(game.month, nextMonth)) {
     return createEmptySeasonHistory();
   }
 
@@ -182,7 +182,7 @@ const getFamilyAgeRange = (family, currentAge, currentMonth) => {
   };
 };
 
-const getNewYearWisdom = (gameState) => {
+const getFamilyAgeWisdom = (gameState) => {
   const ageRange = getFamilyAgeRange(gameState.family, gameState.age, gameState.month);
   const fallback = wisdomRecords[0] ?? null;
 
@@ -247,7 +247,7 @@ const seasonalWisdomByStat = {
 
 const getSeasonalFamilyWisdom = (gameState, previousGame = null, targetMonth = gameState?.month, deltas = null) => {
   const ageRange = getFamilyAgeRange(gameState?.family, gameState?.age, targetMonth);
-  const ageRecord = getNewYearWisdom({ ...gameState, month: targetMonth });
+  const ageRecord = getFamilyAgeWisdom({ ...gameState, month: targetMonth });
   const statEntries = summaryStatKeys.map((key) => ({
     key,
     value: clamp(Number(gameState?.[key] ?? 0)),
@@ -268,7 +268,7 @@ const getSeasonalFamilyWisdom = (gameState, previousGame = null, targetMonth = g
 
   return {
     kicker: "Family wisdom card",
-    title: `${targetSeason.label} timbit: ${statCopy.title}`,
+    title: `${targetSeason.label} wisdom: ${statCopy.title}`,
     seasonLabel: targetSeason.label,
     ageRangeLabel: formatAgeRange(ageRange),
     ageTitle: ageRecord?.title ?? "Family season",
@@ -936,7 +936,6 @@ const createDefaultGame = () => ({
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
-  newYearWisdom: null,
   gameOver: false,
   gameOverReason: null,
   legacy: createDefaultLegacy(),
@@ -962,7 +961,6 @@ const normalizeGame = (game) => ({
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
   weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
-  newYearWisdom: game?.newYearWisdom && typeof game.newYearWisdom === "object" ? game.newYearWisdom : null,
   gameOver: Boolean(game?.gameOver),
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
   legacy: normalizeLegacy(game?.legacy),
@@ -1021,7 +1019,6 @@ export default function App() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [familySidebarOpen, setFamilySidebarOpen] = useState(false);
-  const [wisdomSidebarOpen, setWisdomSidebarOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
 
@@ -1038,20 +1035,19 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
-    if ((!familySidebarOpen && !wisdomSidebarOpen) || typeof window === "undefined") {
+    if (!familySidebarOpen || typeof window === "undefined") {
       return undefined;
     }
 
     const closeOnEscape = (event) => {
       if (event.key === "Escape") {
         setFamilySidebarOpen(false);
-        setWisdomSidebarOpen(false);
       }
     };
 
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [familySidebarOpen, wisdomSidebarOpen]);
+  }, [familySidebarOpen]);
 
   useEffect(() => () => stopZenMusic(false), []);
 
@@ -1190,7 +1186,6 @@ export default function App() {
       currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
-      newYearWisdom: null,
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
@@ -1204,10 +1199,7 @@ export default function App() {
     };
 
     setSimulationState(createIdleSimulationState());
-    setGame({
-      ...initializedGame,
-      newYearWisdom: getNewYearWisdom(initializedGame)
-    });
+    setGame(initializedGame);
     startZenMusic();
   };
 
@@ -1229,7 +1221,6 @@ export default function App() {
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
     setFamilySidebarOpen(false);
-    setWisdomSidebarOpen(false);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
@@ -1243,6 +1234,7 @@ export default function App() {
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
   const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
+  const activeSeasonWisdom = useMemo(() => getSeasonalFamilyWisdom(game, null, game.month), [game]);
 
   useEffect(() => {
     if (!musicPlaying || audioRef.current?.seasonId === activeSeason.id) {
@@ -1469,16 +1461,11 @@ export default function App() {
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     };
-    const previewNextGameWithWisdom = {
-      ...previewNextGame,
-      newYearWisdom: isNewYearRefresh(game.month, nextSeasonState.month) ? getNewYearWisdom(previewNextGame) : game.newYearWisdom
-    };
-
     setActiveDecisionContext(null);
     setSeasonTransition({
       previousSeasonId: getSeasonForMonth(game.month).id,
       targetSeasonId: getSeasonForMonth(nextSeasonState.month).id,
-      wisdom: getSeasonalFamilyWisdom(previewNextGameWithWisdom, game, nextSeasonState.month)
+      wisdom: getSeasonalFamilyWisdom(previewNextGame, game, nextSeasonState.month)
     });
     setGame((prevGame) => {
       const seasonHistory = updateSeasonHistory(prevGame, nextSeasonState.month);
@@ -1492,12 +1479,7 @@ export default function App() {
         memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
       };
 
-      const nextGameWithWisdom = {
-        ...nextGame,
-        newYearWisdom: isNewYearRefresh(prevGame.month, nextSeasonState.month) ? getNewYearWisdom(nextGame) : prevGame.newYearWisdom
-      };
-
-      return nextGameWithWisdom;
+      return nextGame;
     });
   };
 
@@ -1598,14 +1580,10 @@ export default function App() {
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
     };
-    const advancedGame = {
-      ...advancedGameBase,
-      newYearWisdom: isNewYearRefresh(game.month, nextSeasonState.month) ? getNewYearWisdom(advancedGameBase) : game.newYearWisdom
-    };
     const monthlySummary = createSeasonalSummary({ previousGame: game, nextState });
     const finalGame = finishRunIfNeeded({
-      ...advancedGame,
-      weekStartStats: captureStats(advancedGame),
+      ...advancedGameBase,
+      weekStartStats: captureStats(advancedGameBase),
       weeklySummary: monthlySummary
     }, game);
 
@@ -1826,28 +1804,12 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-actions">
-          {game.newYearWisdom ? (
-            <button
-              className="secondary wisdom-sidebar-toggle"
-              type="button"
-              aria-controls="wisdom-sidebar"
-              aria-expanded={wisdomSidebarOpen}
-              onClick={() => {
-                setFamilySidebarOpen(false);
-                setWisdomSidebarOpen(true);
-              }}
-            >
-              <span aria-hidden="true">✨</span>
-              New Year Wisdom
-            </button>
-          ) : null}
           <button
             className="secondary family-sidebar-toggle"
             type="button"
             aria-controls="family-sidebar"
             aria-expanded={familySidebarOpen}
             onClick={() => {
-              setWisdomSidebarOpen(false);
               setFamilySidebarOpen(true);
             }}
           >
@@ -1970,6 +1932,23 @@ export default function App() {
                   </div>
                   <p>{season.description}</p>
                   <span className="season-months">{seasonMonthNames}</span>
+                  {isActive && activeSeasonWisdom ? (
+                    <section className="season-screen-wisdom" aria-label={`${season.label} family wisdom`}>
+                      <div className="season-screen-wisdom-header">
+                        <span aria-hidden="true">{activeSeasonWisdom.statIcon}</span>
+                        <div>
+                          <p className="eyebrow">Season wisdom</p>
+                          <h4>{activeSeasonWisdom.title}</h4>
+                        </div>
+                      </div>
+                      <p>{activeSeasonWisdom.summary}</p>
+                      <div className="season-screen-wisdom-details">
+                        <span><strong>{activeSeasonWisdom.ageRangeLabel}</strong><small>{activeSeasonWisdom.ageSummary}</small></span>
+                        <span><strong>Idea</strong><small>{activeSeasonWisdom.focus}</small></span>
+                        <span><strong>Expect</strong><small>{activeSeasonWisdom.expect}</small></span>
+                      </div>
+                    </section>
+                  ) : null}
                   {isActive ? (
                     <div className="season-decisions">
                       {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
@@ -2029,42 +2008,15 @@ export default function App() {
           </div>
         </section>
 
-        {familySidebarOpen || wisdomSidebarOpen ? (
+        {familySidebarOpen ? (
           <button
             className="sidebar-backdrop"
             type="button"
             aria-label="Close sidebar"
             onClick={() => {
               setFamilySidebarOpen(false);
-              setWisdomSidebarOpen(false);
             }}
           />
-        ) : null}
-        {game.newYearWisdom ? (
-          <aside
-            className={`side-stack game-sidebar wisdom-sidebar ${wisdomSidebarOpen ? "open" : ""}`}
-            id="wisdom-sidebar"
-            aria-label="New year wisdom sidebar"
-            aria-hidden={!wisdomSidebarOpen}
-          >
-            <div className="sidebar-header">
-              <div>
-                <p className="eyebrow">New year wisdom</p>
-                <h2>{game.newYearWisdom.title}</h2>
-              </div>
-              <button className="secondary sidebar-close" type="button" onClick={() => setWisdomSidebarOpen(false)}>Close</button>
-            </div>
-            <section className="panel new-year-wisdom-card sidebar-wisdom-card" aria-live="polite">
-              <div className="wisdom-hero" aria-hidden="true">✨</div>
-              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
-              <p>{game.newYearWisdom.summary}</p>
-              <div className="wisdom-expect">
-                <span>Expect</span>
-                <strong>{game.newYearWisdom.expect}</strong>
-              </div>
-              <small>{game.newYearWisdom.focus}</small>
-            </section>
-          </aside>
         ) : null}
         <aside
           className={`side-stack game-sidebar family-sidebar ${familySidebarOpen ? "open" : ""}`}

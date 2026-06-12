@@ -52,6 +52,33 @@ const statConfig = {
 };
 
 const summaryStatKeys = Object.keys(statConfig);
+const displayStatConfig = {
+  wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
+  marriage: statConfig.marriage,
+  children: statConfig.children
+};
+const displayStatKeys = Object.keys(displayStatConfig);
+const getWellbeingValue = (game) => clamp(((game.health ?? 0) + (100 - (game.stress ?? 0))) / 2);
+const getWellbeingDelta = (deltas) => Math.round(((deltas.health ?? 0) - (deltas.stress ?? 0)) / 2);
+const getDisplayStatValue = (game, key) => key === "wellbeing" ? getWellbeingValue(game) : game[key];
+const getDisplayDeltaValue = (deltas, key) => key === "wellbeing" ? getWellbeingDelta(deltas) : deltas[key] ?? 0;
+const getDisplayEffectEntries = (effects) => {
+  const sanitizedEffects = sanitizeEffects(effects);
+  const entries = [];
+  const wellbeingDelta = getWellbeingDelta(sanitizedEffects);
+
+  if ("health" in sanitizedEffects || "stress" in sanitizedEffects) {
+    entries.push(["wellbeing", wellbeingDelta]);
+  }
+
+  ["marriage", "children"].forEach((key) => {
+    if (key in sanitizedEffects) {
+      entries.push([key, sanitizedEffects[key]]);
+    }
+  });
+
+  return entries;
+};
 const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
 
@@ -286,7 +313,8 @@ const getNextSeasonState = (month, age) => {
   };
 };
 
-const UNEXPECTED_EVENT_CHANCE = 0.28;
+const RANDOM_EVENT_CHANCE = 0.067;
+const UNEXPECTED_EVENT_CHANCE = 0.093;
 const surpriseEvents = unexpectedEventRecords.filter(isMoneyFreeEvent).map((event) => ({
   ...event,
   severity: getSeverity(event),
@@ -319,7 +347,7 @@ const getMonthSchedule = (month, year, eventSeed, age, eventList = events) => {
   return Array.from({ length: daysInMonth }, (_, index) => {
     const date = new Date(year, month - 1, index + 1);
     const dayLabel = `${monthNames[month - 1]} ${index + 1}`;
-    const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < 0.2;
+    const hasEvent = seededRandom(eventSeed, month, year, index, "has-event") < RANDOM_EVENT_CHANCE;
     const decisions = hasEvent
       ? [getDecoratedEvent(chooseAgeRelevantEvent(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
       : [];
@@ -785,7 +813,6 @@ export default function App() {
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
   const playableEvents = useMemo(() => [...events, ...(Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents]);
   const activeSeason = getSeasonForMonth(game.month);
-  const activeSeasonIndex = getSeasonIndexForMonth(game.month);
   const seasonSchedule = useMemo(
     () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents)),
     [activeSeason, game.eventSeed, game.age, currentCalendarYear, playableEvents]
@@ -798,10 +825,8 @@ export default function App() {
   const selectedChoices = game.selectedChoices ?? {};
   const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
-  const currentYearProgress = Math.round(((activeSeasonIndex + 1) / seasonConfig.length) * 100);
   const legacy = normalizeLegacy(game.legacy);
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
-  const runNumber = getRunNumber(legacy);
   const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
   const isSimulationLocked = simulationState.phase === "animating" || simulationState.phase === "unexpected" || simulationState.phase === "summary";
 
@@ -1124,9 +1149,9 @@ export default function App() {
 
     return (
     <span className="choice-effects" aria-label="Choice effects">
-      {Object.entries(adjustedEffects).map(([key, value]) => (
+      {getDisplayEffectEntries(adjustedEffects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+          {displayStatConfig[key]?.label ?? statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
         </span>
       ))}
     </span>
@@ -1135,16 +1160,16 @@ export default function App() {
 
   const renderSimulationEffects = (effects) => (
     <span className="choice-effects simulation-effects" aria-label="Simulation stat changes">
-      {Object.entries(effects ?? {}).map(([key, value]) => (
+      {getDisplayEffectEntries(effects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+          {displayStatConfig[key]?.label ?? statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
         </span>
       ))}
     </span>
   );
 
   const renderSummaryDelta = (key, value) => {
-    const config = statConfig[key];
+    const config = displayStatConfig[key] ?? statConfig[key];
     const isGoodChange = key === "stress" ? value <= 0 : value >= 0;
 
     return (
@@ -1167,20 +1192,19 @@ export default function App() {
     return (
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
-          <p className="eyebrow">Run {legacy.runs} game over</p>
+          <p className="eyebrow">Game over</p>
           <h1>New Game+ unlocked</h1>
           <p className="subtitle">{game.gameOverReason}</p>
           <div className="legacy-meta-grid">
-            <span><strong>{legacy.difficulty.toFixed(2)}×</strong> Next difficulty</span>
             <span><strong>{Math.round((legacy.carryRate ?? 0) * 100)}%</strong> Carryover rate</span>
-            <span><strong>{legacy.runs}</strong> Runs completed</span>
+            <span><strong>{legacy.skills ? Object.values(legacy.skills).reduce((sum, level) => sum + level, 0) : 0}</strong> Skill levels saved</span>
           </div>
           <div className="legacy-stat-grid" aria-label="Total New Game Plus bonuses">
-            {summaryStatKeys.map((key) => (
+            {displayStatKeys.map((key) => (
               <article key={key}>
-                <span>{statConfig[key].icon}</span>
-                <strong>{statConfig[key].label}</strong>
-                <em>{formatSummaryDelta(key, totalLegacyBonuses[key] ?? 0)}</em>
+                <span>{displayStatConfig[key].icon}</span>
+                <strong>{displayStatConfig[key].label}</strong>
+                <em>{formatSummaryDelta(key, getDisplayDeltaValue(totalLegacyBonuses, key))}</em>
                 <small>carry + skills</small>
               </article>
             ))}
@@ -1216,21 +1240,18 @@ export default function App() {
       <StartScreen
         customEventError={customEventError}
         customEventsText={customEventsText}
-        difficultyMultiplier={difficultyMultiplier}
         familyInput={familyInput}
         formatSummaryDelta={formatSummaryDelta}
         legacy={legacy}
         onResetGame={resetGame}
         onStartGame={startNewGame}
         quiz={quiz}
-        runNumber={runNumber}
         setCustomEventsText={setCustomEventsText}
         setFamilyInput={setFamilyInput}
         setQuiz={setQuiz}
         setStartAge={setStartAge}
         startAge={startAge}
         statConfig={statConfig}
-        summaryStatKeys={summaryStatKeys}
         totalLegacyBonuses={totalLegacyBonuses}
       />
     );
@@ -1240,7 +1261,7 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Run {runNumber} · {difficultyMultiplier.toFixed(2)}× difficulty · {activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>
+          <p className="eyebrow">{activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>
           <h1>Seasonal Life Map</h1>
           <div className="active-character">
             <span>👨‍👩‍👧‍👦</span>
@@ -1259,8 +1280,9 @@ export default function App() {
       <section className="bottom-turn-hud" aria-label="Life stats and season controls">
         <div className="bottom-stat-strip">
           <section className="stat-grid" aria-label="Current life stats">
-            {Object.entries(statConfig).map(([key, config]) => {
-              const value = game[key];
+            {displayStatKeys.map((key) => {
+              const config = displayStatConfig[key];
+              const value = getDisplayStatValue(game, key);
               const normalizedValue = config.max ? clamp(value, 0, config.max) : null;
               const percentage = config.max ? `${normalizedValue}%` : null;
               const severity = getStatSeverity(value, config);
@@ -1380,21 +1402,6 @@ export default function App() {
         </section>
 
         <aside className="side-stack">
-          <section className="panel timeline-card">
-            <div className="section-heading">
-              <h2>Year progress</h2>
-              <span>{currentYearProgress}%</span>
-            </div>
-            <div className="year-ring" style={{ "--progress": `${currentYearProgress}%` }}>
-              <div>
-                <strong>{activeSeason.icon}</strong>
-                <span>{activeSeason.label} · Age {game.age}</span>
-              </div>
-            </div>
-            <p>Use Simulate Season to automatically resolve the season. Each season includes a chance for unexpected trouble and random life events.</p>
-            <p>Plan the choices you care about, then use Simulate Season to let the seasonal arc resolve the rest.</p>
-          </section>
-
           {game.weeklySummary ? (
             <section className="panel monthly-summary-card compact-summary-card" aria-live="polite">
               <div className="section-heading summary-heading">
@@ -1407,22 +1414,6 @@ export default function App() {
               <p>{game.weeklySummary.headline}</p>
             </section>
           ) : null}
-
-          <section className="panel memories-card">
-            <div className="section-heading">
-              <h2>Recent memories</h2>
-              <span>{game.memories.length}/8 saved</span>
-            </div>
-            {game.memories.length === 0 ? (
-              <p>No memories yet.</p>
-            ) : (
-              <ol>
-                {[...game.memories].reverse().map((memory) => (
-                  <li key={memory}>{memory}</li>
-                ))}
-              </ol>
-            )}
-          </section>
         </aside>
       </div>
 
@@ -1499,7 +1490,7 @@ export default function App() {
               <strong>{activeMonthlySummary.weather}</strong>
             </div>
             <div className="summary-deltas" aria-label="Seasonal stat changes">
-              {summaryStatKeys.map((key) => renderSummaryDelta(key, activeMonthlySummary.deltas[key] ?? 0))}
+              {displayStatKeys.map((key) => renderSummaryDelta(key, getDisplayDeltaValue(activeMonthlySummary.deltas, key)))}
             </div>
             <div className="summary-award">
               <span aria-hidden="true">🏅</span>

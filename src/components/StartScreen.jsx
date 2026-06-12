@@ -65,21 +65,18 @@ const quizSections = [
 export default function StartScreen({
   customEventError,
   customEventsText,
-  difficultyMultiplier,
   familyInput,
   formatSummaryDelta,
   legacy,
   onResetGame,
   onStartGame,
   quiz,
-  runNumber,
   setCustomEventsText,
   setFamilyInput,
   setQuiz,
   setStartAge,
   startAge,
   statConfig,
-  summaryStatKeys,
   totalLegacyBonuses
 }) {
   const updateFamilyField = (key, value) => {
@@ -89,6 +86,12 @@ export default function StartScreen({
   const updateQuiz = (name, value) => {
     setQuiz((currentQuiz) => ({ ...currentQuiz, [name]: value }));
   };
+
+  const legacyPreviewStats = [
+    { key: "wellbeing", icon: "🌿", delta: Math.round(((totalLegacyBonuses.health ?? 0) - (totalLegacyBonuses.stress ?? 0)) / 2) },
+    { key: "marriage", icon: statConfig.marriage.icon, delta: totalLegacyBonuses.marriage ?? 0 },
+    { key: "children", icon: statConfig.children.icon, delta: totalLegacyBonuses.children ?? 0 }
+  ];
 
   return (
     <main className="app-shell setup-shell">
@@ -187,12 +190,12 @@ export default function StartScreen({
         {legacy.runs > 0 ? (
           <section className="legacy-preview" aria-label="New Game Plus bonuses">
             <div>
-              <strong>New Game+ Run {runNumber}</strong>
-              <span>{difficultyMultiplier.toFixed(2)}× difficulty · {Math.round((legacy.carryRate ?? 0) * 100)}% carryover + skill boosts</span>
+              <strong>New Game+</strong>
+              <span>{Math.round((legacy.carryRate ?? 0) * 100)}% carryover + skill boosts</span>
             </div>
             <div className="legacy-preview-stats">
-              {summaryStatKeys.map((key) => (
-                <span key={key}>{statConfig[key].icon} {formatSummaryDelta(key, totalLegacyBonuses[key] ?? 0)}</span>
+              {legacyPreviewStats.map((stat) => (
+                <span key={stat.key}>{stat.icon} {formatSummaryDelta(stat.key, stat.delta)}</span>
               ))}
             </div>
           </section>

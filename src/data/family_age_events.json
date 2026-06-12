@@ -1,0 +1,110 @@
+[
+  {
+    "id": "toddler-sleep-regression",
+    "tags": [
+      "young-family",
+      "family-age",
+      "general"
+    ],
+    "title": "Toddler Sleep Regression",
+    "description": "A little one has started waking up every few hours, and tomorrow still expects everyone to function.",
+    "wisdom": "Small children do not keep adult calendars. The goal is not a perfect night; it is a plan that keeps everyone safe, supported, and a little less frayed.",
+    "severity": "moderate",
+    "category": "Family age event",
+    "icon": "🧸",
+    "accent": "violet",
+    "familyAgeGroups": [
+      {
+        "label": "Toddler in the family",
+        "roles": [
+          "child"
+        ],
+        "minAge": 1,
+        "maxAge": 3
+      }
+    ],
+    "choices": [
+      {
+        "label": "Trade night shifts",
+        "memory": "You and your partner traded night shifts through the toddler sleep regression.",
+        "effects": {
+          "wellbeing": -3,
+          "marriage": 6,
+          "children": 8
+        }
+      },
+      {
+        "label": "Handle it solo",
+        "memory": "You handled the wakeups alone and paid for it the next day.",
+        "effects": {
+          "wellbeing": -10,
+          "marriage": -4,
+          "children": 4
+        }
+      },
+      {
+        "label": "Ask family for backup",
+        "memory": "You asked trusted family for backup so everyone could recover.",
+        "effects": {
+          "wellbeing": 5,
+          "children": 5,
+          "wallet": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "teen-driving-practice",
+    "tags": [
+      "family-age",
+      "parenting",
+      "general"
+    ],
+    "title": "Teen Driving Practice",
+    "description": "A teenager in the family needs supervised driving hours, and the nearest empty parking lot suddenly feels like a final boss arena.",
+    "wisdom": "Teaching independence is rarely comfortable. Patience now becomes confidence later, especially when the stakes include turn signals and everyone's blood pressure.",
+    "severity": "moderate",
+    "category": "Family age event",
+    "icon": "🚙",
+    "accent": "amber",
+    "familyAgeGroups": [
+      {
+        "label": "Driving-age teen in the family",
+        "roles": [
+          "child"
+        ],
+        "minAge": 15,
+        "maxAge": 17
+      }
+    ],
+    "choices": [
+      {
+        "label": "Practice calmly after dinner",
+        "memory": "You made time for calm driving practice with the teen.",
+        "effects": {
+          "wellbeing": -2,
+          "children": 10,
+          "marriage": 2
+        }
+      },
+      {
+        "label": "Pay for extra lessons",
+        "memory": "You paid for extra driving lessons to add structure and confidence.",
+        "effects": {
+          "wallet": -5,
+          "wellbeing": 4,
+          "children": 7
+        }
+      },
+      {
+        "label": "Keep postponing it",
+        "memory": "You postponed driving practice and the teen noticed the delay.",
+        "effects": {
+          "wellbeing": 1,
+          "children": -8,
+          "marriage": -2
+        }
+      }
+    ]
+  }
+]

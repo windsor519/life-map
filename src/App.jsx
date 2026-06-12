@@ -5,7 +5,7 @@ import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
 import FamilyPhoto from "./components/FamilyPhoto.jsx";
 import Setting from "./setting.js";
-import { createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
+import { createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const SETTINGS_KEY = "life-map-settings";
@@ -363,6 +363,64 @@ const isEventConditionMet = (event, gameState) => {
   return isSingleConditionMet(condition, gameState);
 };
 
+const normalizeRequirementList = (requirements) => {
+  if (!requirements) {
+    return [];
+  }
+
+  return Array.isArray(requirements) ? requirements : [requirements];
+};
+
+const matchesFamilyAgeRequirement = (member, requirement) => {
+  if (!Number.isFinite(member?.age)) {
+    return false;
+  }
+
+  const minAge = Number(requirement?.minAge ?? requirement?.min);
+  const maxAge = Number(requirement?.maxAge ?? requirement?.max);
+  const roles = Array.isArray(requirement?.roles) ? requirement.roles : [];
+  const sexes = Array.isArray(requirement?.sexes) ? requirement.sexes : [];
+
+  if (roles.length > 0 && !roles.includes(member.role)) {
+    return false;
+  }
+
+  if (sexes.length > 0 && !sexes.includes(member.sex)) {
+    return false;
+  }
+
+  if (Number.isFinite(minAge) && member.age < minAge) {
+    return false;
+  }
+
+  if (Number.isFinite(maxAge) && member.age > maxAge) {
+    return false;
+  }
+
+  return true;
+};
+
+const isFamilyAgeEventEligible = (event, gameState) => {
+  const requirements = normalizeRequirementList(event?.familyAgeGroups ?? event?.familyAgeGroup);
+
+  if (requirements.length === 0) {
+    return true;
+  }
+
+  if (!gameState?.family) {
+    return false;
+  }
+
+  const familyMembers = getFamilyMembers(gameState.family, gameState.age, gameState.month);
+
+  return requirements.some((requirement) =>
+    familyMembers.some((member) => matchesFamilyAgeRequirement(member, requirement))
+  );
+};
+
+const isEventEligible = (event, gameState) =>
+  isEventConditionMet(event, gameState) && isFamilyAgeEventEligible(event, gameState);
+
 const getAgePriorityTags = (age) => {
   if (age >= 35 && age <= 45) {
     return ["young-family", "eldercare", "midlife"];
@@ -372,7 +430,7 @@ const getAgePriorityTags = (age) => {
 
 const getAgeRelevantEvents = (age, eventList = events, gameState = null) => {
   const priorityTags = getAgePriorityTags(age);
-  const scheduledEvents = eventList.filter((event) => !event.surprise && isEventConditionMet(event, gameState));
+  const scheduledEvents = eventList.filter((event) => !event.surprise && isEventEligible(event, gameState));
   const relevantEvents = scheduledEvents.filter((event) => {
     const tags = event.tags ?? ["general"];
     return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
@@ -471,7 +529,7 @@ const morbidUnexpectedEvents = [
 ];
 const getUnexpectedEventForMonth = (eventSeed, month, year, gameState, settings = createDefaultSettings()) => {
   const surpriseEventPool = settings.morbid ? [...surpriseEvents, ...morbidUnexpectedEvents] : surpriseEvents;
-  const eligibleSurpriseEvents = surpriseEventPool.filter((event) => isEventConditionMet(event, gameState));
+  const eligibleSurpriseEvents = surpriseEventPool.filter((event) => isEventEligible(event, gameState));
 
   if (eligibleSurpriseEvents.length === 0) {
     return null;
@@ -924,7 +982,7 @@ export default function App() {
       memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
       family,
       customEvents,
-      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventConditionMet(eventItem, baseStats))),
+      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
       gameOver: false,

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "little-kid-years",
+    "minAge": 0,
+    "maxAge": 7,
+    "title": "Little-kid orbit",
+    "summary": "The household will probably revolve around routines, transitions, and tiny emotional weather systems.",
+    "expect": "Small choices around sleep, meals, and patience can create outsized calm.",
+    "focus": "Protect predictable rituals and leave extra space for messy recovery days."
+  },
+  {
+    "id": "teen-launchpad",
+    "minAge": 13,
+    "maxAge": 19,
+    "title": "Teen launchpad",
+    "summary": "Independence, identity, and schedule negotiations are likely to become the loudest family themes.",
+    "expect": "Trust-building choices will matter more than perfect control.",
+    "focus": "Offer structure, listen before solving, and keep low-pressure connection on the calendar."
+  },
+  {
+    "id": "midlife-sandwich",
+    "minAge": 35,
+    "maxAge": 55,
+    "title": "Midlife balancing act",
+    "summary": "Your family may ask you to balance work momentum, long-term money choices, and care for more than one generation.",
+    "expect": "Boundaries and planned rest will be as strategic as ambition.",
+    "focus": "Spend attention like a limited resource: deliberately, visibly, and before burnout invoices arrive."
+  }
+]

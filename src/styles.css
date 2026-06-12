@@ -1148,6 +1148,109 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
+.season-history {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.34);
+  padding: 0.75rem;
+}
+
+.season-history > strong {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.season-history-item {
+  display: grid;
+  gap: 0.15rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.6rem;
+}
+
+.season-history-item span {
+  color: #93c5fd;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.season-history-item em {
+  overflow: hidden;
+  color: #dbeafe;
+  font-size: 0.82rem;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.season-history-item strong {
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.new-year-wisdom-card {
+  display: grid;
+  gap: 0.8rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(251, 191, 36, 0.22), transparent 13rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+}
+
+.new-year-wisdom-card p,
+.new-year-wisdom-card small {
+  margin: 0;
+  color: #d7e1f7;
+  line-height: 1.55;
+}
+
+.new-year-wisdom-card small {
+  color: #c4b5fd;
+  font-weight: 800;
+}
+
+.wisdom-range {
+  width: fit-content;
+  border-radius: 999px;
+  color: #fef3c7 !important;
+  background: rgba(251, 191, 36, 0.14);
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.65rem;
+  text-transform: uppercase;
+}
+
+.wisdom-expect {
+  display: grid;
+  gap: 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background: rgba(9, 12, 30, 0.34);
+  padding: 0.8rem;
+}
+
+.wisdom-expect span {
+  color: #93c5fd;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wisdom-expect strong {
+  color: #fff;
+  line-height: 1.35;
+}
+
 @media (max-width: 1120px) {
   .season-carousel {
     display: flex;

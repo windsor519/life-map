@@ -421,6 +421,16 @@ const isFamilyAgeEventEligible = (event, gameState) => {
 const isEventEligible = (event, gameState) =>
   isEventConditionMet(event, gameState) && isFamilyAgeEventEligible(event, gameState);
 
+const isEventSeasonEligible = (event, month) => {
+  const seasons = Array.isArray(event?.seasons) ? event.seasons : [];
+
+  if (seasons.length === 0) {
+    return true;
+  }
+
+  return seasons.includes(getSeasonForMonth(month).id);
+};
+
 const getAgePriorityTags = (age) => {
   if (age >= 35 && age <= 45) {
     return ["young-family", "eldercare", "midlife"];
@@ -428,9 +438,11 @@ const getAgePriorityTags = (age) => {
   return ["general"];
 };
 
-const getAgeRelevantEvents = (age, eventList = events, gameState = null) => {
+const getAgeRelevantEvents = (age, eventList = events, gameState = null, month = gameState?.month) => {
   const priorityTags = getAgePriorityTags(age);
-  const scheduledEvents = eventList.filter((event) => !event.surprise && isEventEligible(event, gameState));
+  const scheduledEvents = eventList.filter((event) =>
+    !event.surprise && isEventEligible(event, gameState) && (!month || isEventSeasonEligible(event, month))
+  );
   const relevantEvents = scheduledEvents.filter((event) => {
     const tags = event.tags ?? ["general"];
     return tags.some((tag) => priorityTags.includes(tag) || tag === "general");
@@ -551,7 +563,7 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
 });
 
 const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameState = null) => {
-  const eventPool = getAgeRelevantEvents(age, eventList, gameState);
+  const eventPool = getAgeRelevantEvents(age, eventList, gameState, month);
   const daysInMonth = getMonthLength(month, year);
 
   return Array.from({ length: daysInMonth }, (_, index) => {

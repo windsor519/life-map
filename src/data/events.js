@@ -7,6 +7,7 @@ import familyEvents from "./events/family.js";
 import homeEvents from "./events/home.js";
 import parentingEvents from "./events/parenting.js";
 import schoolEvents from "./events/school.js";
+import seasonalEvents from "./events/seasonal.js";
 import unexpectedEvents from "./events/unexpected.js";
 import walletEvents from "./events/wallet.js";
 import wellbeingEvents from "./events/wellbeing.js";
@@ -42,6 +43,7 @@ const refactoredEvents = [
   ...homeEvents,
   ...parentingEvents,
   ...schoolEvents,
+  ...seasonalEvents,
   ...unexpectedEvents,
   ...walletEvents,
   ...wellbeingEvents

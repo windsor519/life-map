@@ -3,7 +3,7 @@ import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 import wisdomRecords from "./data/wisdom.json";
 import StartScreen from "./components/StartScreen.jsx";
-import SeasonTransition from "./components/SeasonTransition.jsx";
+import SeasonTransition, { SeasonBackground } from "./components/SeasonTransition.jsx";
 import FamilyPhoto from "./components/FamilyPhoto.jsx";
 import Setting from "./setting.js";
 import { createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
@@ -1578,6 +1578,7 @@ export default function App() {
   if (game.gameOver) {
     return (
       <>
+      <SeasonBackground seasonId={activeSeason.id} />
       {settingsModal}
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
@@ -1610,6 +1611,7 @@ export default function App() {
   if (!game.initialized) {
     return (
       <>
+      <SeasonBackground seasonId={activeSeason.id} />
       {settingsModal}
       <StartScreen
         familyInput={familyInput}
@@ -1628,6 +1630,8 @@ export default function App() {
   }
 
   return (
+    <>
+    <SeasonBackground seasonId={activeSeason.id} />
     <main className="app-shell">
       {settingsModal}
       {seasonTransition ? (
@@ -2008,5 +2012,6 @@ export default function App() {
         );
       })() : null}
     </main>
+    </>
   );
 }

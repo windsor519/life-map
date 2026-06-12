@@ -17,11 +17,13 @@ const familyPhotoCss = `
   gap: 0.9rem;
   min-height: 18rem;
   overflow-x: auto;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  border: 1px solid rgba(255, 247, 237, 0.28);
   border-radius: 1.4rem;
   background:
-    radial-gradient(ellipse at 50% 100%, rgba(34, 197, 94, 0.12), transparent 36%),
-    linear-gradient(180deg, rgba(148, 163, 184, 0.08), rgba(15, 23, 42, 0.22));
+    radial-gradient(ellipse at 50% 105%, rgba(132, 204, 22, 0.18), transparent 38%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.16), rgba(30, 41, 59, 0.24)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 7px);
+  box-shadow: inset 0 0.18rem 0 rgba(255, 255, 255, 0.18), 0 1.4rem 3rem rgba(2, 6, 23, 0.22);
   padding: 1.25rem 1rem 1rem;
 }
 
@@ -33,6 +35,7 @@ const familyPhotoCss = `
   align-items: end;
   gap: 0.42rem;
   color: #e5eefc;
+  filter: drop-shadow(0 0.35rem 0.18rem rgba(15, 23, 42, 0.18));
   text-align: center;
 }
 
@@ -43,12 +46,14 @@ const familyPhotoCss = `
   height: clamp(6.2rem, calc(var(--family-scale) * 4.2rem), 7.6rem);
   place-items: end center;
   overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.25);
+  border: 0.12rem solid rgba(255, 255, 255, 0.48);
   border-radius: 2.2rem 2.2rem 1rem 1rem;
   background:
-    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.34), transparent 2rem),
-    linear-gradient(180deg, rgba(186, 230, 253, 0.28), rgba(30, 41, 59, 0.2));
-  box-shadow: 0 1.1rem 2.3rem rgba(15, 23, 42, 0.28);
+    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.42), transparent 2rem),
+    linear-gradient(180deg, rgba(224, 242, 254, 0.58), rgba(186, 230, 253, 0.18)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 6px);
+  box-shadow: inset 0 0.22rem 0 rgba(255, 255, 255, 0.42), 0 1.1rem 2.3rem rgba(15, 23, 42, 0.28);
+  clip-path: polygon(8% 0, 92% 0, 100% 16%, 96% 100%, 5% 100%, 0 18%);
 }
 
 .family-portrait::after {
@@ -56,7 +61,9 @@ const familyPhotoCss = `
   inset: auto 0 0;
   height: 1.45rem;
   content: "";
-  background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.52));
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(30, 41, 59, 0.34), transparent 70%),
+    linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.38));
   pointer-events: none;
 }
 
@@ -69,10 +76,10 @@ const familyPhotoCss = `
   width: 1.35rem;
   height: 1.35rem;
   place-items: center;
-  border: 1px solid rgba(226, 232, 240, 0.28);
+  border: 0.1rem solid rgba(255, 255, 255, 0.62);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.42);
-  color: #e0f2fe;
+  background: #1e293b;
+  color: #f8fafc;
   font-size: 0.72rem;
   font-weight: 900;
   line-height: 1;
@@ -83,6 +90,8 @@ const familyPhotoCss = `
   --hair: #6b3f2a;
   --shirt: #38bdf8;
   --shirt-shadow: #1d4ed8;
+  --paper-edge: rgba(255, 255, 255, 0.42);
+  --paper-shadow: rgba(15, 23, 42, 0.28);
   position: relative;
   width: calc(var(--family-scale) * 3.15rem);
   min-width: 3.1rem;
@@ -97,6 +106,8 @@ const familyPhotoCss = `
   position: absolute;
   display: block;
   margin: 0;
+  border: 0.08rem solid var(--paper-edge);
+  box-shadow: 0 0.28rem 0.3rem var(--paper-shadow);
   font-size: 0;
   line-height: 0;
 }
@@ -108,9 +119,11 @@ const familyPhotoCss = `
   width: 2.45rem;
   height: 1.05rem;
   border-radius: 55% 55% 34% 34%;
-  background: var(--hair);
-  box-shadow: inset 0 -0.24rem 0 rgba(15, 23, 42, 0.16);
-  transform: translateX(-50%);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 42%),
+    var(--hair);
+  clip-path: polygon(3% 42%, 13% 9%, 45% 0, 78% 7%, 100% 35%, 86% 100%, 18% 88%);
+  transform: translateX(-50%) rotate(-1deg);
 }
 
 .family-hair::before,
@@ -121,6 +134,8 @@ const familyPhotoCss = `
   height: 0.8rem;
   border-radius: 999px;
   background: var(--hair);
+  border: 0.06rem solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0.18rem 0.22rem rgba(15, 23, 42, 0.2);
   content: "";
 }
 
@@ -140,15 +155,16 @@ const familyPhotoCss = `
   z-index: 4;
   width: 2.25rem;
   height: 2.35rem;
-  border: 0.2rem solid var(--hair);
+  border: 0.16rem solid rgba(255, 255, 255, 0.46);
   border-radius: 48% 48% 44% 44%;
   background:
     radial-gradient(circle at 35% 46%, #3f1f12 0.07rem, transparent 0.08rem),
     radial-gradient(circle at 65% 46%, #3f1f12 0.07rem, transparent 0.08rem),
     radial-gradient(ellipse at 50% 70%, rgba(127, 29, 29, 0.62) 0.13rem, transparent 0.14rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), transparent 46%),
     var(--skin);
-  box-shadow: 0 0.32rem 0 var(--hair) inset, 0 0.45rem 0.9rem rgba(15, 23, 42, 0.2);
-  transform: translateX(-50%);
+  clip-path: polygon(20% 5%, 78% 0, 96% 28%, 88% 82%, 55% 100%, 19% 88%, 3% 35%);
+  transform: translateX(-50%) rotate(1deg);
 }
 
 .family-neck {
@@ -159,6 +175,7 @@ const familyPhotoCss = `
   height: 0.85rem;
   border-radius: 0 0 0.35rem 0.35rem;
   background: var(--skin);
+  clip-path: polygon(12% 0, 88% 0, 100% 92%, 0 100%);
   transform: translateX(-50%);
 }
 
@@ -172,8 +189,8 @@ const familyPhotoCss = `
   background:
     radial-gradient(ellipse at 50% 8%, rgba(255, 255, 255, 0.34), transparent 1rem),
     linear-gradient(180deg, var(--shirt), var(--shirt-shadow));
-  box-shadow: inset 0 0.24rem 0 rgba(255, 255, 255, 0.18), 0 1rem 1.8rem rgba(15, 23, 42, 0.24);
-  transform: translateX(-50%);
+  clip-path: polygon(18% 0, 82% 0, 100% 24%, 92% 100%, 8% 100%, 0 26%);
+  transform: translateX(-50%) rotate(-0.8deg);
 }
 
 .family-shoulder {
@@ -183,6 +200,7 @@ const familyPhotoCss = `
   height: 2.55rem;
   border-radius: 999px;
   background: linear-gradient(180deg, var(--shirt), var(--shirt-shadow));
+  clip-path: polygon(28% 0, 78% 7%, 100% 86%, 48% 100%, 0 17%);
 }
 
 .family-shoulder-left {
@@ -213,7 +231,7 @@ const familyPhotoCss = `
   width: 2.72rem;
   height: 3.25rem;
   border-radius: 1.3rem 1.3rem 1.05rem 1.05rem;
-  box-shadow: inset 0 -0.42rem 0 rgba(15, 23, 42, 0.14), 0 0.35rem 0.55rem rgba(15, 23, 42, 0.12);
+  clip-path: polygon(10% 4%, 50% 0, 90% 6%, 100% 34%, 88% 100%, 13% 100%, 0 36%);
 }
 
 .family-female .family-hair::before,
@@ -236,7 +254,6 @@ const familyPhotoCss = `
 
 .family-female .family-head {
   border-width: 0.14rem;
-  box-shadow: 0 0.22rem 0 rgba(124, 45, 18, 0.8) inset, 0 0.45rem 0.9rem rgba(15, 23, 42, 0.2);
 }
 
 .family-male .family-hair {
@@ -275,11 +292,12 @@ const familyPhotoCss = `
 }
 
 .family-self .family-portrait {
-  border-color: rgba(125, 211, 252, 0.6);
+  border-color: rgba(224, 242, 254, 0.86);
   background:
-    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.42), transparent 2rem),
-    linear-gradient(180deg, rgba(125, 211, 252, 0.36), rgba(14, 165, 233, 0.12));
-  box-shadow: 0 1.1rem 2.6rem rgba(14, 165, 233, 0.28);
+    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.5), transparent 2rem),
+    linear-gradient(180deg, rgba(125, 211, 252, 0.52), rgba(14, 165, 233, 0.16)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 6px);
+  box-shadow: inset 0 0.22rem 0 rgba(255, 255, 255, 0.46), 0 1.1rem 2.6rem rgba(14, 165, 233, 0.28);
 }
 
 .family-self .family-bust {
@@ -345,14 +363,16 @@ const familyPhotoCss = `
   justify-items: center;
   gap: 0.42rem;
   padding: 0.72rem 0.7rem 0.68rem;
-  border: 1px solid rgba(226, 232, 240, 0.18);
+  border: 0.12rem solid rgba(255, 247, 237, 0.26);
   border-radius: 1.15rem;
   background:
     radial-gradient(circle at 50% 0%, rgba(125, 211, 252, 0.16), transparent 62%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 8px),
     rgba(15, 23, 42, 0.5);
   color: #e0f2fe;
   text-align: center;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 1rem 2rem rgba(2, 6, 23, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1rem 0 rgba(2, 6, 23, 0.08), 0 1rem 2rem rgba(2, 6, 23, 0.2);
+  clip-path: polygon(4% 0, 96% 0, 100% 10%, 98% 94%, 91% 100%, 6% 100%, 0 90%, 0 8%);
 }
 
 .family-tree-node.family-tree-self {

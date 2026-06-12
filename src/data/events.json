@@ -8,7 +8,7 @@
       ],
       "title": "Daughter's Recital",
       "description": "Your daughter has a recital tonight, but a client also wants a late call.",
-      "wisdom": "Kids remember who showed up. They forget the money you didn't make. This isn't just a recital\u2014it's the moment she knows, deep down, that she mattered more than the deadline.",
+      "wisdom": "Kids remember who showed up. They forget the money you didn't make. This isn't just a recital—it's the moment she knows, deep down, that she mattered more than the deadline.",
       "choices": [
         {
           "label": "Attend the recital",
@@ -97,7 +97,7 @@
       ],
       "title": "Weekend Getaway",
       "description": "Your partner suggests a low-key weekend away to reconnect.",
-      "wisdom": "Relationships don't fail from one big fight\u2014they fade from a thousand small moments you didn't make time for. This getaway is a chance to remember why you chose each other.",
+      "wisdom": "Relationships don't fail from one big fight—they fade from a thousand small moments you didn't make time for. This getaway is a chance to remember why you chose each other.",
       "choices": [
         {
           "label": "Plan the trip",
@@ -147,7 +147,7 @@
       ],
       "title": "Career Course",
       "description": "A practical online course could improve your future earning power.",
-      "wisdom": "Your career is either growing or shrinking\u2014there's no standing still. An investment now in new skills is a bet that future-you will have more options when life throws something unexpected.",
+      "wisdom": "Your career is either growing or shrinking—there's no standing still. An investment now in new skills is a bet that future-you will have more options when life throws something unexpected.",
       "choices": [
         {
           "label": "Enroll",
@@ -186,7 +186,7 @@
         "general"
       ],
       "title": "Date Night",
-      "wisdom": "The person you chose matters. Protect time with them like you'd protect your health\u2014because your relationship is your health. Rescheduling again is how marriages become roommates.",
+      "wisdom": "The person you chose matters. Protect time with them like you'd protect your health—because your relationship is your health. Rescheduling again is how marriages become roommates.",
       "description": "There is finally a free evening for your relationship.",
       "choices": [
         {
@@ -286,7 +286,7 @@
       ],
       "title": "Therapy Session",
       "description": "A therapy opening appears during a stressful stretch.",
-      "wisdom": "Talking to someone trained to help you think clearly is not weakness\u2014it's smart maintenance. The conversations you have now might prevent a breakdown later.",
+      "wisdom": "Talking to someone trained to help you think clearly is not weakness—it's smart maintenance. The conversations you have now might prevent a breakdown later.",
       "choices": [
         {
           "label": "Take the slot",
@@ -416,7 +416,7 @@
       "id": "parent-teacher-conference",
       "title": "Parent-Teacher Conference",
       "severity": "moderate",
-      "wisdom": "Ignoring problems at school doesn't make them go away\u2014it makes them bigger. A teacher reaching out is actually them being on your team. Show up and make a plan together.",
+      "wisdom": "Ignoring problems at school doesn't make them go away—it makes them bigger. A teacher reaching out is actually them being on your team. Show up and make a plan together.",
       "description": "The teacher asks for a conference about slipping homework and classroom focus.",
       "choices": [
         {
@@ -681,7 +681,7 @@
       "severity": "major",
       "surprise": true,
       "category": "Random emergency",
-      "icon": "\ud83d\ude97",
+      "icon": "🚗",
       "accent": "amber",
       "description": "The car will not start on a morning when everyone needs to be somewhere.",
       "choices": [
@@ -724,7 +724,7 @@
       "severity": "major",
       "surprise": true,
       "category": "Random emergency",
-      "icon": "\ud83d\udd25",
+      "icon": "🔥",
       "accent": "rose",
       "description": "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
       "choices": [
@@ -809,7 +809,7 @@
         "general"
       ],
       "title": "Easter Weekend",
-      "description": "Easter weekend is here\u2014services, family gatherings, and traditions all collide.",
+      "description": "Easter weekend is here—services, family gatherings, and traditions all collide.",
       "wisdom": "The holidays that feel like obligation are the ones you don't invest in. Easter, done intentionally, can be the anchor that kids look back on for decades.",
       "choices": [
         {
@@ -941,7 +941,7 @@
       ],
       "title": "A Season of Doubt",
       "description": "You've been wrestling with questions about faith and haven't told anyone.",
-      "wisdom": "Doubt that's hidden becomes corrosive. Doubt that's brought into the light\u2014with a pastor, a friend, or a good book\u2014tends to become the foundation of something stronger.",
+      "wisdom": "Doubt that's hidden becomes corrosive. Doubt that's brought into the light—with a pastor, a friend, or a good book—tends to become the foundation of something stronger.",
       "choices": [
         {
           "label": "Talk to your pastor",
@@ -986,7 +986,7 @@
       ],
       "title": "Unresolved Argument",
       "description": "You and your spouse went to bed angry two nights in a row.",
-      "wisdom": "Letting things sit doesn't resolve them\u2014it compounds them. Every day you leave something unaddressed is a day it quietly grows a root.",
+      "wisdom": "Letting things sit doesn't resolve them—it compounds them. Every day you leave something unaddressed is a day it quietly grows a root.",
       "choices": [
         {
           "label": "Initiate the conversation",
@@ -1031,8 +1031,8 @@
         "general"
       ],
       "title": "Wedding Anniversary",
-      "description": "Your anniversary is this week\u2014it snuck up on you.",
-      "wisdom": "The years go faster than you think. Marking your anniversary intentionally\u2014even simply\u2014says to your partner that you still choose them.",
+      "description": "Your anniversary is this week—it snuck up on you.",
+      "wisdom": "The years go faster than you think. Marking your anniversary intentionally—even simply—says to your partner that you still choose them.",
       "choices": [
         {
           "label": "Plan a special dinner",
@@ -1163,7 +1163,7 @@
       ],
       "title": "In-Laws Visiting",
       "description": "Your in-laws are coming to stay for the weekend and opinions about it differ.",
-      "wisdom": "In-law visits rarely go perfectly. Your job is to stay a team with your spouse\u2014that means running interference for each other and debriefing honestly afterwards.",
+      "wisdom": "In-law visits rarely go perfectly. Your job is to stay a team with your spouse—that means running interference for each other and debriefing honestly afterwards.",
       "choices": [
         {
           "label": "Prepare and welcome them",
@@ -1205,7 +1205,7 @@
       ],
       "title": "Spouse Wants a Career Change",
       "description": "Your spouse wants to leave their stable job to pursue something more meaningful.",
-      "wisdom": "Supporting your spouse's growth is part of the long game. Fear is a legitimate input\u2014but it shouldn't be the only one. Talk it through honestly before the resentment of an unanswered dream grows.",
+      "wisdom": "Supporting your spouse's growth is part of the long game. Fear is a legitimate input—but it shouldn't be the only one. Talk it through honestly before the resentment of an unanswered dream grows.",
       "choices": [
         {
           "label": "Discuss a transition plan",
@@ -1249,7 +1249,7 @@
       ],
       "title": "Lost Intimacy",
       "description": "You realize you and your spouse haven't truly connected in weeks.",
-      "wisdom": "Intimacy doesn't disappear in one dramatic moment\u2014it fades from a hundred small neglects. Naming the distance is the first step toward closing it.",
+      "wisdom": "Intimacy doesn't disappear in one dramatic moment—it fades from a hundred small neglects. Naming the distance is the first step toward closing it.",
       "choices": [
         {
           "label": "Name it and plan a reconnect",
@@ -1297,7 +1297,7 @@
       ],
       "title": "Screen Time Battle",
       "description": "Fights over devices are happening daily and you need a household policy.",
-      "wisdom": "Rules without relationship don't work. A screen-time policy that your kids helped create is one they're more likely to follow\u2014and it models the kind of problem-solving you want them to internalize.",
+      "wisdom": "Rules without relationship don't work. A screen-time policy that your kids helped create is one they're more likely to follow—and it models the kind of problem-solving you want them to internalize.",
       "choices": [
         {
           "label": "Create family screen rules together",
@@ -1391,7 +1391,7 @@
       ],
       "title": "Child's Birthday Party",
       "description": "Your child's birthday is coming up and friends are expecting an invitation.",
-      "wisdom": "The party doesn't have to be Instagram-worthy to be meaningful. What your child will remember is whether they felt celebrated\u2014not whether the balloon arch was symmetrical.",
+      "wisdom": "The party doesn't have to be Instagram-worthy to be meaningful. What your child will remember is whether they felt celebrated—not whether the balloon arch was symmetrical.",
       "choices": [
         {
           "label": "Host a real party",
@@ -1530,7 +1530,7 @@
       ],
       "title": "Adult Child Moving Out",
       "description": "Your oldest is leaving home for the first time and the house will feel different.",
-      "wisdom": "This is what you raised them for. Pride and grief can coexist. Your job now is to launch them well\u2014not hold on.",
+      "wisdom": "This is what you raised them for. Pride and grief can coexist. Your job now is to launch them well—not hold on.",
       "choices": [
         {
           "label": "Help them set up their place",
@@ -1625,7 +1625,7 @@
       ],
       "title": "College Conversation",
       "description": "Your teenager starts asking serious questions about college and what it costs.",
-      "wisdom": "The earlier you have an honest conversation about college finances, the fewer surprises land at signing time. Your kid can handle the truth\u2014they just need it early enough to make good choices.",
+      "wisdom": "The earlier you have an honest conversation about college finances, the fewer surprises land at signing time. Your kid can handle the truth—they just need it early enough to make good choices.",
       "choices": [
         {
           "label": "Map it out together honestly",
@@ -1764,7 +1764,7 @@
       ],
       "title": "Nursing Home Decision",
       "description": "Your parent can no longer safely live alone and the family needs to make a plan.",
-      "wisdom": "No decision in eldercare is without grief. The question isn't which option is painless\u2014it's which one best honors your parent's dignity and your family's real capacity to care.",
+      "wisdom": "No decision in eldercare is without grief. The question isn't which option is painless—it's which one best honors your parent's dignity and your family's real capacity to care.",
       "choices": [
         {
           "label": "Research care facilities together",
@@ -1810,7 +1810,7 @@
       ],
       "title": "Parent's Loneliness",
       "description": "Your widowed parent mentions for the third time this week that they feel alone.",
-      "wisdom": "Loneliness in older adults is a health crisis, not just a mood. Regular connection\u2014even brief\u2014dramatically changes the trajectory for aging parents.",
+      "wisdom": "Loneliness in older adults is a health crisis, not just a mood. Regular connection—even brief—dramatically changes the trajectory for aging parents.",
       "choices": [
         {
           "label": "Set up weekly visits",
@@ -1852,7 +1852,7 @@
         "general"
       ],
       "title": "Sibling Caregiving Dispute",
-      "description": "You and a sibling disagree over how to handle care for an aging parent\u2014and it's getting personal.",
+      "description": "You and a sibling disagree over how to handle care for an aging parent—and it's getting personal.",
       "wisdom": "Caregiver conflict between siblings is almost universal and almost always about more than the presenting issue. Name the real concern, not just the logistics.",
       "choices": [
         {
@@ -1899,7 +1899,7 @@
       ],
       "title": "Power of Attorney",
       "description": "Your parent's health is declining and legal documents need to be in order.",
-      "wisdom": "A power of attorney set up in advance is a gift to everyone involved\u2014especially your parent. Legal clarity during a health crisis is far easier than scrambling after the fact.",
+      "wisdom": "A power of attorney set up in advance is a gift to everyone involved—especially your parent. Legal clarity during a health crisis is far easier than scrambling after the fact.",
       "choices": [
         {
           "label": "Consult an elder law attorney",
@@ -1944,7 +1944,7 @@
       ],
       "title": "Emergency Fund Gap",
       "description": "You realize your emergency fund covers less than one month of expenses.",
-      "wisdom": "An emergency fund is the difference between a bad week and a financial crisis. Building it slowly and consistently is boring\u2014which is exactly what financial safety is supposed to feel like.",
+      "wisdom": "An emergency fund is the difference between a bad week and a financial crisis. Building it slowly and consistently is boring—which is exactly what financial safety is supposed to feel like.",
       "choices": [
         {
           "label": "Auto-transfer monthly to savings",
@@ -2034,7 +2034,7 @@
       ],
       "title": "Unexpected Tax Bill",
       "description": "You owe more in taxes than expected this year and the deadline is close.",
-      "wisdom": "Owing taxes isn't a failure\u2014being caught off guard is the problem. This is information to adjust withholding or quarterly payments so next year looks different.",
+      "wisdom": "Owing taxes isn't a failure—being caught off guard is the problem. This is information to adjust withholding or quarterly payments so next year looks different.",
       "choices": [
         {
           "label": "Pay it and adjust withholding",
@@ -2162,7 +2162,7 @@
       ],
       "title": "Chronic Back Pain",
       "description": "Back pain has been limiting your daily activity for months and you've been ignoring it.",
-      "wisdom": "Chronic pain that goes untreated tends to compound\u2014in your body and in your mood. Most back pain responds well to early, consistent intervention. Waiting makes everything harder.",
+      "wisdom": "Chronic pain that goes untreated tends to compound—in your body and in your mood. Most back pain responds well to early, consistent intervention. Waiting makes everything harder.",
       "choices": [
         {
           "label": "See a physical therapist",
@@ -2208,7 +2208,7 @@
       ],
       "title": "Drinking Habits Check",
       "description": "You've been reaching for a drink most evenings and it's becoming automatic.",
-      "wisdom": "Habitual drinking creeps in quietly. If you need it to decompress, that's worth examining\u2014not with shame, but honestly. The habit is usually doing something that a better tool could do instead.",
+      "wisdom": "Habitual drinking creeps in quietly. If you need it to decompress, that's worth examining—not with shame, but honestly. The habit is usually doing something that a better tool could do instead.",
       "choices": [
         {
           "label": "Try a dry month",
@@ -2253,7 +2253,7 @@
       ],
       "title": "Mental Burnout",
       "description": "You can't remember the last day you felt rested, motivated, or yourself.",
-      "wisdom": "Burnout isn't weakness\u2014it's a signal that the output has exceeded the input for too long. Recovery requires intentional rest, not just a long weekend.",
+      "wisdom": "Burnout isn't weakness—it's a signal that the output has exceeded the input for too long. Recovery requires intentional rest, not just a long weekend.",
       "choices": [
         {
           "label": "Take a mental health day",
@@ -2298,7 +2298,7 @@
       ],
       "title": "Preventive Cancer Screening",
       "description": "Your doctor recommends a routine cancer screening based on your age.",
-      "wisdom": "The screenings you skip are the ones that would have caught something early. Early detection is the single biggest factor in cancer outcomes. This is not optional self-care\u2014it's common sense.",
+      "wisdom": "The screenings you skip are the ones that would have caught something early. Early detection is the single biggest factor in cancer outcomes. This is not optional self-care—it's common sense.",
       "choices": [
         {
           "label": "Schedule it this week",
@@ -2382,7 +2382,7 @@
       ],
       "title": "Difficult Coworker",
       "description": "A coworker's behavior is making your work environment toxic.",
-      "wisdom": "Difficult coworkers rarely resolve themselves. Addressing it directly\u2014or escalating thoughtfully\u2014is better than absorbing the stress indefinitely.",
+      "wisdom": "Difficult coworkers rarely resolve themselves. Addressing it directly—or escalating thoughtfully—is better than absorbing the stress indefinitely.",
       "choices": [
         {
           "label": "Address it directly with them",
@@ -2462,7 +2462,7 @@
       ],
       "title": "Layoff Announcement",
       "description": "The company announces layoffs and your role may be at risk.",
-      "wisdom": "A layoff threat is a signal to act, not panic. The people who move fast\u2014updating their network, their resume, their options\u2014are the ones who land best.",
+      "wisdom": "A layoff threat is a signal to act, not panic. The people who move fast—updating their network, their resume, their options—are the ones who land best.",
       "choices": [
         {
           "label": "Update resume and activate your network",
@@ -2502,7 +2502,7 @@
       ],
       "title": "Work Creeping Into Evenings",
       "description": "Work emails and calls have been bleeding into family evenings for weeks.",
-      "wisdom": "A boundary that's never enforced isn't a boundary\u2014it's just a preference you announce. Evenings belong to the people who need you most, not whoever sends the last email.",
+      "wisdom": "A boundary that's never enforced isn't a boundary—it's just a preference you announce. Evenings belong to the people who need you most, not whoever sends the last email.",
       "choices": [
         {
           "label": "Set a hard phone cutoff at 6pm",
@@ -2624,8 +2624,8 @@
         "general"
       ],
       "title": "Summer Vacation Planning",
-      "description": "Summer is approaching and the family wants a vacation\u2014the budget is unclear.",
-      "wisdom": "A vacation that leaves you in debt isn't a vacation\u2014it's a purchase of future stress. The trip that fits your actual budget almost always becomes the story you tell anyway.",
+      "description": "Summer is approaching and the family wants a vacation—the budget is unclear.",
+      "wisdom": "A vacation that leaves you in debt isn't a vacation—it's a purchase of future stress. The trip that fits your actual budget almost always becomes the story you tell anyway.",
       "choices": [
         {
           "label": "Plan a real trip within budget",
@@ -2676,7 +2676,7 @@
       ],
       "title": "School Choice Decision",
       "description": "Enrollment season opens for next year and you're considering switching schools.",
-      "wisdom": "School decisions carry weight but they're rarely permanent. The question to ask isn't just which school is better in theory\u2014but which environment fits your specific child right now.",
+      "wisdom": "School decisions carry weight but they're rarely permanent. The question to ask isn't just which school is better in theory—but which environment fits your specific child right now.",
       "choices": [
         {
           "label": "Research and visit both options",
@@ -2807,7 +2807,7 @@
       ],
       "title": "Foster Care Inquiry",
       "description": "A church announcement about foster care need sparks a real conversation between you and your spouse.",
-      "wisdom": "Fostering is one of the most demanding and meaningful things a family can do. The call to consider it is worth sitting with seriously\u2014not dismissing, and not rushing.",
+      "wisdom": "Fostering is one of the most demanding and meaningful things a family can do. The call to consider it is worth sitting with seriously—not dismissing, and not rushing.",
       "choices": [
         {
           "label": "Attend an informational meeting",
@@ -2863,7 +2863,7 @@
       ],
       "title": "Grieving a Loss",
       "description": "Someone you love has died and the grief is hitting in waves.",
-      "wisdom": "Grief doesn't follow a schedule and it doesn't respond to being pushed down. The people who do best are the ones who let it move through them\u2014with support, not in silence.",
+      "wisdom": "Grief doesn't follow a schedule and it doesn't respond to being pushed down. The people who do best are the ones who let it move through them—with support, not in silence.",
       "choices": [
         {
           "label": "Accept support from your community",
@@ -2904,7 +2904,7 @@
       ],
       "title": "Adoption Conversation",
       "description": "You and your spouse have been circling the topic of adoption for months.",
-      "wisdom": "Adoption is one of the most profound things a family can do and one of the most complex. The question isn't whether the impulse is good\u2014it is. The question is whether you go in with full awareness of what it asks of you.",
+      "wisdom": "Adoption is one of the most profound things a family can do and one of the most complex. The question isn't whether the impulse is good—it is. The question is whether you go in with full awareness of what it asks of you.",
       "choices": [
         {
           "label": "Meet with an adoption agency",
@@ -2961,7 +2961,7 @@
       ],
       "title": "Church Conflict",
       "description": "A disagreement with church leadership or a fellow member is creating real tension.",
-      "wisdom": "The church is made of people and people have conflict. How you handle it\u2014with grace and directness rather than gossip and drift\u2014says more about your faith than your attendance record.",
+      "wisdom": "The church is made of people and people have conflict. How you handle it—with grace and directness rather than gossip and drift—says more about your faith than your attendance record.",
       "choices": [
         {
           "label": "Address it directly with the person",
@@ -3003,7 +3003,7 @@
       ],
       "title": "Financial Advisor Meeting",
       "description": "A friend suggests seeing a financial advisor but the fees feel unnecessary.",
-      "wisdom": "Most people are flying blind on retirement and long-term wealth. A fee-only advisor pays for themselves in the decisions they help you make\u2014and avoid.",
+      "wisdom": "Most people are flying blind on retirement and long-term wealth. A fee-only advisor pays for themselves in the decisions they help you make—and avoid.",
       "choices": [
         {
           "label": "Book a session with a fee-only advisor",
@@ -3104,7 +3104,7 @@
       "title": "Unexpected Pregnancy",
       "severity": "major",
       "description": "A pregnancy test brings news that wasn't in the plan.",
-      "wisdom": "Life rarely follows the plan exactly. The most important decisions made in this moment are about communication, support, and facing it as a team\u2014not making major choices in isolation.",
+      "wisdom": "Life rarely follows the plan exactly. The most important decisions made in this moment are about communication, support, and facing it as a team—not making major choices in isolation.",
       "choices": [
         {
           "label": "Sit with it together and talk deeply",
@@ -3148,7 +3148,7 @@
       "severity": "major",
       "surprise": true,
       "description": "You receive unexpected notice that your position has been eliminated.",
-      "wisdom": "Losing a job is one of the highest-stress events a family can face\u2014but it's also one of the most revealing ones. How you handle the first week often sets the tone for how long recovery takes.",
+      "wisdom": "Losing a job is one of the highest-stress events a family can face—but it's also one of the most revealing ones. How you handle the first week often sets the tone for how long recovery takes.",
       "choices": [
         {
           "label": "File for benefits and activate network immediately",
@@ -3237,8 +3237,8 @@
       "title": "Surprise Medical Bill",
       "severity": "major",
       "surprise": true,
-      "description": "A bill arrives for a procedure that was supposed to be covered\u2014and it's thousands of dollars.",
-      "wisdom": "Medical billing errors are common. A bill is not a verdict. Calling and asking questions\u2014or hiring a patient advocate\u2014resolves a huge percentage of surprise bills.",
+      "description": "A bill arrives for a procedure that was supposed to be covered—and it's thousands of dollars.",
+      "wisdom": "Medical billing errors are common. A bill is not a verdict. Calling and asking questions—or hiring a patient advocate—resolves a huge percentage of surprise bills.",
       "choices": [
         {
           "label": "Call the billing department and negotiate",
@@ -3366,7 +3366,7 @@
       ],
       "title": "PTA or School Involvement",
       "description": "The school asks for more parent involvement and you've been on the fence.",
-      "wisdom": "Parental presence in a school sends a message to your child and to their teachers. You don't have to chair a committee\u2014but showing up somewhere is worth more than people realize.",
+      "wisdom": "Parental presence in a school sends a message to your child and to their teachers. You don't have to chair a committee—but showing up somewhere is worth more than people realize.",
       "choices": [
         {
           "label": "Join the PTA and take a role",
@@ -3405,7 +3405,7 @@
       ],
       "title": "Retirement Reality Check",
       "description": "You look at your retirement account and realize you're significantly behind where you should be.",
-      "wisdom": "Most people are behind on retirement savings and most people do nothing about it. The math gets harder the longer you wait, but the math never gets impossible\u2014until very late. Act now.",
+      "wisdom": "Most people are behind on retirement savings and most people do nothing about it. The math gets harder the longer you wait, but the math never gets impossible—until very late. Act now.",
       "choices": [
         {
           "label": "Max contributions and build a catch-up plan",
@@ -3450,7 +3450,7 @@
       ],
       "title": "Parent Remarrying",
       "description": "Your widowed or divorced parent announces they're remarrying, and family feelings are mixed.",
-      "wisdom": "Your parent's new relationship is theirs to have. Your feelings about it are valid. The two things aren't mutually exclusive\u2014and navigating them without poisoning either takes real maturity.",
+      "wisdom": "Your parent's new relationship is theirs to have. Your feelings about it are valid. The two things aren't mutually exclusive—and navigating them without poisoning either takes real maturity.",
       "choices": [
         {
           "label": "Support them and get to know the partner",
@@ -3494,7 +3494,7 @@
       "title": "Pregnancy Loss",
       "severity": "major",
       "description": "You and your spouse experience the loss of a pregnancy.",
-      "wisdom": "Grief after pregnancy loss is real and often private\u2014which makes it heavier. Couples who talk about it, lean on community, and let themselves grieve fully recover their bond. Couples who don't can quietly fracture.",
+      "wisdom": "Grief after pregnancy loss is real and often private—which makes it heavier. Couples who talk about it, lean on community, and let themselves grieve fully recover their bond. Couples who don't can quietly fracture.",
       "choices": [
         {
           "label": "Grieve together and lean on your community",
@@ -3537,7 +3537,7 @@
       ],
       "title": "Kids Online Safety",
       "description": "You discover your child has been using apps or sites you didn't know about.",
-      "wisdom": "Kids move faster online than parents can watch. The goal isn't perfect surveillance\u2014it's building the judgment to make good decisions when you're not looking. That starts with a calm, honest conversation.",
+      "wisdom": "Kids move faster online than parents can watch. The goal isn't perfect surveillance—it's building the judgment to make good decisions when you're not looking. That starts with a calm, honest conversation.",
       "choices": [
         {
           "label": "Have an open conversation about online safety",
@@ -3575,14 +3575,14 @@
   "generatedEventBlueprints": [
     {
       "category": "Money",
-      "icon": "\ud83d\udcb3",
+      "icon": "💳",
       "accent": "amber",
       "title": "Subscription Audit",
       "description": "A forgotten subscription renewal hits your account this week.",
       "minor": [
         "Cancel unused plans",
         {
-          "money": 95,
+          "money": 1,
           "stress": -2
         },
         "You trimmed unused subscriptions."
@@ -3590,7 +3590,7 @@
       "balanced": [
         "Keep favorites",
         {
-          "money": -35,
+          "money": -1,
           "stress": -1
         },
         "You kept the subscriptions you actually enjoy."
@@ -3598,7 +3598,7 @@
       "risky": [
         "Ignore the charge",
         {
-          "money": -120,
+          "money": -1,
           "stress": 3
         },
         "You ignored another subscription renewal."
@@ -3606,7 +3606,7 @@
     },
     {
       "category": "Wellness",
-      "icon": "\ud83e\uddd8",
+      "icon": "🧘",
       "accent": "green",
       "title": "Morning Stretch",
       "description": "A short mobility routine could make the week feel easier.",
@@ -3637,7 +3637,7 @@
     },
     {
       "category": "Relationship",
-      "icon": "\ud83d\udc8c",
+      "icon": "💌",
       "accent": "rose",
       "title": "Thoughtful Check-In",
       "description": "Your partner seems quieter than usual after a busy day.",
@@ -3668,7 +3668,7 @@
     },
     {
       "category": "Parenting",
-      "icon": "\ud83e\udde9",
+      "icon": "🧩",
       "accent": "teal",
       "title": "Homework Spiral",
       "description": "Homework turns into frustration right before bedtime.",
@@ -3699,14 +3699,14 @@
     },
     {
       "category": "Career",
-      "icon": "\ud83d\udcce",
+      "icon": "📎",
       "accent": "indigo",
       "title": "Inbox Backlog",
       "description": "Your inbox is full of small tasks competing for attention.",
       "minor": [
         "Clear top priorities",
         {
-          "money": 110,
+          "money": 1,
           "stress": -3
         },
         "You cleared the highest-value inbox tasks."
@@ -3714,7 +3714,7 @@
       "balanced": [
         "Set a timer",
         {
-          "money": 60,
+          "money": 1,
           "stress": -1
         },
         "You used a timer to tame the inbox."
@@ -3730,7 +3730,7 @@
     },
     {
       "category": "Home",
-      "icon": "\ud83e\udeb4",
+      "icon": "🪴",
       "accent": "green",
       "title": "Plant Care",
       "description": "The houseplants are drooping and need attention.",
@@ -3759,7 +3759,7 @@
     },
     {
       "category": "Community",
-      "icon": "\u2615",
+      "icon": "☕",
       "accent": "blue",
       "title": "Coffee Invitation",
       "description": "Someone from your neighborhood suggests a low-key coffee meetup.",
@@ -3768,7 +3768,7 @@
         {
           "marriage": 4,
           "stress": -2,
-          "money": -12
+          "money": -1
         },
         "You built community over coffee."
       ],
@@ -3791,7 +3791,7 @@
     },
     {
       "category": "Health",
-      "icon": "\ud83c\udf72",
+      "icon": "🍲",
       "accent": "green",
       "title": "Lunch Choice",
       "description": "Lunch can be quick comfort food or something that fuels the afternoon.",
@@ -3800,7 +3800,7 @@
         {
           "health": 4,
           "stress": -1,
-          "money": -18
+          "money": -1
         },
         "You picked a balanced lunch."
       ],
@@ -3808,7 +3808,7 @@
         "Pack leftovers",
         {
           "health": 3,
-          "money": 20
+          "money": 1
         },
         "You saved money with leftovers."
       ],
@@ -3823,14 +3823,14 @@
     },
     {
       "category": "Errands",
-      "icon": "\ud83d\udcee",
+      "icon": "📮",
       "accent": "amber",
       "title": "Post Office Run",
       "description": "A package return deadline is about to expire.",
       "minor": [
         "Return it today",
         {
-          "money": 70,
+          "money": 1,
           "stress": -3
         },
         "You returned the package before the deadline."
@@ -3838,7 +3838,7 @@
       "balanced": [
         "Schedule pickup",
         {
-          "money": 45,
+          "money": 1,
           "stress": -1
         },
         "You scheduled a package pickup."
@@ -3846,7 +3846,7 @@
       "risky": [
         "Miss deadline",
         {
-          "money": -75,
+          "money": -1,
           "stress": 2
         },
         "You missed the return deadline."
@@ -3854,7 +3854,7 @@
     },
     {
       "category": "Recovery",
-      "icon": "\ud83c\udf19",
+      "icon": "🌙",
       "accent": "indigo",
       "title": "Early Bedtime",
       "description": "A quiet evening could become actual rest if you protect it.",
@@ -3885,14 +3885,14 @@
     },
     {
       "category": "Money",
-      "icon": "\ud83e\uddfe",
+      "icon": "🧾",
       "accent": "amber",
       "title": "Bill Review",
       "description": "A bill looks higher than expected and might be negotiable.",
       "minor": [
         "Call provider",
         {
-          "money": 140,
+          "money": 1,
           "stress": 1
         },
         "You called and lowered a bill."
@@ -3900,7 +3900,7 @@
       "balanced": [
         "Compare plans",
         {
-          "money": 80,
+          "money": 1,
           "stress": 2
         },
         "You compared cheaper plans."
@@ -3908,7 +3908,7 @@
       "risky": [
         "Auto-pay it",
         {
-          "money": -90,
+          "money": -1,
           "stress": -1
         },
         "You paid the higher bill without review."
@@ -3916,7 +3916,7 @@
     },
     {
       "category": "School",
-      "icon": "\ud83d\udcda",
+      "icon": "📚",
       "accent": "blue",
       "title": "Reading Log",
       "description": "The weekly reading log needs a parent signature.",
@@ -3946,7 +3946,7 @@
     },
     {
       "category": "Major life event",
-      "icon": "\ud83c\udfe5",
+      "icon": "🏥",
       "accent": "rose",
       "title": "Urgent Care Choice",
       "severity": "major",
@@ -3954,7 +3954,7 @@
       "minor": [
         "Go to urgent care",
         {
-          "money": -280,
+          "money": -3,
           "health": 9,
           "stress": 4
         },
@@ -3979,7 +3979,7 @@
     },
     {
       "category": "Major family event",
-      "icon": "\ud83d\udedf",
+      "icon": "🛟",
       "accent": "rose",
       "title": "Family Emergency",
       "severity": "major",
@@ -3990,7 +3990,7 @@
           "children": 8,
           "marriage": 5,
           "stress": 8,
-          "money": -220
+          "money": -2
         },
         "You showed up for a family emergency."
       ],
@@ -4015,7 +4015,7 @@
     },
     {
       "category": "Major career event",
-      "icon": "\ud83d\udeaa",
+      "icon": "🚪",
       "accent": "violet",
       "title": "Job Interview",
       "severity": "major",
@@ -4023,7 +4023,7 @@
       "minor": [
         "Prepare deeply",
         {
-          "money": 850,
+          "money": 8,
           "stress": 8,
           "health": -2
         },
@@ -4032,7 +4032,7 @@
       "balanced": [
         "Prep essentials",
         {
-          "money": 420,
+          "money": 4,
           "stress": 4
         },
         "You covered the essentials before the interview."

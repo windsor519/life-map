@@ -1,4 +1,5 @@
 import { baseEvents, generatedEventBlueprints } from "./events.json";
+import familyAgeEvents from "./family_age_events.json";
 
 const generatedEvents = Array.from({ length: 279 }, (_, index) => {
   const blueprint = generatedEventBlueprints[index % generatedEventBlueprints.length];
@@ -23,6 +24,6 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
   };
 });
 
-const events = [...baseEvents, ...generatedEvents];
+const events = [...baseEvents, ...familyAgeEvents, ...generatedEvents];
 
 export default events;

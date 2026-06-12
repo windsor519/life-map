@@ -315,6 +315,10 @@ export default function StartScreen({
     <main className="app-shell setup-shell">
       <section className="hero-card startup-hero">
         <div>
+          <div className="brand-lockup startup-brand">
+            <img src="/life-map-logo.svg" alt="" aria-hidden="true" />
+            <span>Life Map</span>
+          </div>
           <p className="eyebrow">Life simulator</p>
           <h1>Map a life that keeps moving.</h1>
           <p className="subtitle">Pick a starting point, add your household, and follow each season.</p>

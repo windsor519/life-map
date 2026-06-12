@@ -13,17 +13,33 @@ export default function SeasonGameBoard({
   seasonHistory,
   selectedChoices,
   severityConfig,
-  totalSeasonDecisions
+  totalSeasonDecisions,
+  year
 }) {
   const seasonCarouselRef = useRef(null);
   const seasonPanelRefs = useRef([]);
   const seasonSwipeStartXRef = useRef(null);
   const activeSeasonIndex = Math.max(0, seasonConfig.findIndex((season) => season.id === activeSeason.id));
-  const viewedSeasonIndexRef = useRef(activeSeasonIndex);
-  const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeSeasonIndex);
+  const visibleSeasonOffsets = Array.from({ length: 11 }, (_, index) => index - 7);
+  const seasonTimeline = visibleSeasonOffsets.map((offset) => {
+    const absoluteIndex = activeSeasonIndex + offset;
+    const seasonIndex = ((absoluteIndex % seasonConfig.length) + seasonConfig.length) % seasonConfig.length;
+    const yearOffset = Math.floor(absoluteIndex / seasonConfig.length);
+
+    return {
+      offset,
+      season: seasonConfig[seasonIndex],
+      seasonIndex,
+      year: year + yearOffset
+    };
+  });
+  const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0);
+  const hasYearHistory = Object.keys(seasonHistory ?? {}).some((key) => /^\d{4}-/.test(key));
+  const viewedSeasonIndexRef = useRef(activeTimelineIndex);
+  const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
 
   const goToSeasonCard = useCallback((index) => {
-    const nextIndex = (index + seasonConfig.length) % seasonConfig.length;
+    const nextIndex = Math.max(0, Math.min(index, seasonTimeline.length - 1));
     viewedSeasonIndexRef.current = nextIndex;
     setViewedSeasonIndex(nextIndex);
     seasonPanelRefs.current[nextIndex]?.scrollIntoView({
@@ -31,11 +47,11 @@ export default function SeasonGameBoard({
       block: "nearest",
       inline: "center"
     });
-  }, [seasonConfig.length]);
+  }, [seasonTimeline.length]);
 
   useEffect(() => {
-    goToSeasonCard(activeSeasonIndex);
-  }, [activeSeasonIndex, goToSeasonCard]);
+    goToSeasonCard(activeTimelineIndex);
+  }, [activeTimelineIndex, goToSeasonCard]);
 
   const handleSeasonCarouselScroll = () => {
     const carousel = seasonCarouselRef.current;
@@ -89,11 +105,11 @@ export default function SeasonGameBoard({
       <div className="section-heading calendar-heading">
         <div>
           <p className="eyebrow">This season</p>
-          <h2>Plan {activeSeason.label}</h2>
+          <h2>Plan {activeSeason.label} {year}</h2>
         </div>
         <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
       </div>
-      <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
+      <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)} {year}.</p>
       <div className="flow-panel">
         <div>
           <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
@@ -108,47 +124,50 @@ export default function SeasonGameBoard({
         onTouchEnd={handleSeasonSwipeEnd}
         ref={seasonCarouselRef}
       >
-        {seasonConfig.map((season, seasonIndex) => {
-          const isActive = season.id === activeSeason.id;
+        {seasonTimeline.map(({ season, seasonIndex, offset, year: seasonYear }, timelineIndex) => {
+          const isActive = offset === 0;
+          const isPast = offset < 0;
+          const isFuture = offset > 0;
           const seasonMonthNames = getSeasonMonthNames(season);
           const cardDecisions = isActive ? seasonDecisions : [];
-          const previousSelections = seasonHistory[season.id] ?? [];
+          const historyKey = `${seasonYear}-${season.id}`;
+          const previousSelections = seasonHistory[historyKey] ?? (!hasYearHistory && isPast ? seasonHistory[season.id] ?? [] : []);
 
           return (
             <article
-              className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${seasonIndex === viewedSeasonIndex ? "in-view" : ""}`}
-              key={season.id}
+              className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${isPast ? "past" : ""} ${isFuture ? "future" : ""} ${timelineIndex === viewedSeasonIndex ? "in-view" : ""}`}
+              key={`${seasonYear}-${season.id}-${offset}`}
               ref={(panel) => {
-                seasonPanelRefs.current[seasonIndex] = panel;
+                seasonPanelRefs.current[timelineIndex] = panel;
               }}
             >
               <div className="season-panel-header">
                 <span className="season-icon" aria-hidden="true">{season.icon}</span>
                 <div>
-                  <p className="eyebrow">{season.palette} season</p>
+                  <p className="eyebrow">{seasonYear} · {offset === 0 ? "Selected season" : isPast ? "Past season" : "Future season"}</p>
                   <h3>{season.label}</h3>
                 </div>
-                <div className="season-card-nav" aria-label={`${season.label} card navigation`}>
+                <div className="season-card-nav" aria-label={`${season.label} ${seasonYear} card navigation`}>
                   <button
                     className="season-card-arrow"
                     type="button"
-                    aria-label={`Show previous season card before ${season.label}`}
-                    onClick={() => goToSeasonCard(seasonIndex - 1)}
+                    aria-label={`Show previous season card before ${season.label} ${seasonYear}`}
+                    onClick={() => goToSeasonCard(timelineIndex - 1)}
                   >
                     ←
                   </button>
                   <button
                     className="season-card-arrow"
                     type="button"
-                    aria-label={`Show next season card after ${season.label}`}
-                    onClick={() => goToSeasonCard(seasonIndex + 1)}
+                    aria-label={`Show next season card after ${season.label} ${seasonYear}`}
+                    onClick={() => goToSeasonCard(timelineIndex + 1)}
                   >
                     →
                   </button>
                 </div>
               </div>
               <p>{season.description}</p>
-              <span className="season-months">{seasonMonthNames}</span>
+              <span className="season-months">{seasonMonthNames} · {seasonYear}</span>
               {isActive ? (
                 <div className="season-decisions">
                   {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
@@ -186,8 +205,8 @@ export default function SeasonGameBoard({
                   }) : <p className="season-empty">This season is unusually quiet. Simulate to discover whether life stays that way.</p>}
                 </div>
               ) : previousSelections.length > 0 ? (
-                <div className="season-history" aria-label={`${season.label} previous selections`}>
-                  <strong>Previous selections</strong>
+                <div className="season-history" aria-label={`${season.label} ${seasonYear} selected choices`}>
+                  <strong>{seasonYear} selections</strong>
                   {previousSelections.slice(0, 4).map((selection) => (
                     <div className="season-history-item" key={selection.id}>
                       <span>{selection.dayName}</span>
@@ -199,7 +218,7 @@ export default function SeasonGameBoard({
               ) : (
                 <div className="season-preview">
                   <strong>{season.months.length} month arc</strong>
-                  <span>Coming after {activeSeason.label}</span>
+                  <span>{isFuture ? `${Math.abs(offset)} season${Math.abs(offset) === 1 ? "" : "s"} ahead` : `No selections saved for ${seasonYear}`}</span>
                 </div>
               )}
             </article>

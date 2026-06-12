@@ -78,9 +78,9 @@ const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
 const getSeasonForMonth = (month) => seasonConfig.find((season) => season.months.includes(month)) ?? seasonConfig[0];
 const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => season.months.includes(month));
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
+const createSeasonHistoryKey = (year, seasonId) => `${year}-${seasonId}`;
 
 const createEmptySeasonHistory = () => Object.fromEntries(seasonConfig.map((season) => [season.id, []]));
-const isSpringYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
 const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month).id) => {
   const selections = Object.values(game.selectedChoices ?? {});
 
@@ -92,18 +92,21 @@ const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month)
     effects: sanitizeEffects(selection.effects)
   }));
 };
-const updateSeasonHistory = (game, nextMonth) => {
-  if (isSpringYearRefresh(game.month, nextMonth)) {
-    return createEmptySeasonHistory();
-  }
-
+const updateSeasonHistory = (game) => {
   const seasonId = getSeasonForMonth(game.month).id;
+  const year = Number.isFinite(Number(game.year)) ? Number(game.year) : new Date().getFullYear();
+  const historyKey = createSeasonHistoryKey(year, seasonId);
   const nextHistory = { ...createEmptySeasonHistory(), ...(game.seasonHistory ?? {}) };
-  const snapshot = getSeasonHistorySnapshot(game, seasonId);
+  const snapshot = getSeasonHistorySnapshot(game, seasonId).map((selection) => ({
+    ...selection,
+    seasonId,
+    year
+  }));
 
   return {
     ...nextHistory,
-    [seasonId]: snapshot.length > 0 ? snapshot : nextHistory[seasonId] ?? []
+    [seasonId]: snapshot.length > 0 ? snapshot : nextHistory[seasonId] ?? [],
+    [historyKey]: snapshot.length > 0 ? snapshot : nextHistory[historyKey] ?? []
   };
 };
 
@@ -636,13 +639,14 @@ const getRandomChoice = (eventSeed, month, dayIndex, decisionIndex, choices) => 
   const choiceIndex = Math.floor(seededRandom(eventSeed, month, dayIndex, decisionIndex, "choice") * choices.length);
   return choices[Math.min(choiceIndex, choices.length - 1)];
 };
-const getNextSeasonState = (month, age) => {
+const getNextSeasonState = (month, age, year = new Date().getFullYear()) => {
   const seasonIndex = getSeasonIndexForMonth(month);
   const nextSeason = seasonConfig[(seasonIndex + 1) % seasonConfig.length];
   const nextMonth = nextSeason.months[0];
 
   return {
     age: nextMonth <= month ? age + 1 : age,
+    year: nextMonth <= month ? year + 1 : year,
     month: nextMonth,
     week: nextMonth
   };
@@ -984,6 +988,7 @@ const createDefaultGame = () => ({
   children: 35,
   wallet: 60,
   month: 1,
+  year: new Date().getFullYear(),
   completedDecisions: [],
   selectedChoices: {},
   seasonHistory: createEmptySeasonHistory(),
@@ -1010,6 +1015,7 @@ const normalizeGame = (game) => ({
   children: clamp(Number(game?.children ?? 0)),
   wallet: clamp(Number(game?.wallet ?? 60)),
   month: clamp(Number(game?.month ?? 1), 1, 12),
+  year: Number.isFinite(Number(game?.year)) ? Number(game.year) : new Date().getFullYear(),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
   seasonHistory: { ...createEmptySeasonHistory(), ...(game?.seasonHistory && typeof game.seasonHistory === "object" && !Array.isArray(game.seasonHistory) ? game.seasonHistory : {}) },
@@ -1233,6 +1239,7 @@ export default function App() {
       age,
       ...baseStats,
       month: 1,
+      year: new Date().getFullYear(),
       week: 1,
       completedDecisions: [],
       selectedChoices: {},
@@ -1290,7 +1297,7 @@ export default function App() {
     setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
   };
 
-  const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
+  const currentCalendarYear = game.year;
   const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
 
@@ -1441,11 +1448,11 @@ export default function App() {
       return;
     }
 
-    const nextSeasonState = getNextSeasonState(game.month, game.age);
+    const nextSeasonState = getNextSeasonState(game.month, game.age, game.year);
     const previewNextGame = {
       ...game,
       ...nextSeasonState,
-      seasonHistory: updateSeasonHistory(game, nextSeasonState.month),
+      seasonHistory: updateSeasonHistory(game),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
@@ -1459,7 +1466,7 @@ export default function App() {
       wisdom: getSeasonalFamilyWisdom(previewNextGame, game, nextSeasonState.month)
     });
     setGame((prevGame) => {
-      const seasonHistory = updateSeasonHistory(prevGame, nextSeasonState.month);
+      const seasonHistory = updateSeasonHistory(prevGame);
       const nextGame = {
         ...prevGame,
         ...nextSeasonState,
@@ -1562,11 +1569,11 @@ export default function App() {
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: The season stayed unusually calm.`);
     }
 
-    const nextSeasonState = getNextSeasonState(game.month, game.age);
+    const nextSeasonState = getNextSeasonState(game.month, game.age, game.year);
     const advancedGameBase = {
       ...nextState,
       ...nextSeasonState,
-      seasonHistory: updateSeasonHistory(nextState, nextSeasonState.month),
+      seasonHistory: updateSeasonHistory(nextState),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
@@ -1887,6 +1894,7 @@ export default function App() {
           seasonDecisions={seasonDecisions}
           seasonHistory={seasonHistory}
           selectedChoices={selectedChoices}
+          year={game.year}
           severityConfig={severityConfig}
           totalSeasonDecisions={totalSeasonDecisions}
         />

@@ -76,6 +76,43 @@ const getSeasonForMonth = (month) => seasonConfig.find((season) => season.months
 const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => season.months.includes(month));
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
+const seasonalAudioConfig = {
+  spring: {
+    padFrequencies: [196, 293.66, 349.23, 440],
+    chimeFrequencies: [659.25, 783.99, 880, 987.77],
+    chimeInterval: 4800,
+    chimePeak: 0.15,
+    padMix: 0.16,
+    oscillatorTypes: ["sine", "triangle", "sine", "triangle"]
+  },
+  summer: {
+    padFrequencies: [220, 329.63, 392, 493.88],
+    chimeFrequencies: [523.25, 587.33, 659.25, 783.99],
+    chimeInterval: 4200,
+    chimePeak: 0.17,
+    padMix: 0.2,
+    oscillatorTypes: ["triangle", "sine", "triangle", "sine"]
+  },
+  fall: {
+    padFrequencies: [164.81, 246.94, 329.63, 392],
+    chimeFrequencies: [392, 493.88, 587.33, 659.25],
+    chimeInterval: 6200,
+    chimePeak: 0.13,
+    padMix: 0.17,
+    oscillatorTypes: ["sine", "sine", "triangle", "sine"]
+  },
+  winter: {
+    padFrequencies: [174, 261.63, 349.23, 523.25],
+    chimeFrequencies: [783.99, 880, 987.77, 1046.5],
+    chimeInterval: 7600,
+    chimePeak: 0.11,
+    padMix: 0.14,
+    oscillatorTypes: ["sine", "triangle", "sine", "sine"]
+  }
+};
+
+const getSeasonalAudioConfig = (seasonId) => seasonalAudioConfig[seasonId] ?? seasonalAudioConfig.spring;
+
 const statConfig = {
   wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
   marriage: { label: "Spousal relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / partner" },
@@ -791,7 +828,7 @@ export default function App() {
     }
   };
 
-  const startZenMusic = () => {
+  const startZenMusic = (seasonId = activeSeason.id) => {
     if (typeof window === "undefined" || audioRef.current) {
       return;
     }
@@ -802,22 +839,22 @@ export default function App() {
       return;
     }
 
+    const config = getSeasonalAudioConfig(seasonId);
     const context = new AudioContext();
     const master = context.createGain();
     const padGain = context.createGain();
     const nodes = [];
-    const padFrequencies = [174, 261.63, 329.63, 392];
 
     master.gain.value = (settings.masterVolume / 100) * 0.09;
-    padGain.gain.value = 0.18;
+    padGain.gain.value = config.padMix;
     padGain.connect(master);
     master.connect(context.destination);
 
-    padFrequencies.forEach((frequency, index) => {
+    config.padFrequencies.forEach((frequency, index) => {
       const oscillator = context.createOscillator();
       const voiceGain = context.createGain();
 
-      oscillator.type = index % 2 === 0 ? "sine" : "triangle";
+      oscillator.type = config.oscillatorTypes[index] ?? "sine";
       oscillator.frequency.value = frequency;
       voiceGain.gain.value = index === 0 ? 0.2 : 0.08;
       oscillator.connect(voiceGain);
@@ -830,24 +867,27 @@ export default function App() {
       const now = context.currentTime;
       const oscillator = context.createOscillator();
       const chimeGain = context.createGain();
-      const frequencies = [523.25, 587.33, 659.25, 783.99, 880];
-      const frequency = frequencies[Math.floor(Math.random() * frequencies.length)];
+      const frequency = config.chimeFrequencies[Math.floor(Math.random() * config.chimeFrequencies.length)];
 
       oscillator.type = "sine";
       oscillator.frequency.setValueAtTime(frequency, now);
       chimeGain.gain.setValueAtTime(0, now);
-      chimeGain.gain.linearRampToValueAtTime(0.18, now + 0.08);
+      chimeGain.gain.linearRampToValueAtTime(config.chimePeak, now + 0.08);
       chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
       oscillator.connect(chimeGain);
       chimeGain.connect(master);
+      oscillator.onended = () => {
+        oscillator.disconnect();
+        chimeGain.disconnect();
+      };
       oscillator.start(now);
       oscillator.stop(now + 3);
     };
 
-    const chimeTimer = window.setInterval(playChime, 5400);
+    const chimeTimer = window.setInterval(playChime, config.chimeInterval);
     playChime();
 
-    audioRef.current = { chimeTimer, context, master, nodes };
+    audioRef.current = { chimeTimer, context, master, nodes, seasonId };
     setMusicPlaying(true);
   };
 
@@ -943,6 +983,16 @@ export default function App() {
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
   const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
+
+  useEffect(() => {
+    if (!musicPlaying || audioRef.current?.seasonId === activeSeason.id) {
+      return;
+    }
+
+    stopZenMusic(false);
+    startZenMusic(activeSeason.id);
+  }, [activeSeason.id, musicPlaying]);
+
   const seasonSchedule = useMemo(
     () => activeSeason.months.flatMap((month) => getMonthSchedule(month, currentCalendarYear, game.eventSeed, game.age, playableEvents, game)),
     [activeSeason, game, currentCalendarYear, playableEvents]

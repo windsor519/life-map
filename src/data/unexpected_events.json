@@ -8,42 +8,12 @@
     "accent": "amber",
     "description": "The car will not start on a morning when everyone needs to be somewhere.",
     "effects": {
-      "money": -1200,
-      "stress": 6,
+      "wallet": -8,
+      "wellbeing": -6,
       "marriage": -1,
       "children": -1
     },
     "memory": "A sudden car breakdown forced you to spend savings and juggle everyone's schedule."
-  },
-  {
-    "id": "furnace-replacement",
-    "title": "Furnace Goes Out",
-    "severity": "major",
-    "category": "Home emergency",
-    "icon": "🔥",
-    "accent": "rose",
-    "description": "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
-    "effects": {
-      "money": -2800,
-      "stress": 9,
-      "health": -2
-    },
-    "memory": "You dealt with a failing furnace before the house became unsafe."
-  },
-  {
-    "id": "fence-blown-down",
-    "title": "Fence Blows Down",
-    "severity": "moderate",
-    "category": "Home emergency",
-    "icon": "🌬️",
-    "accent": "teal",
-    "description": "A windstorm knocks down a section of fence and the yard suddenly needs a fix.",
-    "effects": {
-      "money": -450,
-      "stress": 5,
-      "marriage": -1
-    },
-    "memory": "A windstorm knocked down the fence and added an urgent repair to the month."
   },
   {
     "id": "surprise-medical-bill",
@@ -54,42 +24,642 @@
     "accent": "blue",
     "description": "An old appointment finally processes through insurance and leaves an awkward balance due.",
     "effects": {
-      "money": -650,
-      "stress": 4,
-      "health": -1
+      "wallet": -4,
+      "wellbeing": -5
     },
     "memory": "A delayed medical bill arrived and dented the budget."
   },
   {
-    "id": "boss-quits",
-    "title": "Boss Quits Suddenly",
+    "id": "pipe-leak-discovered",
+    "title": "Pipe Leak Found",
     "severity": "moderate",
-    "category": "Work disruption",
-    "icon": "📎",
-    "accent": "indigo",
-    "description": "Your boss resigns with almost no notice, leaving the team to absorb the mess for a while.",
+    "category": "Home emergency",
+    "icon": "🔧",
+    "accent": "teal",
+    "description": "Water damage behind the wall turns a small drip into an urgent repair.",
     "effects": {
-      "money": 250,
-      "stress": 8,
-      "health": -1,
-      "marriage": -2
+      "wallet": -6,
+      "wellbeing": -5
     },
-    "memory": "Your boss quit suddenly, and the extra work took over more evenings than expected."
+    "memory": "A hidden pipe leak turned into an expensive repair you didn't see coming."
   },
   {
-    "id": "family-favor-emergency",
-    "title": "Family Favor Emergency",
-    "severity": "minor",
-    "category": "Family surprise",
-    "icon": "☎️",
-    "accent": "violet",
-    "description": "A relative needs last-minute help, and saying yes means rearranging an already packed month.",
+    "id": "identity-stolen",
+    "title": "Card Skimmed",
+    "severity": "moderate",
+    "category": "Financial shock",
+    "icon": "💳",
+    "accent": "rose",
+    "description": "Fraudulent charges appear on your account from somewhere you've never been.",
     "effects": {
-      "money": -180,
-      "stress": 3,
-      "children": 3,
-      "marriage": 1
+      "wallet": -5,
+      "wellbeing": -6
     },
-    "memory": "You made room for a family favor when someone needed last-minute help."
+    "memory": "Your card was compromised and the cleanup cost time, money, and peace of mind."
+  },
+  {
+    "id": "sick-week",
+    "title": "Everyone Gets Sick",
+    "severity": "moderate",
+    "category": "Health disruption",
+    "icon": "🤧",
+    "accent": "amber",
+    "description": "A bug moves through the whole household and the week grinds to a halt.",
+    "effects": {
+      "wellbeing": -7,
+      "marriage": -2,
+      "children": -2
+    },
+    "memory": "A bad illness swept through the family and knocked everything sideways for a week."
+  },
+  {
+    "id": "roof-leak",
+    "title": "Roof Starts Leaking",
+    "severity": "major",
+    "category": "Home emergency",
+    "icon": "🏚️",
+    "accent": "rose",
+    "description": "Rain reveals a leak that's been building quietly for longer than you realized.",
+    "effects": {
+      "wallet": -9,
+      "wellbeing": -6,
+      "marriage": -2
+    },
+    "memory": "A leaking roof arrived without warning and took a real bite out of the savings."
+  },
+  {
+    "id": "job-loss-unexpected",
+    "title": "Laid Off Without Warning",
+    "severity": "major",
+    "category": "Career shock",
+    "icon": "📂",
+    "accent": "violet",
+    "description": "HR calls on a Tuesday. Your role is eliminated, effective immediately.",
+    "effects": {
+      "wallet": -10,
+      "wellbeing": -12,
+      "marriage": -3
+    },
+    "memory": "An unexpected layoff hit like a freight train and changed everything overnight."
+  },
+  {
+    "id": "fender-bender",
+    "title": "Fender Bender",
+    "severity": "minor",
+    "category": "Random accident",
+    "icon": "🚙",
+    "accent": "amber",
+    "description": "A parking lot scrape or slow-speed collision — nobody hurt, but the deductible stings.",
+    "effects": {
+      "wallet": -3,
+      "wellbeing": -3
+    },
+    "memory": "A minor fender bender added stress and a deductible to an ordinary week."
+  },
+  {
+    "id": "appliance-dies",
+    "title": "Appliance Dies",
+    "severity": "minor",
+    "category": "Home disruption",
+    "icon": "🫙",
+    "accent": "teal",
+    "description": "The dishwasher, dryer, or microwave quits with no warning in the middle of the week.",
+    "effects": {
+      "wallet": -4,
+      "wellbeing": -3
+    },
+    "memory": "A dead appliance meant an unplanned purchase and a week of inconvenience."
+  },
+  {
+    "id": "unexpected-bonus",
+    "title": "Unexpected Work Bonus",
+    "severity": "minor",
+    "category": "Financial windfall",
+    "icon": "💰",
+    "accent": "green",
+    "description": "A performance bonus or profit-sharing check arrives that you weren't counting on.",
+    "effects": {
+      "wallet": 7,
+      "wellbeing": 5,
+      "marriage": 3
+    },
+    "memory": "An unexpected bonus landed and gave the whole family a little breathing room."
+  },
+  {
+    "id": "tax-refund",
+    "title": "Tax Refund Arrives",
+    "severity": "minor",
+    "category": "Financial windfall",
+    "icon": "📬",
+    "accent": "green",
+    "description": "The refund is bigger than expected and lands at exactly the right time.",
+    "effects": {
+      "wallet": 6,
+      "wellbeing": 4
+    },
+    "memory": "A larger-than-expected tax refund gave the budget a welcome cushion."
+  },
+  {
+    "id": "kid-wins-award",
+    "title": "Child Wins an Award",
+    "severity": "minor",
+    "category": "Family joy",
+    "icon": "🏆",
+    "accent": "amber",
+    "description": "Your child is recognized at school or in their sport for something they worked hard at.",
+    "effects": {
+      "wellbeing": 5,
+      "children": 8,
+      "marriage": 4
+    },
+    "memory": "Your child was recognized for their hard work and the whole family celebrated."
+  },
+  {
+    "id": "promotion",
+    "title": "Promoted at Work",
+    "severity": "moderate",
+    "category": "Career win",
+    "icon": "📈",
+    "accent": "indigo",
+    "description": "You're offered a promotion — more responsibility, more pay, and a little more pressure.",
+    "effects": {
+      "wallet": 8,
+      "wellbeing": 4,
+      "marriage": 3
+    },
+    "memory": "A promotion came through and changed the financial and professional trajectory."
+  },
+  {
+    "id": "friend-moves-nearby",
+    "title": "Old Friend Moves to Town",
+    "severity": "minor",
+    "category": "Social windfall",
+    "icon": "🏡",
+    "accent": "teal",
+    "description": "A close friend you've missed for years relocates nearby and life feels a little fuller.",
+    "effects": {
+      "wellbeing": 6,
+      "marriage": 4
+    },
+    "memory": "An old friend moved nearby and the reconnection lifted the whole season."
+  },
+  {
+    "id": "health-scare-resolved",
+    "title": "Health Scare Comes Back Clear",
+    "severity": "moderate",
+    "category": "Health relief",
+    "icon": "💚",
+    "accent": "green",
+    "description": "Results from a worrying test come back clean. The relief is immediate and real.",
+    "effects": {
+      "wellbeing": 10,
+      "marriage": 5
+    },
+    "memory": "A health scare resolved with good news and reminded you what really matters."
+  },
+  {
+    "id": "inheritance-received",
+    "title": "Unexpected Inheritance",
+    "severity": "moderate",
+    "category": "Financial windfall",
+    "icon": "📜",
+    "accent": "amber",
+    "description": "A relative leaves you something unexpected — not life-changing, but meaningful.",
+    "effects": {
+      "wallet": 9,
+      "wellbeing": 3,
+      "marriage": 2
+    },
+    "memory": "An unexpected inheritance arrived, bringing both financial relief and reflection."
+  },
+  {
+    "id": "family-trip-surprise",
+    "title": "Free Family Trip",
+    "severity": "minor",
+    "category": "Family joy",
+    "icon": "✈️",
+    "accent": "blue",
+    "description": "Points, miles, or a generous gift cover a trip the family wouldn't have taken otherwise.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 6,
+      "children": 7
+    },
+    "memory": "A free trip landed in your lap and the whole family came home closer."
+  },
+  {
+    "id": "community-recognition",
+    "title": "Recognized by Your Community",
+    "severity": "minor",
+    "category": "Social recognition",
+    "icon": "🌟",
+    "accent": "violet",
+    "description": "A church, neighborhood group, or civic organization honors something you contributed.",
+    "effects": {
+      "wellbeing": 6,
+      "marriage": 3
+    },
+    "memory": "Your community recognized your contribution and it meant more than you expected."
+  },
+  {
+    "id": "child-reconciles-friendship",
+    "title": "Your Child Repairs a Friendship",
+    "severity": "minor",
+    "category": "Family joy",
+    "icon": "🤝",
+    "accent": "teal",
+    "description": "After weeks of tension, your child takes the first step and a friendship is restored.",
+    "effects": {
+      "wellbeing": 4,
+      "children": 7
+    },
+    "memory": "Your child showed maturity and repaired an important friendship on their own."
+  },
+  {
+    "id": "date-night-magic",
+    "title": "Perfect Evening Together",
+    "severity": "minor",
+    "category": "Relationship joy",
+    "icon": "🕯️",
+    "accent": "rose",
+    "description": "An ordinary evening turns into something both of you will talk about for months.",
+    "effects": {
+      "wellbeing": 6,
+      "marriage": 9
+    },
+    "memory": "An unplanned evening became one of the best nights you two have had in years."
+  },
+  {
+    "id": "side-project-pays-off",
+    "title": "Side Project Pays Off",
+    "severity": "minor",
+    "category": "Financial windfall",
+    "icon": "💡",
+    "accent": "indigo",
+    "description": "Something you built, sold, or pursued on the side generates real money unexpectedly.",
+    "effects": {
+      "wallet": 5,
+      "wellbeing": 7
+    },
+    "memory": "A side project you almost abandoned generated real income and renewed your confidence."
+  },
+  {
+    "id": "garden-harvest",
+    "title": "Garden Comes In",
+    "severity": "minor",
+    "category": "Simple joy",
+    "icon": "🌱",
+    "accent": "green",
+    "description": "The garden you planted produces more than expected and the family eats from it all week.",
+    "effects": {
+      "wellbeing": 5,
+      "children": 4,
+      "marriage": 3
+    },
+    "memory": "The garden delivered and the table was full of things you grew together."
+  },
+  {
+    "id": "marriage-cold-spell",
+    "title": "Cold Spell Between You",
+    "severity": "moderate",
+    "category": "Relationship strain",
+    "icon": "🥶",
+    "accent": "blue",
+    "description": "Nothing exploded — you've just been distant for weeks without either of you naming it.",
+    "effects": {
+      "wellbeing": -5,
+      "marriage": -7
+    },
+    "memory": "A quiet cold spell settled into the marriage and neither of you addressed it in time.",
+    "condition": {
+      "stat": "marriage",
+      "op": "lte",
+      "value": 55
+    }
+  },
+  {
+    "id": "teenager-caught-lying",
+    "title": "Teenager Caught in a Lie",
+    "severity": "moderate",
+    "category": "Parenting disruption",
+    "icon": "😬",
+    "accent": "violet",
+    "description": "You find out your teenager has been hiding something for weeks. Trust takes a hit.",
+    "effects": {
+      "wellbeing": -5,
+      "children": -8,
+      "marriage": -2
+    },
+    "memory": "A discovered lie shook trust with your teenager and brought tension into the house.",
+    "condition": {
+      "stat": "children",
+      "op": "lte",
+      "value": 60
+    }
+  },
+  {
+    "id": "flooded-basement",
+    "title": "Basement Floods",
+    "severity": "major",
+    "category": "Home emergency",
+    "icon": "💧",
+    "accent": "teal",
+    "description": "Heavy rain finds every crack and the basement is underwater by morning.",
+    "effects": {
+      "wallet": -8,
+      "wellbeing": -7,
+      "marriage": -2
+    },
+    "memory": "A flooded basement wiped out a weekend and cost more than expected to fix."
+  },
+  {
+    "id": "burnout-crash",
+    "title": "Burnout Hits Hard",
+    "severity": "major",
+    "category": "Health disruption",
+    "icon": "🪫",
+    "accent": "rose",
+    "description": "You've been running on empty for months and the body finally refuses to cooperate.",
+    "effects": {
+      "wellbeing": -12,
+      "marriage": -4,
+      "wallet": -3
+    },
+    "memory": "Burnout caught up with you and forced everything to slow down whether you wanted it to or not.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "lte",
+      "value": 40
+    }
+  },
+  {
+    "id": "social-media-pile-on",
+    "title": "Online Criticism",
+    "severity": "minor",
+    "category": "Social disruption",
+    "icon": "📱",
+    "accent": "indigo",
+    "description": "Something you said or shared gets taken out of context and people pile on.",
+    "effects": {
+      "wellbeing": -6,
+      "marriage": -2
+    },
+    "memory": "An online pile-on stole a week of peace and left you second-guessing yourself."
+  },
+  {
+    "id": "pay-cut",
+    "title": "Pay Cut Announced",
+    "severity": "major",
+    "category": "Financial shock",
+    "icon": "📉",
+    "accent": "rose",
+    "description": "The company announces a pay reduction. It's not catastrophic — but it changes the math.",
+    "effects": {
+      "wallet": -6,
+      "wellbeing": -6,
+      "marriage": -3
+    },
+    "memory": "A pay cut landed without warning and forced a hard look at the household budget."
+  },
+  {
+    "id": "elderly-parent-fall",
+    "title": "Parent Has a Fall",
+    "severity": "major",
+    "category": "Family emergency",
+    "icon": "🏥",
+    "accent": "amber",
+    "description": "Your parent takes a fall and the recovery raises bigger questions about their independence.",
+    "effects": {
+      "wellbeing": -8,
+      "wallet": -4,
+      "marriage": -2
+    },
+    "memory": "A parent's fall set off a difficult stretch of medical appointments and hard conversations."
+  },
+  {
+    "id": "neighbourhood-crime",
+    "title": "Break-In on the Street",
+    "severity": "minor",
+    "category": "Safety disruption",
+    "icon": "🔓",
+    "accent": "amber",
+    "description": "A neighbour's home is broken into and the whole street feels less safe for a while.",
+    "effects": {
+      "wellbeing": -4,
+      "marriage": -1
+    },
+    "memory": "A neighbourhood break-in left the family uneasy and sleeping lighter for weeks."
+  },
+  {
+    "id": "school-suspension",
+    "title": "Child Suspended",
+    "severity": "major",
+    "category": "Parenting disruption",
+    "icon": "🏫",
+    "accent": "rose",
+    "description": "The school calls — your child has been suspended and you're the last to know why.",
+    "effects": {
+      "wellbeing": -6,
+      "children": -10,
+      "marriage": -3
+    },
+    "memory": "A school suspension came out of nowhere and exposed something bigger that needed attention.",
+    "condition": {
+      "stat": "children",
+      "op": "lte",
+      "value": 50
+    }
+  },
+  {
+    "id": "coworker-takes-credit",
+    "title": "Coworker Takes Credit",
+    "severity": "minor",
+    "category": "Work disruption",
+    "icon": "😤",
+    "accent": "indigo",
+    "description": "Your work gets presented as someone else's in a meeting. You find out after.",
+    "effects": {
+      "wellbeing": -5,
+      "wallet": -2
+    },
+    "memory": "A coworker took credit for your work and the unfairness lingered longer than you expected."
+  },
+  {
+    "id": "marriage-second-wind",
+    "title": "Marriage Gets a Second Wind",
+    "severity": "moderate",
+    "category": "Relationship joy",
+    "icon": "💑",
+    "accent": "rose",
+    "description": "Out of nowhere, you and your spouse have a stretch of real connection — laughing, talking, present.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 10
+    },
+    "memory": "A surprising stretch of closeness reminded you both why you chose each other.",
+    "condition": {
+      "stat": "marriage",
+      "op": "gte",
+      "value": 45
+    }
+  },
+  {
+    "id": "debt-paid-off",
+    "title": "Debt Paid Off",
+    "severity": "moderate",
+    "category": "Financial win",
+    "icon": "✂️",
+    "accent": "green",
+    "description": "The last payment clears on a debt you've been carrying for years. The relief is real.",
+    "effects": {
+      "wallet": 8,
+      "wellbeing": 9,
+      "marriage": 4
+    },
+    "memory": "The final debt payment cleared and the weight that lifted was bigger than you expected.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 40
+    }
+  },
+  {
+    "id": "child-opens-up",
+    "title": "Child Opens Up to You",
+    "severity": "minor",
+    "category": "Parenting joy",
+    "icon": "💬",
+    "accent": "teal",
+    "description": "Your child shares something real and vulnerable — the kind of thing you hoped they'd tell you.",
+    "effects": {
+      "wellbeing": 6,
+      "children": 9
+    },
+    "memory": "Your child opened up about something real and it deepened everything between you.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 45
+    }
+  },
+  {
+    "id": "dream-job-interest",
+    "title": "Dream Employer Reaches Out",
+    "severity": "moderate",
+    "category": "Career win",
+    "icon": "📨",
+    "accent": "indigo",
+    "description": "A company you've admired for years reaches out about a role. The timing is surprising.",
+    "effects": {
+      "wellbeing": 7,
+      "wallet": 4
+    },
+    "memory": "An out-of-the-blue message from a dream employer opened a door you didn't know was there."
+  },
+  {
+    "id": "spiritual-breakthrough",
+    "title": "Spiritual Breakthrough",
+    "severity": "moderate",
+    "category": "Faith moment",
+    "icon": "✝️",
+    "accent": "violet",
+    "description": "A sermon, a conversation, or a quiet moment breaks something open and faith feels alive again.",
+    "effects": {
+      "wellbeing": 8,
+      "marriage": 5
+    },
+    "memory": "Something broke open spiritually and the clarity carried into the weeks that followed."
+  },
+  {
+    "id": "neighbour-becomes-friend",
+    "title": "Neighbour Becomes a Real Friend",
+    "severity": "minor",
+    "category": "Social joy",
+    "icon": "🏘️",
+    "accent": "teal",
+    "description": "What started as a wave over the fence has quietly become one of the better friendships in your life.",
+    "effects": {
+      "wellbeing": 5,
+      "marriage": 4
+    },
+    "memory": "A neighbour became a genuine friend and the neighbourhood started to feel like community."
+  },
+  {
+    "id": "child-discovers-passion",
+    "title": "Child Finds Their Thing",
+    "severity": "minor",
+    "category": "Parenting joy",
+    "icon": "🎨",
+    "accent": "amber",
+    "description": "Whether it's art, coding, sport, or music — your child finds something that lights them up.",
+    "effects": {
+      "wellbeing": 5,
+      "children": 9,
+      "marriage": 3
+    },
+    "memory": "Your child found something they truly loved and the whole house felt the energy shift."
+  },
+  {
+    "id": "unexpected-free-weekend",
+    "title": "Weekend Opens Up",
+    "severity": "minor",
+    "category": "Simple joy",
+    "icon": "☀️",
+    "accent": "amber",
+    "description": "Plans cancel, schedules clear, and you suddenly have a whole weekend with nothing on it.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 5,
+      "children": 4
+    },
+    "memory": "An open weekend appeared out of nowhere and the family made the most of every hour."
+  },
+  {
+    "id": "salary-bump",
+    "title": "Salary Increase",
+    "severity": "minor",
+    "category": "Financial win",
+    "icon": "💵",
+    "accent": "green",
+    "description": "Your annual review comes with a raise that's actually meaningful — not just cost-of-living.",
+    "effects": {
+      "wallet": 6,
+      "wellbeing": 5,
+      "marriage": 3
+    },
+    "memory": "A real salary increase landed and created room in the budget that hadn't existed before."
+  },
+  {
+    "id": "long-lost-friend-visits",
+    "title": "Old Friend Visits",
+    "severity": "minor",
+    "category": "Social joy",
+    "icon": "🚂",
+    "accent": "blue",
+    "description": "A friend you haven't seen in years shows up for a few days and time collapses in the best way.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 4
+    },
+    "memory": "An old friend visited and the days felt full in a way that's hard to manufacture."
+  },
+  {
+    "id": "anniversary-surprise",
+    "title": "Spouse Plans a Surprise",
+    "severity": "minor",
+    "category": "Relationship joy",
+    "icon": "🎁",
+    "accent": "rose",
+    "description": "Your spouse plans something thoughtful without being asked. It catches you completely off guard.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 11
+    },
+    "memory": "Your spouse surprised you with something thoughtful and it meant more than they knew.",
+    "condition": {
+      "stat": "marriage",
+      "op": "gte",
+      "value": 50
+    }
   }
 ]

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
+import wisdomRecords from "./data/wisdom.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition from "./components/SeasonTransition.jsx";
 import FamilyPhoto from "./components/FamilyPhoto.jsx";
@@ -77,6 +78,34 @@ const getSeasonForMonth = (month) => seasonConfig.find((season) => season.months
 const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => season.months.includes(month));
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
+const createEmptySeasonHistory = () => Object.fromEntries(seasonConfig.map((season) => [season.id, []]));
+const isNewYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
+const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month).id) => {
+  const selections = Object.values(game.selectedChoices ?? {});
+
+  return selections.map((selection, index) => ({
+    id: `${seasonId}-${selection.eventTitle ?? "event"}-${selection.label ?? "choice"}-${index}`,
+    dayName: selection.dayName,
+    eventTitle: selection.eventTitle,
+    label: selection.label,
+    effects: sanitizeEffects(selection.effects)
+  }));
+};
+const updateSeasonHistory = (game, nextMonth) => {
+  if (isNewYearRefresh(game.month, nextMonth)) {
+    return createEmptySeasonHistory();
+  }
+
+  const seasonId = getSeasonForMonth(game.month).id;
+  const nextHistory = { ...createEmptySeasonHistory(), ...(game.seasonHistory ?? {}) };
+  const snapshot = getSeasonHistorySnapshot(game, seasonId);
+
+  return {
+    ...nextHistory,
+    [seasonId]: snapshot.length > 0 ? snapshot : nextHistory[seasonId] ?? []
+  };
+};
+
 const seasonalAudioConfig = {
   spring: {
     padFrequencies: [196, 293.66, 349.23, 440],
@@ -129,6 +158,49 @@ const getDisplayDeltaValue = (deltas, key) => deltas[key] ?? 0;
 const getDisplayEffectEntries = (effects) => Object.entries(sanitizeEffects(effects));
 const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
+
+
+const formatAgeRange = (range) => {
+  if (!range) return "Family ages unavailable";
+  if (range.min === range.max) return `Age ${range.min}`;
+  return `Ages ${range.min}–${range.max}`;
+};
+
+const getFamilyAgeRange = (family, currentAge, currentMonth) => {
+  const memberAges = getFamilyMembers(family, currentAge, currentMonth)
+    .map((member) => member.age)
+    .filter(Number.isFinite);
+  const ages = [Number(currentAge), ...memberAges].filter(Number.isFinite).map((age) => Math.max(0, Math.floor(age)));
+
+  if (ages.length === 0) {
+    return null;
+  }
+
+  return {
+    min: Math.min(...ages),
+    max: Math.max(...ages)
+  };
+};
+
+const getNewYearWisdom = (gameState) => {
+  const ageRange = getFamilyAgeRange(gameState.family, gameState.age, gameState.month);
+  const fallback = wisdomRecords[0] ?? null;
+
+  if (!ageRange || !fallback) {
+    return null;
+  }
+
+  const matchingRecord = wisdomRecords.find((record) => {
+    const minAge = Number(record.minAge ?? 0);
+    const maxAge = Number(record.maxAge ?? 120);
+    return ageRange.max >= minAge && ageRange.min <= maxAge;
+  }) ?? fallback;
+
+  return {
+    ...matchingRecord,
+    ageRangeLabel: formatAgeRange(ageRange)
+  };
+};
 
 const legacySkillConfig = {
   grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
@@ -775,11 +847,13 @@ const createDefaultGame = () => ({
   month: 1,
   completedDecisions: [],
   selectedChoices: {},
+  seasonHistory: createEmptySeasonHistory(),
   memories: [],
   currentEventId: getRandomEventId(undefined, events),
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
+  newYearWisdom: null,
   gameOver: false,
   gameOverReason: null,
   legacy: createDefaultLegacy(),
@@ -800,10 +874,12 @@ const normalizeGame = (game) => ({
   month: clamp(Number(game?.month ?? 1), 1, 12),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
+  seasonHistory: { ...createEmptySeasonHistory(), ...(game?.seasonHistory && typeof game.seasonHistory === "object" && !Array.isArray(game.seasonHistory) ? game.seasonHistory : {}) },
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
   weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
+  newYearWisdom: game?.newYearWisdom && typeof game.newYearWisdom === "object" ? game.newYearWisdom : null,
   gameOver: Boolean(game?.gameOver),
   gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
   legacy: normalizeLegacy(game?.legacy),
@@ -1006,12 +1082,14 @@ export default function App() {
       week: 1,
       completedDecisions: [],
       selectedChoices: {},
+      seasonHistory: createEmptySeasonHistory(),
       memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
       family,
       customEvents,
       currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
+      newYearWisdom: null,
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
@@ -1019,10 +1097,15 @@ export default function App() {
       initialized: true
     };
 
-    setSimulationState(createIdleSimulationState());
-    setGame({
+    const initializedGame = {
       ...newGame,
       weekStartStats: captureStats(newGame)
+    };
+
+    setSimulationState(createIdleSimulationState());
+    setGame({
+      ...initializedGame,
+      newYearWisdom: getNewYearWisdom(initializedGame)
     });
     startZenMusic();
   };
@@ -1077,6 +1160,7 @@ export default function App() {
   );
   const totalSeasonDecisions = seasonDecisions.length;
   const selectedChoices = game.selectedChoices ?? {};
+  const seasonHistory = { ...createEmptySeasonHistory(), ...(game.seasonHistory ?? {}) };
   const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
   const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
   const legacy = normalizeLegacy(game.legacy);
@@ -1212,13 +1296,22 @@ export default function App() {
       previousSeasonId: getSeasonForMonth(game.month).id,
       targetSeasonId: getSeasonForMonth(nextSeasonState.month).id
     });
-    setGame({
-      ...game,
-      ...nextSeasonState,
-      completedDecisions: [],
-      selectedChoices: {},
-      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
-      memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+    setGame((prevGame) => {
+      const seasonHistory = updateSeasonHistory(prevGame, nextSeasonState.month);
+      const nextGame = {
+        ...prevGame,
+        ...nextSeasonState,
+        seasonHistory,
+        completedDecisions: [],
+        selectedChoices: {},
+        currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
+        memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+      };
+
+      return {
+        ...nextGame,
+        newYearWisdom: isNewYearRefresh(prevGame.month, nextSeasonState.month) ? getNewYearWisdom(nextGame) : prevGame.newYearWisdom
+      };
     });
   };
 
@@ -1309,13 +1402,19 @@ export default function App() {
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: The season stayed unusually calm.`);
     }
 
-    const advancedGame = {
+    const nextSeasonState = getNextSeasonState(game.month, game.age);
+    const advancedGameBase = {
       ...nextState,
-      ...getNextSeasonState(game.month, game.age),
+      ...nextSeasonState,
+      seasonHistory: updateSeasonHistory(nextState, nextSeasonState.month),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
+    };
+    const advancedGame = {
+      ...advancedGameBase,
+      newYearWisdom: isNewYearRefresh(game.month, nextSeasonState.month) ? getNewYearWisdom(advancedGameBase) : game.newYearWisdom
     };
     const monthlySummary = createSeasonalSummary({ previousGame: game, nextState });
     const finalGame = finishRunIfNeeded({
@@ -1609,6 +1708,7 @@ export default function App() {
               const isActive = season.id === activeSeason.id;
               const seasonMonthNames = getSeasonMonthNames(season);
               const cardDecisions = isActive ? seasonDecisions : [];
+              const previousSelections = seasonHistory[season.id] ?? [];
 
               return (
                 <article className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""}`} key={season.id}>
@@ -1657,6 +1757,17 @@ export default function App() {
                         );
                       }) : <p className="season-empty">This season is unusually quiet. Simulate to discover whether life stays that way.</p>}
                     </div>
+                  ) : previousSelections.length > 0 ? (
+                    <div className="season-history" aria-label={`${season.label} previous selections`}>
+                      <strong>Previous selections</strong>
+                      {previousSelections.slice(0, 4).map((selection) => (
+                        <div className="season-history-item" key={selection.id}>
+                          <span>{selection.dayName}</span>
+                          <em>{selection.eventTitle}</em>
+                          <strong>{selection.label}</strong>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div className="season-preview">
                       <strong>{season.months.length} month arc</strong>
@@ -1670,6 +1781,24 @@ export default function App() {
         </section>
 
         <aside className="side-stack">
+          {game.newYearWisdom ? (
+            <section className="panel new-year-wisdom-card" aria-live="polite">
+              <div className="section-heading summary-heading">
+                <div>
+                  <p className="eyebrow">New year wisdom</p>
+                  <h2>{game.newYearWisdom.title}</h2>
+                </div>
+                <span>✨</span>
+              </div>
+              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
+              <p>{game.newYearWisdom.summary}</p>
+              <div className="wisdom-expect">
+                <span>Expect</span>
+                <strong>{game.newYearWisdom.expect}</strong>
+              </div>
+              <small>{game.newYearWisdom.focus}</small>
+            </section>
+          ) : null}
           {game.weeklySummary ? (
             <section className="panel monthly-summary-card compact-summary-card" aria-live="polite">
               <div className="section-heading summary-heading">

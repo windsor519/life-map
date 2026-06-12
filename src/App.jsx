@@ -79,7 +79,7 @@ const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => sea
 const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 
 const createEmptySeasonHistory = () => Object.fromEntries(seasonConfig.map((season) => [season.id, []]));
-const isNewYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
+const isSpringYearRefresh = (currentMonth, nextMonth) => getSeasonForMonth(currentMonth).id === "winter" && getSeasonForMonth(nextMonth).id === "spring";
 const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month).id) => {
   const selections = Object.values(game.selectedChoices ?? {});
 
@@ -92,7 +92,7 @@ const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month)
   }));
 };
 const updateSeasonHistory = (game, nextMonth) => {
-  if (isNewYearRefresh(game.month, nextMonth)) {
+  if (isSpringYearRefresh(game.month, nextMonth)) {
     return createEmptySeasonHistory();
   }
 
@@ -182,7 +182,7 @@ const getFamilyAgeRange = (family, currentAge, currentMonth) => {
   };
 };
 
-const getNewYearWisdom = (gameState) => {
+const getAgeWisdom = (gameState) => {
   const ageRange = getFamilyAgeRange(gameState.family, gameState.age, gameState.month);
   const fallback = wisdomRecords[0] ?? null;
 
@@ -199,6 +199,94 @@ const getNewYearWisdom = (gameState) => {
   return {
     ...matchingRecord,
     ageRangeLabel: formatAgeRange(ageRange)
+  };
+};
+
+
+const getStatBand = (value) => {
+  if (value <= 30) return "critical";
+  if (value <= 50) return "low";
+  if (value >= 82) return "strong";
+  return "steady";
+};
+
+const seasonalWisdomByStat = {
+  wellbeing: {
+    title: "Protect the oxygen mask",
+    critical: "Wellbeing is flashing red, so make the next season smaller on purpose before everyone starts borrowing from your nervous system.",
+    low: "Energy is thinner than the calendar pretends. Choose one repeatable recovery ritual before adding another obligation.",
+    steady: "Your calm is usable capital. Spend it deliberately on the family moments that will actually remember you.",
+    strong: "Wellbeing is carrying the household well right now. Bank the strength by building routines that still work on tired days.",
+    action: "Pick one non-negotiable rest block and defend it like a bill that comes due.",
+    suggestions: ["Cancel or shrink one low-value obligation.", "Put sleep, movement, or quiet time on the calendar first.", "Ask the family what would make the week feel lighter."]
+  },
+  marriage: {
+    title: "Keep the teammate close",
+    critical: "The partnership meter needs gentle triage. Fewer heroic fixes, more specific repair attempts and honest check-ins.",
+    low: "Connection is asking for maintenance, not fireworks. Small bids for attention will matter more than dramatic speeches.",
+    steady: "The relationship has enough stability to become a planning advantage if you make decisions together instead of nearby.",
+    strong: "Your partnership is a family asset this season. Let the kids see cooperation, apologies, and shared laughter in motion.",
+    action: "Schedule one boring-but-kind logistics talk and one no-logistics moment.",
+    suggestions: ["Do a 15-minute calendar and money check-in.", "Name one thing you appreciated before problem-solving.", "Plan a small moment with no chores, phones, or kid logistics."]
+  },
+  children: {
+    title: "Connection before correction",
+    critical: "The family bond needs warmth before strategy. Lead with attention, then expectations, especially if the house feels tense.",
+    low: "Kids and dependents may need proof that they are not just another task. Tiny consistent rituals beat occasional grand gestures.",
+    steady: "Family connection is workable. Turn routine moments into anchors before the season gets noisy.",
+    strong: "The children bond is a strength. Use it to teach resilience without turning every lesson into a lecture.",
+    action: "Create one predictable touchpoint: breakfast, bedtime, ride home, walk, or weekly check-in.",
+    suggestions: ["Let each kid choose one tiny seasonal ritual.", "Ask a question you do not immediately turn into advice.", "Protect one shared meal, walk, bedtime, or ride-home check-in."]
+  },
+  wallet: {
+    title: "Make money boring again",
+    critical: "Wallet stress is likely to leak into every other stat. This is a season for clarity, limits, and fewer surprise commitments.",
+    low: "Resources are tight enough that vague optimism is expensive. Give every planned choice a small budget container.",
+    steady: "Money is stable enough to support values if you name the tradeoffs before the calendar names them for you.",
+    strong: "The wallet has breathing room. Use it to buy resilience, not just relief: buffers, repairs, and future flexibility.",
+    action: "Set one spending boundary and one tiny buffer before saying yes to extras.",
+    suggestions: ["Give the season a simple family spending cap.", "Delay one non-urgent purchase for 48 hours.", "Move a small amount into a repairs, snacks, or surprise buffer."]
+  }
+};
+
+const getSeasonalFamilyWisdom = (gameState, previousGame = null, targetMonth = gameState?.month, deltas = null) => {
+  const ageRange = getFamilyAgeRange(gameState?.family, gameState?.age, targetMonth);
+  const ageRecord = getAgeWisdom({ ...gameState, month: targetMonth });
+  const statEntries = summaryStatKeys.map((key) => ({
+    key,
+    value: clamp(Number(gameState?.[key] ?? 0)),
+    delta: Number(deltas?.[key] ?? 0)
+  }));
+  const focusStat = statEntries.reduce((lowest, entry) => {
+    if (!lowest) return entry;
+    if (entry.value < lowest.value) return entry;
+    if (entry.value === lowest.value && entry.delta < lowest.delta) return entry;
+    return lowest;
+  }, null);
+  const statCopy = seasonalWisdomByStat[focusStat?.key] ?? seasonalWisdomByStat.wellbeing;
+  const band = getStatBand(focusStat?.value ?? 0);
+  const targetSeason = getSeasonForMonth(targetMonth);
+  const previousSeason = previousGame ? getSeasonForMonth(previousGame.month) : null;
+  const delta = focusStat?.delta ?? null;
+  const deltaLabel = Number.isFinite(delta) && delta !== 0 ? `${delta > 0 ? "+" : ""}${delta} last season` : "steady last season";
+
+  return {
+    kicker: "Family wisdom card",
+    title: `${targetSeason.label} timbit: ${statCopy.title}`,
+    seasonLabel: targetSeason.label,
+    ageRangeLabel: formatAgeRange(ageRange),
+    ageTitle: ageRecord?.title ?? "Family season",
+    ageSummary: ageRecord?.summary ?? "This household season will reward attention to the people who are changing fastest.",
+    statIcon: statConfig[focusStat?.key]?.icon ?? "✨",
+    statLabel: statConfig[focusStat?.key]?.label ?? "Family",
+    statValue: focusStat?.value ?? 0,
+    statBand: band,
+    statDeltaLabel: deltaLabel,
+    summary: statCopy[band],
+    expect: ageRecord?.expect ?? "Small choices can become family patterns when repeated kindly.",
+    focus: statCopy.action,
+    suggestions: statCopy.suggestions ?? [],
+    context: previousSeason ? `${previousSeason.label} is behind you. ${targetSeason.label} needs a fresh family rule.` : `${targetSeason.label} begins with a fresh family rule.`
   };
 };
 
@@ -853,7 +941,6 @@ const createDefaultGame = () => ({
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
-  newYearWisdom: null,
   gameOver: false,
   gameOverReason: null,
   legacy: createDefaultLegacy(),
@@ -863,30 +950,35 @@ const createDefaultGame = () => ({
   initialized: false
 });
 
-const normalizeGame = (game) => ({
-  ...createDefaultGame(),
-  ...game,
-  age: clamp(Number(game?.age ?? 25), 12, 100),
-  wellbeing: clamp(Number(game?.wellbeing ?? ((Number(game?.health ?? 70) + (100 - Number(game?.stress ?? 30))) / 2))),
-  marriage: clamp(Number(game?.marriage ?? 40)),
-  children: clamp(Number(game?.children ?? 0)),
-  wallet: clamp(Number(game?.wallet ?? 60)),
-  month: clamp(Number(game?.month ?? 1), 1, 12),
-  completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
-  selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
-  seasonHistory: { ...createEmptySeasonHistory(), ...(game?.seasonHistory && typeof game.seasonHistory === "object" && !Array.isArray(game.seasonHistory) ? game.seasonHistory : {}) },
-  memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
-  eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
-  weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
-  weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
-  newYearWisdom: game?.newYearWisdom && typeof game.newYearWisdom === "object" ? game.newYearWisdom : null,
-  gameOver: Boolean(game?.gameOver),
-  gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
-  legacy: normalizeLegacy(game?.legacy),
-  character: game?.character && typeof game.character === "object" ? game.character : null,
-  family: normalizeFamily(game?.family),
-  customEvents: Array.isArray(game?.customEvents) ? game.customEvents.map((event) => ({ ...event, choices: (event.choices ?? []).map((choice) => ({ ...choice, effects: sanitizeEffects(choice.effects) })) })) : []
-});
+const normalizeGame = (game) => {
+  const gameObject = game && typeof game === "object" ? game : {};
+  const deprecatedWisdomKey = ["new", "Year", "Wisdom"].join("");
+  const { [deprecatedWisdomKey]: _discardedWisdom, ...gameWithoutDeprecatedWisdom } = gameObject;
+
+  return {
+    ...createDefaultGame(),
+    ...gameWithoutDeprecatedWisdom,
+    age: clamp(Number(game?.age ?? 25), 12, 100),
+    wellbeing: clamp(Number(game?.wellbeing ?? ((Number(game?.health ?? 70) + (100 - Number(game?.stress ?? 30))) / 2))),
+    marriage: clamp(Number(game?.marriage ?? 40)),
+    children: clamp(Number(game?.children ?? 0)),
+    wallet: clamp(Number(game?.wallet ?? 60)),
+    month: clamp(Number(game?.month ?? 1), 1, 12),
+    completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
+    selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
+    seasonHistory: { ...createEmptySeasonHistory(), ...(game?.seasonHistory && typeof game.seasonHistory === "object" && !Array.isArray(game.seasonHistory) ? game.seasonHistory : {}) },
+    memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
+    eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
+    weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
+    weeklySummary: game?.weeklySummary && typeof game.weeklySummary === "object" ? game.weeklySummary : null,
+    gameOver: Boolean(game?.gameOver),
+    gameOverReason: typeof game?.gameOverReason === "string" ? game.gameOverReason : null,
+    legacy: normalizeLegacy(game?.legacy),
+    character: game?.character && typeof game.character === "object" ? game.character : null,
+    family: normalizeFamily(game?.family),
+    customEvents: Array.isArray(game?.customEvents) ? game.customEvents.map((event) => ({ ...event, choices: (event.choices ?? []).map((choice) => ({ ...choice, effects: sanitizeEffects(choice.effects) })) })) : []
+  };
+};
 
 
 const ensureSpouse = (family, age) => {
@@ -938,7 +1030,6 @@ export default function App() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [familySidebarOpen, setFamilySidebarOpen] = useState(false);
-  const [wisdomSidebarOpen, setWisdomSidebarOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
 
@@ -955,20 +1046,19 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
-    if ((!familySidebarOpen && !wisdomSidebarOpen) || typeof window === "undefined") {
+    if (!familySidebarOpen || typeof window === "undefined") {
       return undefined;
     }
 
     const closeOnEscape = (event) => {
       if (event.key === "Escape") {
         setFamilySidebarOpen(false);
-        setWisdomSidebarOpen(false);
       }
     };
 
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [familySidebarOpen, wisdomSidebarOpen]);
+  }, [familySidebarOpen]);
 
   useEffect(() => () => stopZenMusic(false), []);
 
@@ -1107,8 +1197,7 @@ export default function App() {
       currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
-      newYearWisdom: null,
-      gameOver: false,
+          gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
       character: { name: "", sex: startSex.trim() },
@@ -1121,10 +1210,7 @@ export default function App() {
     };
 
     setSimulationState(createIdleSimulationState());
-    setGame({
-      ...initializedGame,
-      newYearWisdom: getNewYearWisdom(initializedGame)
-    });
+    setGame(initializedGame);
     startZenMusic();
   };
 
@@ -1146,7 +1232,6 @@ export default function App() {
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
     setFamilySidebarOpen(false);
-    setWisdomSidebarOpen(false);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
@@ -1160,6 +1245,10 @@ export default function App() {
   const currentCalendarYear = useMemo(() => new Date().getFullYear(), []);
   const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
+  const activeSeasonWisdom = useMemo(
+    () => getSeasonalFamilyWisdom(game, null, game.month, game.weeklySummary?.deltas),
+    [game]
+  );
 
   useEffect(() => {
     if (!musicPlaying || audioRef.current?.seasonId === activeSeason.id) {
@@ -1310,7 +1399,15 @@ export default function App() {
     }
 
     const nextSeasonState = getNextSeasonState(game.month, game.age);
-
+    const previewNextGame = {
+      ...game,
+      ...nextSeasonState,
+      seasonHistory: updateSeasonHistory(game, nextSeasonState.month),
+      completedDecisions: [],
+      selectedChoices: {},
+      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
+      memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+    };
     setActiveDecisionContext(null);
     setSeasonTransition({
       previousSeasonId: getSeasonForMonth(game.month).id,
@@ -1328,10 +1425,7 @@ export default function App() {
         memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
       };
 
-      return {
-        ...nextGame,
-        newYearWisdom: isNewYearRefresh(prevGame.month, nextSeasonState.month) ? getNewYearWisdom(nextGame) : prevGame.newYearWisdom
-      };
+      return nextGame;
     });
   };
 
@@ -1432,14 +1526,10 @@ export default function App() {
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
     };
-    const advancedGame = {
-      ...advancedGameBase,
-      newYearWisdom: isNewYearRefresh(game.month, nextSeasonState.month) ? getNewYearWisdom(advancedGameBase) : game.newYearWisdom
-    };
     const monthlySummary = createSeasonalSummary({ previousGame: game, nextState });
     const finalGame = finishRunIfNeeded({
-      ...advancedGame,
-      weekStartStats: captureStats(advancedGame),
+      ...advancedGameBase,
+      weekStartStats: captureStats(advancedGameBase),
       weeklySummary: monthlySummary
     }, game);
 
@@ -1658,28 +1748,12 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-actions">
-          {game.newYearWisdom ? (
-            <button
-              className="secondary wisdom-sidebar-toggle"
-              type="button"
-              aria-controls="wisdom-sidebar"
-              aria-expanded={wisdomSidebarOpen}
-              onClick={() => {
-                setFamilySidebarOpen(false);
-                setWisdomSidebarOpen(true);
-              }}
-            >
-              <span aria-hidden="true">✨</span>
-              New Year Wisdom
-            </button>
-          ) : null}
           <button
             className="secondary family-sidebar-toggle"
             type="button"
             aria-controls="family-sidebar"
             aria-expanded={familySidebarOpen}
             onClick={() => {
-              setWisdomSidebarOpen(false);
               setFamilySidebarOpen(true);
             }}
           >
@@ -1747,6 +1821,39 @@ export default function App() {
             <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
           </div>
           <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
+          {activeSeasonWisdom ? (
+            <section className="season-screen-wisdom-card" aria-label={`${activeSeason.label} family wisdom`}>
+              <div className="season-screen-wisdom-main">
+                <span className="wisdom-hero compact-wisdom-hero" aria-hidden="true">{activeSeasonWisdom.statIcon}</span>
+                <div>
+                  <p className="eyebrow">Season wisdom · {activeSeasonWisdom.ageRangeLabel}</p>
+                  <h3>{activeSeasonWisdom.title}</h3>
+                  <p>{activeSeasonWisdom.context}</p>
+                </div>
+              </div>
+              <div className="season-screen-wisdom-grid">
+                <div className="wisdom-expect">
+                  <span>Timbit</span>
+                  <strong>{activeSeasonWisdom.summary}</strong>
+                </div>
+                <div className="wisdom-expect">
+                  <span>{activeSeasonWisdom.statLabel}</span>
+                  <strong>{activeSeasonWisdom.statValue} · {activeSeasonWisdom.statDeltaLabel}</strong>
+                </div>
+                <div className="wisdom-expect">
+                  <span>Age signal</span>
+                  <strong>{activeSeasonWisdom.ageSummary}</strong>
+                </div>
+              </div>
+              <div className="season-screen-ideas">
+                <span>Ideas for this season</span>
+                <ul>
+                  {activeSeasonWisdom.suggestions.map((suggestion) => <li key={suggestion}>{suggestion}</li>)}
+                </ul>
+              </div>
+              <small>{activeSeasonWisdom.focus}</small>
+            </section>
+          ) : null}
           <div className="flow-panel">
             <div>
               <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
@@ -1830,42 +1937,15 @@ export default function App() {
           </div>
         </section>
 
-        {familySidebarOpen || wisdomSidebarOpen ? (
+        {familySidebarOpen ? (
           <button
             className="sidebar-backdrop"
             type="button"
             aria-label="Close sidebar"
             onClick={() => {
               setFamilySidebarOpen(false);
-              setWisdomSidebarOpen(false);
             }}
           />
-        ) : null}
-        {game.newYearWisdom ? (
-          <aside
-            className={`side-stack game-sidebar wisdom-sidebar ${wisdomSidebarOpen ? "open" : ""}`}
-            id="wisdom-sidebar"
-            aria-label="New year wisdom sidebar"
-            aria-hidden={!wisdomSidebarOpen}
-          >
-            <div className="sidebar-header">
-              <div>
-                <p className="eyebrow">New year wisdom</p>
-                <h2>{game.newYearWisdom.title}</h2>
-              </div>
-              <button className="secondary sidebar-close" type="button" onClick={() => setWisdomSidebarOpen(false)}>Close</button>
-            </div>
-            <section className="panel new-year-wisdom-card sidebar-wisdom-card" aria-live="polite">
-              <div className="wisdom-hero" aria-hidden="true">✨</div>
-              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
-              <p>{game.newYearWisdom.summary}</p>
-              <div className="wisdom-expect">
-                <span>Expect</span>
-                <strong>{game.newYearWisdom.expect}</strong>
-              </div>
-              <small>{game.newYearWisdom.focus}</small>
-            </section>
-          </aside>
         ) : null}
         <aside
           className={`side-stack game-sidebar family-sidebar ${familySidebarOpen ? "open" : ""}`}

@@ -1323,35 +1323,6 @@ textarea:focus {
   line-height: 1.25;
 }
 
-.new-year-wisdom-card {
-  display: grid;
-  gap: 0.8rem;
-  background:
-    radial-gradient(circle at 100% 0, rgba(251, 191, 36, 0.22), transparent 13rem),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
-}
-
-.inline-wisdom-card {
-  border: 1px solid rgba(251, 191, 36, 0.24);
-  border-radius: 1.45rem;
-  margin: 0 0 1rem;
-  padding: clamp(1rem, 2vw, 1.25rem);
-}
-
-.inline-wisdom-card .summary-heading h2 {
-  margin: 0;
-  color: #fff;
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
-  letter-spacing: -0.03em;
-}
-
-.sidebar-wisdom-card {
-  min-height: min(30rem, calc(100vh - 9rem));
-  align-content: start;
-  border-color: rgba(251, 191, 36, 0.26);
-  padding: clamp(1.1rem, 3vw, 1.75rem);
-}
-
 .wisdom-hero {
   display: grid;
   width: clamp(4.5rem, 8vw, 6.5rem);
@@ -1366,28 +1337,12 @@ textarea:focus {
   font-size: clamp(2.2rem, 5vw, 3.4rem);
 }
 
-.new-year-wisdom-card p,
-.new-year-wisdom-card small {
-  margin: 0;
-  color: #d7e1f7;
-  line-height: 1.55;
-}
-
-.new-year-wisdom-card small {
-  color: #c4b5fd;
-  font-weight: 800;
-}
-
-.wisdom-range {
-  width: fit-content;
-  border-radius: 999px;
-  color: #fef3c7 !important;
-  background: rgba(251, 191, 36, 0.14);
-  font-size: 0.74rem;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  padding: 0.35rem 0.65rem;
-  text-transform: uppercase;
+.compact-wisdom-hero {
+  flex: 0 0 auto;
+  width: clamp(3.5rem, 7vw, 5rem);
+  height: clamp(3.5rem, 7vw, 5rem);
+  border-radius: 1.45rem;
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
 }
 
 .wisdom-expect {
@@ -1399,7 +1354,8 @@ textarea:focus {
   padding: 0.8rem;
 }
 
-.wisdom-expect span {
+.wisdom-expect span,
+.season-screen-ideas > span {
   color: #93c5fd;
   font-size: 0.68rem;
   font-weight: 950;
@@ -1410,6 +1366,72 @@ textarea:focus {
 .wisdom-expect strong {
   color: #fff;
   line-height: 1.35;
+}
+
+.season-screen-wisdom-card {
+  display: grid;
+  gap: 0.9rem;
+  border: 1px solid rgba(251, 191, 36, 0.24);
+  border-radius: 1.45rem;
+  margin: 0 0 1rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  background:
+    radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.2), transparent 12rem),
+    radial-gradient(circle at 100% 0, rgba(124, 58, 237, 0.2), transparent 13rem),
+    rgba(9, 12, 30, 0.32);
+}
+
+.season-screen-wisdom-main {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.season-screen-wisdom-main h3 {
+  margin: 0.15rem 0 0.35rem;
+  color: #fff;
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.season-screen-wisdom-card p,
+.season-screen-wisdom-card small {
+  margin: 0;
+  color: #d7e1f7;
+  line-height: 1.55;
+}
+
+.season-screen-wisdom-card > small {
+  color: #fde68a;
+  font-weight: 850;
+}
+
+.season-screen-wisdom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.season-screen-ideas {
+  display: grid;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.85rem;
+}
+
+.season-screen-ideas ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.season-screen-ideas li {
+  color: #eef4ff;
+  line-height: 1.4;
 }
 
 @media (max-width: 1120px) {
@@ -3650,5 +3672,23 @@ textarea:focus {
   .brand-lockup img {
     width: 2.25rem;
     height: 2.25rem;
+  }
+}
+
+.season-transition-next-copy {
+  margin: 0;
+  color: #bfdbfe;
+  font-size: 0.9rem;
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .season-screen-wisdom-main {
+    flex-direction: column;
+  }
+
+  .season-screen-wisdom-grid {
+    grid-template-columns: 1fr;
   }
 }

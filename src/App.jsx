@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 import StartScreen from "./components/StartScreen.jsx";
+import SeasonTransition from "./components/SeasonTransition.jsx";
 import { countFamilyNames, createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
@@ -596,6 +597,7 @@ export default function App() {
   const [customEventError, setCustomEventError] = useState("");
   const [activeDecisionContext, setActiveDecisionContext] = useState(null);
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
+  const [seasonTransition, setSeasonTransition] = useState(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -950,19 +952,25 @@ export default function App() {
   };
 
   const handleAdvanceSeason = () => {
-    if (isSimulationLocked) {
+    if (isSimulationLocked || game.gameOver) {
       return;
     }
 
+    const nextSeasonState = getNextSeasonState(game.month, game.age);
+
     setActiveDecisionContext(null);
-    setGame((prevGame) => prevGame.gameOver ? prevGame : ({
-      ...prevGame,
-      ...getNextSeasonState(prevGame.month, prevGame.age),
+    setSeasonTransition({
+      previousSeasonId: getSeasonForMonth(game.month).id,
+      targetSeasonId: getSeasonForMonth(nextSeasonState.month).id
+    });
+    setGame({
+      ...game,
+      ...nextSeasonState,
       completedDecisions: [],
       selectedChoices: {},
-      currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
-      memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
-    }));
+      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
+      memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+    });
   };
 
   const handleSimulateSeason = () => {
@@ -1121,8 +1129,14 @@ export default function App() {
   };
 
   const closeSummaryModal = () => {
-    if (simulationState.summary?.finalGame) {
-      setGame(simulationState.summary.finalGame);
+    const finalGame = simulationState.summary?.finalGame;
+
+    if (finalGame) {
+      setGame(finalGame);
+      setSeasonTransition({
+        previousSeasonId: getSeasonForMonth(game.month).id,
+        targetSeasonId: getSeasonForMonth(finalGame.month).id
+      });
     }
     setSimulationState(createIdleSimulationState());
   };
@@ -1259,6 +1273,13 @@ export default function App() {
 
   return (
     <main className="app-shell">
+      {seasonTransition ? (
+        <SeasonTransition
+          previousSeasonId={seasonTransition.previousSeasonId}
+          targetSeasonId={seasonTransition.targetSeasonId}
+          onComplete={() => setSeasonTransition(null)}
+        />
+      ) : null}
       <header className="topbar">
         <div>
           <p className="eyebrow">{activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>

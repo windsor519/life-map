@@ -58,14 +58,14 @@ export default function Setting({
             "div",
             { className: "settings-card-heading" },
             h("span", { className: "settings-icon", "aria-hidden": "true" }, "🎧"),
-            h("div", null, h("strong", null, "Music"), h("small", null, "Zen ambience uses icon controls now."))
+            h("div", null, h("strong", null, "Seasonal ambience"), h("small", null, "Generated tones shift as the seasons change."))
           ),
           h(
             "button",
             {
               className: `icon-toggle ${musicPlaying ? "active" : ""}`,
               type: "button",
-              "aria-label": musicPlaying ? "Pause zen music" : "Play zen music",
+              "aria-label": musicPlaying ? "Pause seasonal ambience" : "Play seasonal ambience",
               "aria-pressed": musicPlaying,
               onClick: onToggleMusic
             },

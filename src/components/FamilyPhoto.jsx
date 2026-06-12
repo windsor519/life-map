@@ -13,10 +13,9 @@ const familyPhotoCss = `
 }
 
 .family-stage {
-  display: flex;
+  display: grid;
+  gap: 0.9rem;
   min-height: 18rem;
-  align-items: end;
-  gap: clamp(0.7rem, 1.6vw, 1.25rem);
   overflow-x: auto;
   border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 1.4rem;
@@ -306,13 +305,8 @@ const familyPhotoCss = `
 
 .family-tree {
   display: grid;
-  gap: 0.65rem;
-  margin-top: 1rem;
-  padding: 1rem;
-  overflow-x: auto;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 1.2rem;
-  background: rgba(15, 23, 42, 0.2);
+  gap: 0.85rem;
+  min-width: min(100%, max-content);
 }
 
 .family-tree-row {
@@ -320,34 +314,52 @@ const familyPhotoCss = `
   display: flex;
   min-width: max-content;
   justify-content: center;
-  gap: 0.65rem;
-  padding-bottom: 0.3rem;
+  gap: clamp(0.85rem, 2vw, 1.3rem);
+  padding-bottom: 0.55rem;
 }
 
 .family-tree-row:not(:last-child)::after {
   position: absolute;
-  bottom: -0.44rem;
+  bottom: -0.48rem;
   left: 50%;
   width: 1px;
-  height: 0.55rem;
+  height: 0.75rem;
   content: "";
-  background: rgba(125, 211, 252, 0.38);
+  background: linear-gradient(180deg, rgba(125, 211, 252, 0.55), rgba(125, 211, 252, 0.14));
+}
+
+.family-tree-row:not(:last-child)::before {
+  position: absolute;
+  bottom: -0.12rem;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.3), transparent);
 }
 
 .family-tree-node {
-  min-width: 7.2rem;
-  padding: 0.45rem 0.65rem;
+  position: relative;
+  display: grid;
+  min-width: 8.4rem;
+  justify-items: center;
+  gap: 0.42rem;
+  padding: 0.72rem 0.7rem 0.68rem;
   border: 1px solid rgba(226, 232, 240, 0.18);
-  border-radius: 0.9rem;
-  background: rgba(15, 23, 42, 0.44);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(125, 211, 252, 0.16), transparent 62%),
+    rgba(15, 23, 42, 0.5);
   color: #e0f2fe;
   text-align: center;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 1rem 2rem rgba(2, 6, 23, 0.2);
 }
 
 .family-tree-node.family-tree-self {
   border-color: rgba(125, 211, 252, 0.58);
-  background: rgba(14, 165, 233, 0.2);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.28), transparent 62%),
+    rgba(14, 165, 233, 0.2);
 }
 
 .family-tree-node strong,
@@ -439,6 +451,26 @@ const getFamilyTreeRows = (members) =>
     }))
     .filter((row) => row.members.length > 0);
 
+function FamilyPortrait({ member }) {
+  return (
+    <div
+      className="family-portrait"
+      style={{ "--family-scale": getPortraitScale(member) }}
+      aria-hidden="true"
+    >
+      <span className="family-sex-marker">{member.symbol}</span>
+      <div className="family-bust">
+        <span className="family-hair" />
+        <span className="family-head" />
+        <span className="family-neck" />
+        <span className="family-torso" />
+        <span className="family-shoulder family-shoulder-left" />
+        <span className="family-shoulder family-shoulder-right" />
+      </div>
+    </div>
+  );
+}
+
 export default function FamilyPhoto({ family, currentAge, currentMonth, character }) {
   const familyMembers = getFamilyMembers(family, currentAge, currentMonth);
   const members = [getPlayerMember(currentAge, character), ...familyMembers];
@@ -450,45 +482,29 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
       <div className="section-heading">
         <div>
           <p className="eyebrow">Family view</p>
-          <h2>Your family photo grows with the seasons</h2>
+          <h2>Your family tree grows with the seasons</h2>
         </div>
         <span>{members.length} shown · includes you</span>
       </div>
-      <div className="family-stage" role="list" aria-label="Family photo portraits">
-        {members.map((member) => (
-          <article className={`family-member family-${member.role} family-${member.sex}`} key={member.id} role="listitem">
-            <div
-              className="family-portrait"
-              style={{ "--family-scale": getPortraitScale(member) }}
-              aria-hidden="true"
-            >
-              <span className="family-sex-marker">{member.symbol}</span>
-              <div className="family-bust">
-                <span className="family-hair" />
-                <span className="family-head" />
-                <span className="family-neck" />
-                <span className="family-torso" />
-                <span className="family-shoulder family-shoulder-left" />
-                <span className="family-shoulder family-shoulder-right" />
-              </div>
+      <div className="family-stage" role="tree" aria-label="Family tree with portraits">
+        <div className="family-tree">
+          {familyTreeRows.map((row) => (
+            <div className="family-tree-row" key={row.id} aria-label={row.label} role="group">
+              {row.members.map((member) => (
+                <article
+                  className={`family-tree-node family-member family-${member.role} family-${member.sex} ${member.isPlayer ? "family-tree-self" : ""}`}
+                  key={member.id}
+                  role="treeitem"
+                >
+                  <FamilyPortrait member={member} />
+                  {member.isPlayer ? <span className="family-member-badge">Me</span> : null}
+                  <strong>{member.isPlayer ? "Me" : member.name}</strong>
+                  <small>{member.groupLabel} · {member.ageLabel}</small>
+                </article>
+              ))}
             </div>
-            {member.isPlayer ? <span className="family-member-badge">Me</span> : null}
-            <strong>{member.name}</strong>
-            <small>{member.groupLabel} · {member.ageLabel}</small>
-          </article>
-        ))}
-      </div>
-      <div className="family-tree" aria-label="Family tree">
-        {familyTreeRows.map((row) => (
-          <div className="family-tree-row" key={row.id} aria-label={row.label}>
-            {row.members.map((member) => (
-              <div className={`family-tree-node ${member.isPlayer ? "family-tree-self" : ""}`} key={member.id}>
-                <strong>{member.isPlayer ? "Me" : member.name}</strong>
-                <small>{member.groupLabel} · {member.ageLabel}</small>
-              </div>
-            ))}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

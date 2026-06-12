@@ -202,6 +202,89 @@ const getNewYearWisdom = (gameState) => {
   };
 };
 
+
+const getStatBand = (value) => {
+  if (value <= 30) return "critical";
+  if (value <= 50) return "low";
+  if (value >= 82) return "strong";
+  return "steady";
+};
+
+const seasonalWisdomByStat = {
+  wellbeing: {
+    title: "Protect the oxygen mask",
+    critical: "Wellbeing is flashing red, so make the next season smaller on purpose before everyone starts borrowing from your nervous system.",
+    low: "Energy is thinner than the calendar pretends. Choose one repeatable recovery ritual before adding another obligation.",
+    steady: "Your calm is usable capital. Spend it deliberately on the family moments that will actually remember you.",
+    strong: "Wellbeing is carrying the household well right now. Bank the strength by building routines that still work on tired days.",
+    action: "Pick one non-negotiable rest block and defend it like a bill that comes due."
+  },
+  marriage: {
+    title: "Keep the teammate close",
+    critical: "The partnership meter needs gentle triage. Fewer heroic fixes, more specific repair attempts and honest check-ins.",
+    low: "Connection is asking for maintenance, not fireworks. Small bids for attention will matter more than dramatic speeches.",
+    steady: "The relationship has enough stability to become a planning advantage if you make decisions together instead of nearby.",
+    strong: "Your partnership is a family asset this season. Let the kids see cooperation, apologies, and shared laughter in motion.",
+    action: "Schedule one boring-but-kind logistics talk and one no-logistics moment."
+  },
+  children: {
+    title: "Connection before correction",
+    critical: "The family bond needs warmth before strategy. Lead with attention, then expectations, especially if the house feels tense.",
+    low: "Kids and dependents may need proof that they are not just another task. Tiny consistent rituals beat occasional grand gestures.",
+    steady: "Family connection is workable. Turn routine moments into anchors before the season gets noisy.",
+    strong: "The children bond is a strength. Use it to teach resilience without turning every lesson into a lecture.",
+    action: "Create one predictable touchpoint: breakfast, bedtime, ride home, walk, or weekly check-in."
+  },
+  wallet: {
+    title: "Make money boring again",
+    critical: "Wallet stress is likely to leak into every other stat. This is a season for clarity, limits, and fewer surprise commitments.",
+    low: "Resources are tight enough that vague optimism is expensive. Give every planned choice a small budget container.",
+    steady: "Money is stable enough to support values if you name the tradeoffs before the calendar names them for you.",
+    strong: "The wallet has breathing room. Use it to buy resilience, not just relief: buffers, repairs, and future flexibility.",
+    action: "Set one spending boundary and one tiny buffer before saying yes to extras."
+  }
+};
+
+const getSeasonalFamilyWisdom = (gameState, previousGame = null, targetMonth = gameState?.month, deltas = null) => {
+  const ageRange = getFamilyAgeRange(gameState?.family, gameState?.age, targetMonth);
+  const ageRecord = getNewYearWisdom({ ...gameState, month: targetMonth });
+  const statEntries = summaryStatKeys.map((key) => ({
+    key,
+    value: clamp(Number(gameState?.[key] ?? 0)),
+    delta: Number(deltas?.[key] ?? 0)
+  }));
+  const focusStat = statEntries.reduce((lowest, entry) => {
+    if (!lowest) return entry;
+    if (entry.value < lowest.value) return entry;
+    if (entry.value === lowest.value && entry.delta < lowest.delta) return entry;
+    return lowest;
+  }, null);
+  const statCopy = seasonalWisdomByStat[focusStat?.key] ?? seasonalWisdomByStat.wellbeing;
+  const band = getStatBand(focusStat?.value ?? 0);
+  const targetSeason = getSeasonForMonth(targetMonth);
+  const previousSeason = previousGame ? getSeasonForMonth(previousGame.month) : null;
+  const delta = focusStat?.delta ?? null;
+  const deltaLabel = Number.isFinite(delta) && delta !== 0 ? `${delta > 0 ? "+" : ""}${delta} last season` : "steady last season";
+
+  return {
+    kicker: "Family wisdom card",
+    title: `${targetSeason.label} timbit: ${statCopy.title}`,
+    seasonLabel: targetSeason.label,
+    ageRangeLabel: formatAgeRange(ageRange),
+    ageTitle: ageRecord?.title ?? "Family season",
+    ageSummary: ageRecord?.summary ?? "This household season will reward attention to the people who are changing fastest.",
+    statIcon: statConfig[focusStat?.key]?.icon ?? "✨",
+    statLabel: statConfig[focusStat?.key]?.label ?? "Family",
+    statValue: focusStat?.value ?? 0,
+    statBand: band,
+    statDeltaLabel: deltaLabel,
+    summary: statCopy[band],
+    expect: ageRecord?.expect ?? "Small choices can become family patterns when repeated kindly.",
+    focus: statCopy.action,
+    context: previousSeason ? `${previousSeason.label} is behind you. ${targetSeason.label} needs a fresh family rule.` : `${targetSeason.label} begins with a fresh family rule.`
+  };
+};
+
 const legacySkillConfig = {
   grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
   wellness: { label: "Wellness", icon: "🌿", description: "Carries forward healthier habits after a bad ending." },
@@ -1310,11 +1393,25 @@ export default function App() {
     }
 
     const nextSeasonState = getNextSeasonState(game.month, game.age);
+    const previewNextGame = {
+      ...game,
+      ...nextSeasonState,
+      seasonHistory: updateSeasonHistory(game, nextSeasonState.month),
+      completedDecisions: [],
+      selectedChoices: {},
+      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
+      memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+    };
+    const previewNextGameWithWisdom = {
+      ...previewNextGame,
+      newYearWisdom: isNewYearRefresh(game.month, nextSeasonState.month) ? getNewYearWisdom(previewNextGame) : game.newYearWisdom
+    };
 
     setActiveDecisionContext(null);
     setSeasonTransition({
       previousSeasonId: getSeasonForMonth(game.month).id,
-      targetSeasonId: getSeasonForMonth(nextSeasonState.month).id
+      targetSeasonId: getSeasonForMonth(nextSeasonState.month).id,
+      wisdom: getSeasonalFamilyWisdom(previewNextGameWithWisdom, game, nextSeasonState.month)
     });
     setGame((prevGame) => {
       const seasonHistory = updateSeasonHistory(prevGame, nextSeasonState.month);
@@ -1328,10 +1425,12 @@ export default function App() {
         memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
       };
 
-      return {
+      const nextGameWithWisdom = {
         ...nextGame,
         newYearWisdom: isNewYearRefresh(prevGame.month, nextSeasonState.month) ? getNewYearWisdom(nextGame) : prevGame.newYearWisdom
       };
+
+      return nextGameWithWisdom;
     });
   };
 
@@ -1498,7 +1597,8 @@ export default function App() {
       setGame(finalGame);
       setSeasonTransition({
         previousSeasonId: getSeasonForMonth(game.month).id,
-        targetSeasonId: getSeasonForMonth(finalGame.month).id
+        targetSeasonId: getSeasonForMonth(finalGame.month).id,
+        wisdom: getSeasonalFamilyWisdom(finalGame, game, finalGame.month, activeMonthlySummary?.deltas)
       });
     }
     setSimulationState(createIdleSimulationState());
@@ -1642,6 +1742,7 @@ export default function App() {
         <SeasonTransition
           previousSeasonId={seasonTransition.previousSeasonId}
           targetSeasonId={seasonTransition.targetSeasonId}
+          wisdom={seasonTransition.wisdom}
           onComplete={() => setSeasonTransition(null)}
         />
       ) : null}

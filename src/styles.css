@@ -12,6 +12,7 @@
 
 body {
   margin: 0;
+  letter-spacing: 0.012em;
   min-width: 320px;
   min-height: 100vh;
   transition: background 500ms ease;
@@ -179,7 +180,7 @@ textarea:focus {
 .hero-card h1 {
   max-width: 10ch;
   font-size: clamp(3rem, 7vw, 6.2rem);
-  letter-spacing: -0.08em;
+  letter-spacing: -0.055em;
 }
 
 .subtitle {
@@ -313,7 +314,7 @@ textarea:focus {
 
 .topbar h1 {
   font-size: clamp(2.6rem, 7vw, 5.6rem);
-  letter-spacing: -0.08em;
+  letter-spacing: -0.055em;
 }
 
 .bottom-turn-hud {
@@ -491,7 +492,7 @@ textarea:focus {
   color: #ffffff;
   font-size: clamp(1.08rem, 1.35vw, 1.42rem);
   line-height: 1;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.025em;
   text-shadow: 0 0 18px var(--stat-glow, rgba(255, 255, 255, 0.18));
 }
 
@@ -645,7 +646,7 @@ textarea:focus {
   box-shadow: 0 10px 28px rgba(248, 113, 113, 0.24);
   font-size: 0.68rem;
   font-weight: 950;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.055em;
   padding: 0.28rem 0.52rem;
   text-transform: uppercase;
 }
@@ -662,7 +663,7 @@ textarea:focus {
   margin-top: 0.35rem;
   color: #fff;
   font-size: clamp(1.2rem, 2.5vw, 1.75rem);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 
 .meter {
@@ -1773,7 +1774,7 @@ textarea:focus {
   margin: 0 0 0.35rem;
   color: #fff;
   font-size: clamp(1.25rem, 4vw, 2rem);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   line-height: 1.02;
 }
 
@@ -2040,7 +2041,7 @@ textarea:focus {
   margin: 0;
   color: #fff;
   font-size: clamp(3rem, 8vw, 6.5rem);
-  letter-spacing: -0.08em;
+  letter-spacing: -0.055em;
   line-height: 0.94;
 }
 
@@ -2306,6 +2307,13 @@ textarea:focus {
   line-height: 1.55;
 }
 
+.randomize-family-button {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 0.65rem 0.95rem;
+  font-size: 0.88rem;
+}
+
 
 .family-grid {
   display: grid;
@@ -2467,7 +2475,7 @@ textarea:focus {
   margin-top: 0.55rem;
   color: #fff;
   font-size: 1.15rem;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 
 .character-card-header p,
@@ -3136,7 +3144,7 @@ textarea:focus {
   color: #fff;
   font-size: 0.78rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.055em;
   padding: 0.58rem 0.78rem;
   text-transform: uppercase;
 }
@@ -3162,7 +3170,7 @@ textarea:focus {
   margin: 0;
   color: #fff;
   font-size: clamp(1.3rem, 2.5vw, 1.9rem);
-  letter-spacing: -0.045em;
+  letter-spacing: -0.025em;
 }
 
 .startup-form .form-grid {
@@ -3245,6 +3253,10 @@ textarea:focus {
 @media (max-width: 720px) {
   .startup-form .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .randomize-family-button {
+    width: 100%;
   }
 
   .startup-form .actions {

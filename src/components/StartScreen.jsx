@@ -316,7 +316,7 @@ export default function StartScreen({
       <section className="hero-card startup-hero">
         <div>
           <div className="brand-lockup startup-brand">
-            <img src="/life-map-logo.svg" alt="" aria-hidden="true" />
+            <img src={`${import.meta.env.BASE_URL}life-map-logo.svg`} alt="" aria-hidden="true" />
             <span>Life Map</span>
           </div>
           <p className="eyebrow">Life simulator</p>

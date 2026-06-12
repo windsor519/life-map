@@ -95,18 +95,36 @@ const formatAge = (age) => {
   return age < 18 ? `${age.toFixed(1).replace(/\.0$/, "")}y` : `${Math.floor(age)}y`;
 };
 
+const getFamilyPersonCount = (names, ages, sexes, max) => Math.min(max, Math.max(names.length, ages.length, sexes.length));
+
+const getFallbackFamilyName = (field, index) => {
+  if (field.role === "child") return `Kid ${index + 1}`;
+  if (field.role === "parent") return "Spouse / partner";
+  return `${field.label.replace(/s$/, "")} ${index + 1}`;
+};
+
+const getFamilyPeople = (normalizedFamily, key, field) => {
+  const names = splitFamilyNames(normalizedFamily[key]);
+  const ages = splitFamilyNames(normalizedFamily[field.ageKey]);
+  const sexes = splitFamilyNames(normalizedFamily[field.sexKey]);
+  const personCount = getFamilyPersonCount(names, ages, sexes, field.max);
+
+  return Array.from({ length: personCount }, (_, index) => ({
+    name: names[index] || getFallbackFamilyName(field, index),
+    ageValue: ages[index] ?? "",
+    sexValue: sexes[index] ?? ""
+  }));
+};
+
 export const getFamilySummary = (family) => {
   const normalizedFamily = normalizeFamily(family);
   const entries = Object.entries(familyFields)
     .map(([key, field]) => {
-      const names = splitFamilyNames(normalizedFamily[key]).slice(0, field.max);
-      const ages = splitFamilyNames(normalizedFamily[field.ageKey]);
-      const sexes = splitFamilyNames(normalizedFamily[field.sexKey]);
-      const people = names.map((name, index) => {
-        const age = ages[index] ? ` (${ages[index]})` : "";
-        const sex = normalizeSex(sexes[index]);
+      const people = getFamilyPeople(normalizedFamily, key, field).map((person) => {
+        const age = person.ageValue ? ` (${person.ageValue})` : "";
+        const sex = normalizeSex(person.sexValue);
         const symbol = sex === "male" ? " ♂" : sex === "female" ? " ♀" : "";
-        return `${name}${age}${symbol}`;
+        return `${person.name}${age}${symbol}`;
       });
       return people.length ? `${field.label}: ${people.join(", ")}` : null;
     })
@@ -130,19 +148,15 @@ export const getFamilyMembers = (family, currentAge, currentMonth) => {
   const normalizedFamily = normalizeFamily(family);
   const elapsedYears = getFamilyElapsedYears(normalizedFamily, currentAge, currentMonth);
 
-  return Object.entries(familyFields).flatMap(([key, field]) => {
-    const names = splitFamilyNames(normalizedFamily[key]).slice(0, field.max);
-    const ages = splitFamilyNames(normalizedFamily[field.ageKey]);
-    const sexes = splitFamilyNames(normalizedFamily[field.sexKey]);
-
-    return names.map((name, index) => {
-      const baseAge = parseAge(ages[index]);
-      const sex = normalizeSex(sexes[index]);
+  return Object.entries(familyFields).flatMap(([key, field]) =>
+    getFamilyPeople(normalizedFamily, key, field).map((person, index) => {
+      const baseAge = parseAge(person.ageValue);
+      const sex = normalizeSex(person.sexValue);
       const age = baseAge === null ? null : baseAge + elapsedYears;
 
       return {
         id: `${key}-${index}`,
-        name,
+        name: person.name,
         role: field.role,
         groupLabel: field.label,
         sex,
@@ -150,8 +164,8 @@ export const getFamilyMembers = (family, currentAge, currentMonth) => {
         ageLabel: formatAge(age),
         symbol: sex === "male" ? "♂" : sex === "female" ? "♀" : "•"
       };
-    });
-  });
+    })
+  );
 };
 
 export const calculateFamilyHeight = (role, age, sex = "unknown") => {

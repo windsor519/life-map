@@ -800,6 +800,22 @@ const normalizeGame = (game) => ({
   customEvents: Array.isArray(game?.customEvents) ? game.customEvents.map((event) => ({ ...event, choices: (event.choices ?? []).map((choice) => ({ ...choice, effects: sanitizeEffects(choice.effects) })) })) : []
 });
 
+
+const ensureSpouse = (family, age) => {
+  const normalizedFamily = normalizeFamily(family);
+  const hasSpouse = Boolean(String(normalizedFamily.spouseAge ?? normalizedFamily.spouseSex ?? normalizedFamily.spouse ?? "").trim());
+
+  if (hasSpouse) {
+    return normalizedFamily;
+  }
+
+  return {
+    ...normalizedFamily,
+    spouseAge: String(age),
+    spouseSex: ""
+  };
+};
+
 const loadSavedGame = () => {
   if (typeof window === "undefined") {
     return createDefaultGame();
@@ -817,7 +833,6 @@ const loadSavedGame = () => {
 export default function App() {
   const [game, setGame] = useState(loadSavedGame);
   const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
-  const [startName, setStartName] = useState(game.character?.name ?? "");
   const [startSex, setStartSex] = useState(game.character?.sex ?? "");
   const [startingStats, setStartingStats] = useState(() => ({
     ...defaultStartingStats,
@@ -963,7 +978,7 @@ export default function App() {
       return;
     }
 
-    const family = { ...normalizeFamily(familyInput), startAge: age, startMonth: 1 };
+    const family = { ...ensureSpouse(familyInput, age), startAge: age, startMonth: 1 };
 
     const baseStats = applyLegacyBonuses({
       wellbeing: clamp(startingStats.wellbeing),
@@ -988,7 +1003,7 @@ export default function App() {
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
-      character: { name: startName.trim(), sex: startSex.trim() },
+      character: { name: "", sex: startSex.trim() },
       initialized: true
     };
 
@@ -1009,7 +1024,6 @@ export default function App() {
     setGame(createDefaultGame());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
-    setStartName("");
     setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
@@ -1021,7 +1035,6 @@ export default function App() {
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
-    setStartName("");
     setStartSex("");
     setCustomEventsText("");
     setCustomEventError("");
@@ -1477,10 +1490,8 @@ export default function App() {
         setFamilyInput={setFamilyInput}
         setStartingStats={setStartingStats}
         setStartAge={setStartAge}
-        setStartName={setStartName}
         setStartSex={setStartSex}
         startAge={startAge}
-        startName={startName}
         startSex={startSex}
         startingStats={startingStats}
         statConfig={statConfig}

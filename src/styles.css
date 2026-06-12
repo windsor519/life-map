@@ -3165,30 +3165,55 @@ textarea:focus {
   letter-spacing: -0.045em;
 }
 
+.startup-form .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.setup-question {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.setup-form label > span,
+.setup-question > span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.age-sex-control,
+.sex-radio-group,
+.sex-radio-option {
+  display: inline-flex;
+  align-items: center;
+}
+
+.age-sex-control {
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.age-sex-control input[type="number"] {
+  max-width: 6rem;
+  margin-top: 0;
+}
+
+.sex-radio-group {
+  width: fit-content;
+  gap: 0.6rem;
+}
+
+.sex-radio-option {
+  gap: 0.25rem;
+  color: #d8e3f8;
+  font-weight: 850;
+}
+
 .startup-family-stack {
   display: grid;
   gap: 0.85rem;
   margin-top: 1rem;
-}
-
-.startup-form select {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 1rem;
-  margin-top: 0.5rem;
-  color: #f8fbff;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.85rem 0.95rem;
-  outline: none;
-}
-
-.startup-form select:focus {
-  border-color: rgba(125, 211, 252, 0.8);
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
-}
-
-.startup-form option {
-  color: #0f172a;
 }
 
 .startup-form .actions {
@@ -3218,6 +3243,10 @@ textarea:focus {
 }
 
 @media (max-width: 720px) {
+  .startup-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+
   .startup-form .actions {
     margin: 0 -1.25rem -1.25rem;
     padding: 0.85rem 1.25rem 1.25rem;

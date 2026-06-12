@@ -755,10 +755,10 @@ textarea:focus {
 .game-sidebar {
   position: fixed;
   top: max(1rem, env(safe-area-inset-top));
-  right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
   z-index: 55;
-  width: min(28rem, calc(100vw - 2rem));
+  width: min(50vw, calc(100vw - 2rem));
   align-self: start;
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -766,10 +766,10 @@ textarea:focus {
   background:
     radial-gradient(circle at 20% 0%, rgba(125, 211, 252, 0.18), transparent 16rem),
     linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(7, 12, 25, 0.94));
-  box-shadow: -24px 0 90px rgba(0, 0, 0, 0.48);
+  box-shadow: 24px 0 90px rgba(0, 0, 0, 0.48);
   padding: 1rem;
   pointer-events: none;
-  transform: translateX(calc(100% + 2rem));
+  transform: translateX(calc(-100% - 2rem));
   visibility: hidden;
   transition: transform 240ms ease, visibility 240ms ease;
   backdrop-filter: blur(22px) saturate(1.15);
@@ -1343,6 +1343,27 @@ textarea:focus {
   color: #fff;
   font-size: clamp(1.25rem, 2vw, 1.75rem);
   letter-spacing: -0.03em;
+}
+
+.sidebar-wisdom-card {
+  min-height: min(30rem, calc(100vh - 9rem));
+  align-content: start;
+  border-color: rgba(251, 191, 36, 0.26);
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+}
+
+.wisdom-hero {
+  display: grid;
+  width: clamp(4.5rem, 8vw, 6.5rem);
+  height: clamp(4.5rem, 8vw, 6.5rem);
+  place-items: center;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 3rem),
+    linear-gradient(145deg, rgba(251, 191, 36, 0.28), rgba(124, 58, 237, 0.2));
+  box-shadow: 0 20px 48px rgba(251, 191, 36, 0.14);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
 }
 
 .new-year-wisdom-card p,

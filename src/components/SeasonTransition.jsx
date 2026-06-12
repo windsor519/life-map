@@ -63,7 +63,7 @@ function drawParticle(ctx, particle, particleStyle, alpha) {
   ctx.fill();
 }
 
-function renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, particles, flora) {
+function renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, particles, flora, motionScale = 1, particleAlphaScale = 1) {
   const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   skyGradient.addColorStop(0, blendColors(sourcePalette.skyTop, animation.palette.skyTop, progress));
   skyGradient.addColorStop(1, blendColors(sourcePalette.skyBot, animation.palette.skyBot, progress));
@@ -81,9 +81,9 @@ function renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, part
   drawFlora(ctx, flora, animation, progress);
 
   particles.forEach((particle) => {
-    particle.y += particle.speedY + progress * 0.6;
-    particle.angle += 0.025 + progress * 0.02;
-    particle.x += particle.speedX + Math.sin(particle.angle) * (progress * 0.7);
+    particle.y += (particle.speedY + progress * 0.6) * motionScale;
+    particle.angle += (0.025 + progress * 0.02) * motionScale;
+    particle.x += (particle.speedX + Math.sin(particle.angle) * (progress * 0.7)) * motionScale;
 
     if (particle.y > canvas.height + 12) {
       particle.y = -12;
@@ -93,10 +93,10 @@ function renderSeasonScene(ctx, canvas, animation, sourcePalette, progress, part
     if (particle.x < -12) particle.x = canvas.width + 12;
 
     if (progress < 0.58) {
-      drawParticle(ctx, particle, animation.particles.from, (0.58 - progress) / 0.58);
+      drawParticle(ctx, particle, animation.particles.from, ((0.58 - progress) / 0.58) * particleAlphaScale);
     }
     if (progress > 0.25) {
-      drawParticle(ctx, particle, animation.particles.to, clampProgress((progress - 0.25) / 0.75));
+      drawParticle(ctx, particle, animation.particles.to, clampProgress((progress - 0.25) / 0.75) * particleAlphaScale);
     }
   });
 }
@@ -158,6 +158,7 @@ export function SeasonBackground({ seasonId }) {
     }
 
     let frameId;
+    let startedAt;
     let particles = [];
     let flora = [];
 
@@ -168,8 +169,14 @@ export function SeasonBackground({ seasonId }) {
       flora = createFlora(animation, canvas.width, canvas.height);
     };
 
-    const render = () => {
-      renderSeasonScene(ctx, canvas, animation, animation.palette, 1, particles, flora);
+    const render = (timestamp) => {
+      startedAt ??= timestamp;
+      const calmProgress = clampProgress((timestamp - startedAt - 10000) / 6000);
+      const easedCalm = 1 - Math.pow(1 - calmProgress, 3);
+      const motionScale = 1 - easedCalm * 0.72;
+      const particleAlphaScale = 1 - easedCalm * 0.46;
+
+      renderSeasonScene(ctx, canvas, animation, animation.palette, 1, particles, flora, motionScale, particleAlphaScale);
       frameId = window.requestAnimationFrame(render);
     };
 

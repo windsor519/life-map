@@ -8,7 +8,7 @@
       ],
       "title": "Daughter's Recital",
       "description": "Your daughter has a recital tonight, but a client also wants a late call.",
-      "wisdom": "Kids remember who showed up. They forget the money you didn't make. This isn't just a recital—it's the moment she knows, deep down, that she mattered more than the deadline.",
+      "wisdom": "Kids remember who showed up. They forget the money you didn't make. This isn't just a recital\u2014it's the moment she knows, deep down, that she mattered more than the deadline.",
       "choices": [
         {
           "label": "Attend the recital",
@@ -36,71 +36,6 @@
             "stress": 4
           },
           "memory": "You caught part of the recital before returning to work."
-        }
-      ]
-    },
-    {
-      "id": "friend-birthday",
-      "tags": [
-        "general"
-      ],
-      "title": "Friend's Birthday",
-      "description": "A close friend is celebrating their birthday and wants everyone together.",
-      "wisdom": "Good friendships are the backbone of a good life, and they require showing up. Skipping birthdays feels like nothing in the moment, but it's how friendships slowly evaporate without anyone noticing.",
-      "choices": [
-        {
-          "label": "Bring a gift",
-          "effects": {
-            "money": -75,
-            "marriage": 5,
-            "stress": -2
-          },
-          "memory": "You celebrated a friend's birthday with a thoughtful gift."
-        },
-        {
-          "label": "Skip it",
-          "effects": {
-            "marriage": -5,
-            "stress": 5
-          },
-          "memory": "You skipped a friend's birthday to save time."
-        },
-        {
-          "label": "Host dessert",
-          "effects": {
-            "money": -140,
-            "marriage": 9,
-            "stress": 3
-          },
-          "memory": "You hosted dessert and made your friend feel valued."
-        }
-      ]
-    },
-    {
-      "id": "gym-session",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Gym Session",
-      "description": "A gym session is scheduled, but the couch looks tempting.",
-      "wisdom": "Exercise is one of the few things you can do right now that your future self will thank you for. The couch will still be there, but the habit you build today might be what keeps you standing in five years.",
-      "choices": [
-        {
-          "label": "Go to the gym",
-          "effects": {
-            "health": 7,
-            "stress": -4
-          },
-          "memory": "You completed a gym session and felt healthier."
-        },
-        {
-          "label": "Rest at home",
-          "effects": {
-            "health": -2,
-            "stress": 3
-          },
-          "memory": "You skipped the gym and rested at home."
         }
       ]
     },
@@ -151,7 +86,7 @@
       ],
       "title": "Weekend Getaway",
       "description": "Your partner suggests a low-key weekend away to reconnect.",
-      "wisdom": "Relationships don't fail from one big fight—they fade from a thousand small moments you didn't make time for. This getaway is a chance to remember why you chose each other.",
+      "wisdom": "Relationships don't fail from one big fight\u2014they fade from a thousand small moments you didn't make time for. This getaway is a chance to remember why you chose each other.",
       "choices": [
         {
           "label": "Plan the trip",
@@ -190,7 +125,7 @@
       ],
       "title": "Career Course",
       "description": "A practical online course could improve your future earning power.",
-      "wisdom": "Your career is either growing or shrinking—there's no standing still. An investment now in new skills is a bet that future-you will have more options when life throws something unexpected.",
+      "wisdom": "Your career is either growing or shrinking\u2014there's no standing still. An investment now in new skills is a bet that future-you will have more options when life throws something unexpected.",
       "choices": [
         {
           "label": "Enroll",
@@ -221,195 +156,13 @@
       ]
     },
     {
-      "id": "school-project",
-      "tags": [
-        "young-family",
-        "general"
-      ],
-      "title": "School Project",
-      "wisdom": "There's a difference between helping and rescuing. A child who learns to solve problems independently becomes an adult who can handle a crisis. A child who's bailed out every time becomes someone who calls you at 35 when the coffee maker breaks.",
-      "description": "Your child needs help building a last-minute science project.",
-      "choices": [
-        {
-          "label": "Help all evening",
-          "effects": {
-            "children": 10,
-            "stress": 5,
-            "marriage": 2
-          },
-          "memory": "You helped finish a chaotic science project."
-        },
-        {
-          "label": "Let them handle it",
-          "effects": {
-            "children": -6,
-            "stress": -3,
-            "health": 1
-          },
-          "memory": "You let your child handle the project independently."
-        },
-        {
-          "label": "Coach for one hour",
-          "effects": {
-            "children": 5,
-            "stress": 1,
-            "health": 1
-          },
-          "memory": "You coached the project without taking it over."
-        }
-      ]
-    },
-    {
-      "id": "grocery-budget",
-      "tags": [
-        "young-family",
-        "midlife",
-        "general"
-      ],
-      "title": "Grocery Run",
-      "wisdom": "What you feed your body matters, even when you're tired. Home cooking is slower but it's cheaper, healthier, and it keeps you from slowly sliding into meals that cost more and nourish less.",
-      "description": "The fridge is empty and the weekly food budget is already tight.",
-      "choices": [
-        {
-          "label": "Cook budget meals",
-          "effects": {
-            "money": -95,
-            "health": 4,
-            "stress": -2
-          },
-          "memory": "You stocked up for simple home-cooked meals."
-        },
-        {
-          "label": "Order delivery",
-          "effects": {
-            "money": -160,
-            "health": -3,
-            "stress": -5
-          },
-          "memory": "You bought convenience with a delivery night."
-        },
-        {
-          "label": "Meal prep together",
-          "effects": {
-            "money": -120,
-            "health": 5,
-            "children": 4,
-            "stress": 1
-          },
-          "memory": "You turned meal prep into family time."
-        }
-      ]
-    },
-    {
-      "id": "car-repair",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Car Repair",
-      "wisdom": "Small problems compound. A $400 repair today is a $2000 emergency next month if you ignore it. The calendar is already tight—don't let maintenance become a crisis.",
-      "description": "A warning light appears before a packed week of errands.",
-      "choices": [
-        {
-          "label": "Fix it today",
-          "effects": {
-            "money": -420,
-            "stress": -4
-          },
-          "memory": "You handled the car repair before it became an emergency."
-        },
-        {
-          "label": "Ignore it",
-          "effects": {
-            "money": 0,
-            "stress": 7,
-            "health": -1
-          },
-          "memory": "You ignored the car warning light and hoped for the best."
-        },
-        {
-          "label": "Ask for a ride",
-          "effects": {
-            "money": -40,
-            "marriage": 3,
-            "stress": 2
-          },
-          "memory": "You leaned on your support network while delaying the repair."
-        }
-      ]
-    },
-    {
-      "id": "team-lunch",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Team Lunch",
-      "wisdom": "Relationships at work are more than just transactions. Taking time to connect with people eases stress and builds a safety net for when things get rough. Nobody survives alone.",
-      "description": "Coworkers invite you out during a busy workday.",
-      "choices": [
-        {
-          "label": "Join lunch",
-          "effects": {
-            "money": -28,
-            "marriage": 3,
-            "stress": -3
-          },
-          "memory": "You bonded with coworkers over lunch."
-        },
-        {
-          "label": "Eat at desk",
-          "effects": {
-            "money": 0,
-            "stress": 4,
-            "health": -1
-          },
-          "memory": "You worked through lunch to catch up."
-        }
-      ]
-    },
-    {
-      "id": "neighbor-help",
-      "title": "Neighbor Needs Help",
-      "wisdom": "Community is built in small moments of inconvenience. The neighbor who helps when it's hard is the one who has people around when things fall apart.",
-      "description": "A neighbor asks for help moving furniture after dinner.",
-      "choices": [
-        {
-          "label": "Help them",
-          "effects": {
-            "marriage": 4,
-            "health": 2,
-            "stress": 2
-          },
-          "memory": "You helped a neighbor and strengthened community ties."
-        },
-        {
-          "label": "Politely decline",
-          "effects": {
-            "stress": -2,
-            "marriage": -1
-          },
-          "memory": "You protected your evening and declined the favor."
-        },
-        {
-          "label": "Send a handyman",
-          "effects": {
-            "money": -80,
-            "marriage": 2,
-            "stress": -1
-          },
-          "memory": "You found another way to help your neighbor."
-        }
-      ]
-    },
-    {
       "id": "date-night",
       "tags": [
         "midlife",
         "general"
       ],
       "title": "Date Night",
-      "wisdom": "The person you chose matters. Protect time with them like you'd protect your health—because your relationship is your health. Rescheduling again is how marriages become roommates.",
+      "wisdom": "The person you chose matters. Protect time with them like you'd protect your health\u2014because your relationship is your health. Rescheduling again is how marriages become roommates.",
       "description": "There is finally a free evening for your relationship.",
       "choices": [
         {
@@ -437,114 +190,6 @@
             "stress": 3
           },
           "memory": "You rescheduled date night again."
-        }
-      ]
-    },
-    {
-      "id": "sleep-debt",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Sleep Debt",
-      "wisdom": "Sleep is when your body repairs itself and your mind processes the day. Chronically tired people make worse decisions, love their partners less, and snap at their kids. This is non-negotiable biology.",
-      "description": "Late nights are catching up and tomorrow starts early.",
-      "choices": [
-        {
-          "label": "Sleep early",
-          "effects": {
-            "health": 7,
-            "stress": -6,
-            "marriage": -1
-          },
-          "memory": "You chose an early night and recovered energy."
-        },
-        {
-          "label": "Keep scrolling",
-          "effects": {
-            "health": -5,
-            "stress": 5
-          },
-          "memory": "You stayed up scrolling and felt it the next day."
-        },
-        {
-          "label": "Short wind-down",
-          "effects": {
-            "health": 3,
-            "stress": -2
-          },
-          "memory": "You created a quick wind-down routine."
-        }
-      ]
-    },
-    {
-      "id": "home-maintenance",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Home Maintenance",
-      "description": "A small leak under the sink is easy to postpone.",
-      "wisdom": "Small leaks become big ones. The anxiety of a broken home eats at you. Fix it now, move on, and free up mental space for things that actually matter.",
-      "choices": [
-        {
-          "label": "Repair it",
-          "effects": {
-            "money": -160,
-            "stress": -3
-          },
-          "memory": "You fixed the leak before it caused damage."
-        },
-        {
-          "label": "Delay repair",
-          "effects": {
-            "money": 0,
-            "stress": 5
-          },
-          "memory": "You delayed the repair and kept worrying about it."
-        },
-        {
-          "label": "DIY attempt",
-          "effects": {
-            "money": -45,
-            "stress": 4,
-            "health": -1
-          },
-          "memory": "You tried a DIY repair with mixed results."
-        }
-      ]
-    },
-    {
-      "id": "volunteer-shift",
-      "title": "Volunteer Shift",
-      "description": "A local group needs extra help this week.",
-      "wisdom": "Generosity compounds. When you give your time to something bigger than yourself, you become the kind of person others show up for. Plus, helping others is scientifically better for your own mood than almost anything else.",
-      "choices": [
-        {
-          "label": "Take a shift",
-          "effects": {
-            "marriage": 4,
-            "children": 3,
-            "stress": 3
-          },
-          "memory": "You volunteered and felt useful to the community."
-        },
-        {
-          "label": "Donate instead",
-          "effects": {
-            "money": -90,
-            "marriage": 2,
-            "stress": -1
-          },
-          "memory": "You donated when you could not volunteer."
-        },
-        {
-          "label": "Pass this time",
-          "effects": {
-            "stress": -2,
-            "marriage": -2
-          },
-          "memory": "You passed on volunteering to preserve energy."
         }
       ]
     },
@@ -589,44 +234,6 @@
       ]
     },
     {
-      "id": "family-call",
-      "tags": [
-        "eldercare",
-        "young-family",
-        "general"
-      ],
-      "title": "Family Call",
-      "description": "An older relative wants a long catch-up call.",
-      "wisdom": "The time you have with older family members is finite and you don't know how finite. A call now is a memory they'll cherish and a story you'll be grateful for later.",
-      "choices": [
-        {
-          "label": "Call tonight",
-          "effects": {
-            "children": 3,
-            "marriage": 2,
-            "stress": -1
-          },
-          "memory": "You made time for a meaningful family call."
-        },
-        {
-          "label": "Text back",
-          "effects": {
-            "stress": -1,
-            "marriage": -1
-          },
-          "memory": "You sent a quick text instead of calling."
-        },
-        {
-          "label": "Plan Sunday call",
-          "effects": {
-            "stress": 1,
-            "children": 2
-          },
-          "memory": "You scheduled a better time for a family call."
-        }
-      ]
-    },
-    {
       "id": "therapy-session",
       "tags": [
         "midlife",
@@ -634,7 +241,7 @@
       ],
       "title": "Therapy Session",
       "description": "A therapy opening appears during a stressful stretch.",
-      "wisdom": "Talking to someone trained to help you think clearly is not weakness—it's smart maintenance. The conversations you have now might prevent a breakdown later.",
+      "wisdom": "Talking to someone trained to help you think clearly is not weakness\u2014it's smart maintenance. The conversations you have now might prevent a breakdown later.",
       "choices": [
         {
           "label": "Take the slot",
@@ -740,120 +347,10 @@
       ]
     },
     {
-      "id": "digital-detox",
-      "tags": [
-        "midlife",
-        "general"
-      ],
-      "title": "Digital Detox",
-      "description": "Your screen time report is higher than you expected.",
-      "wisdom": "Your phone is designed to be addictive. It wins if you don't actively push back. One phone-free evening won't ruin anything—but it might remind you what presence feels like.",
-      "choices": [
-        {
-          "label": "Phone-free night",
-          "effects": {
-            "health": 3,
-            "marriage": 4,
-            "stress": -4
-          },
-          "memory": "You took a phone-free night and felt present."
-        },
-        {
-          "label": "Set app limits",
-          "effects": {
-            "health": 2,
-            "stress": -2
-          },
-          "memory": "You added screen-time guardrails."
-        },
-        {
-          "label": "Ignore report",
-          "effects": {
-            "health": -2,
-            "stress": 3
-          },
-          "memory": "You ignored the screen-time warning."
-        }
-      ]
-    },
-    {
-      "id": "pop-quiz",
-      "tags": [
-        "young-family",
-        "general"
-      ],
-      "title": "Pop Quiz",
-      "severity": "minor",
-      "wisdom": "A bad grade is not a tragedy. How you respond to it teaches your child whether failure is shameful or something to learn from. Your calm reassurance matters more than the grade.",
-      "description": "A surprise quiz lands in first period, and your child is nervous about the result.",
-      "choices": [
-        {
-          "label": "Review mistakes together",
-          "effects": {
-            "children": 6,
-            "stress": 2
-          },
-          "memory": "You turned a pop quiz into a calm study moment."
-        },
-        {
-          "label": "Brush it off",
-          "effects": {
-            "children": -2,
-            "stress": -2
-          },
-          "memory": "You treated the pop quiz as no big deal."
-        },
-        {
-          "label": "Email the teacher",
-          "effects": {
-            "children": 3,
-            "stress": 4
-          },
-          "memory": "You checked in with the teacher about the surprise quiz."
-        }
-      ]
-    },
-    {
-      "id": "school-supply-list",
-      "title": "School Supply List",
-      "severity": "minor",
-      "wisdom": "Small expenses compound. One supply list is nothing. Ten of them add up. But your child showing up with what they need matters to their day and their teacher's sanity.",
-      "description": "A new supply list comes home with a few unexpected classroom requests.",
-      "choices": [
-        {
-          "label": "Buy everything",
-          "effects": {
-            "money": -85,
-            "children": 5,
-            "stress": -2
-          },
-          "memory": "You stocked the backpack with every requested supply."
-        },
-        {
-          "label": "Shop discounts",
-          "effects": {
-            "money": -35,
-            "children": 3,
-            "stress": 2
-          },
-          "memory": "You hunted for school supplies on a tighter budget."
-        },
-        {
-          "label": "Wait until payday",
-          "effects": {
-            "money": 0,
-            "children": -3,
-            "stress": 5
-          },
-          "memory": "You delayed the supply run until money was available."
-        }
-      ]
-    },
-    {
       "id": "parent-teacher-conference",
       "title": "Parent-Teacher Conference",
       "severity": "moderate",
-      "wisdom": "Ignoring problems at school doesn't make them go away—it makes them bigger. A teacher reaching out is actually them being on your team. Show up and make a plan together.",
+      "wisdom": "Ignoring problems at school doesn't make them go away\u2014it makes them bigger. A teacher reaching out is actually them being on your team. Show up and make a plan together.",
       "description": "The teacher asks for a conference about slipping homework and classroom focus.",
       "choices": [
         {
@@ -880,42 +377,6 @@
             "stress": 6
           },
           "memory": "You missed the teacher conference and the issue lingered."
-        }
-      ]
-    },
-    {
-      "id": "field-trip-form",
-      "title": "Field Trip Form",
-      "severity": "minor",
-      "wisdom": "Field trips are the rare times school cracks open and your kid gets to explore something real. The teacher also gets a chance to see who is invested. Show up if you can.",
-      "description": "A permission slip and fee are due tomorrow for a museum field trip.",
-      "choices": [
-        {
-          "label": "Pay and chaperone",
-          "effects": {
-            "money": -70,
-            "children": 8,
-            "stress": 3
-          },
-          "memory": "You joined the field trip and made a shared memory."
-        },
-        {
-          "label": "Pay the fee",
-          "effects": {
-            "money": -40,
-            "children": 5,
-            "stress": -1
-          },
-          "memory": "You sent in the field trip form on time."
-        },
-        {
-          "label": "Skip this trip",
-          "effects": {
-            "money": 0,
-            "children": -6,
-            "stress": -2
-          },
-          "memory": "You skipped the field trip to protect the budget."
         }
       ]
     },
@@ -1102,7 +563,7 @@
       "severity": "major",
       "surprise": true,
       "category": "Random emergency",
-      "icon": "🚗",
+      "icon": "\ud83d\ude97",
       "accent": "amber",
       "description": "The car will not start on a morning when everyone needs to be somewhere.",
       "choices": [
@@ -1141,7 +602,7 @@
       "severity": "major",
       "surprise": true,
       "category": "Random emergency",
-      "icon": "🔥",
+      "icon": "\ud83d\udd25",
       "accent": "rose",
       "description": "The furnace quits during a cold snap and the repair tech says replacement may be the safest option.",
       "choices": [
@@ -1175,75 +636,2395 @@
       ]
     },
     {
-      "id": "fence-blown-down",
-      "title": "Fence Blows Down",
-      "severity": "moderate",
-      "surprise": true,
-      "category": "Random emergency",
-      "icon": "🌬️",
-      "accent": "teal",
-      "description": "A windstorm knocks down a section of fence and the yard suddenly needs a fix.",
+      "id": "church-tithe",
+      "tags": [
+        "general"
+      ],
+      "title": "Tithing Decision",
+      "description": "Money is tight and the monthly tithe feels harder to justify this month.",
+      "wisdom": "Generosity practiced in scarcity builds a different character than generosity from abundance. The tithe is as much about who you're becoming as it is about the gift itself.",
       "choices": [
         {
-          "label": "Hire a repair crew",
+          "label": "Give the full tithe",
           "effects": {
-            "money": -1100,
-            "stress": -2,
+            "money": -350,
+            "stress": 2,
+            "marriage": 3
+          },
+          "memory": "You gave the full tithe even during a tight month."
+        },
+        {
+          "label": "Give what you can",
+          "effects": {
+            "money": -120,
+            "stress": -1,
             "marriage": 2
           },
-          "memory": "You hired help after the fence blew down."
+          "memory": "You gave a smaller amount with a full heart."
         },
         {
-          "label": "DIY this weekend",
+          "label": "Skip this month",
           "effects": {
-            "money": -320,
-            "stress": 7,
-            "health": -2
+            "money": 350,
+            "stress": 4,
+            "marriage": -2
           },
-          "memory": "You spent the weekend fixing the blown-down fence yourself."
-        },
-        {
-          "label": "Temporary patch",
-          "effects": {
-            "money": -90,
-            "stress": 5,
-            "marriage": -1
-          },
-          "memory": "You patched the blown-down fence and added it to the future list."
+          "memory": "You held back the tithe to cover bills."
         }
       ]
     },
     {
-      "id": "school-fundraiser",
-      "title": "School Fundraiser",
-      "severity": "minor",
-      "description": "The class fundraiser needs families to sell tickets or volunteer at a booth.",
+      "id": "easter-preparations",
+      "tags": [
+        "general"
+      ],
+      "title": "Easter Weekend",
+      "description": "Easter weekend is here\u2014services, family gatherings, and traditions all collide.",
+      "wisdom": "The holidays that feel like obligation are the ones you don't invest in. Easter, done intentionally, can be the anchor that kids look back on for decades.",
       "choices": [
         {
-          "label": "Volunteer booth",
+          "label": "Full family Easter",
           "effects": {
-            "children": 6,
-            "stress": 4,
+            "money": -200,
+            "children": 10,
+            "marriage": 6,
+            "stress": 5
+          },
+          "memory": "You made Easter a full, meaningful family celebration."
+        },
+        {
+          "label": "Service only",
+          "effects": {
+            "money": -40,
+            "marriage": 3,
+            "stress": -2
+          },
+          "memory": "You kept Easter simple with just the church service."
+        },
+        {
+          "label": "Low-key at home",
+          "effects": {
+            "money": -60,
+            "children": 4,
+            "stress": -4
+          },
+          "memory": "You had a quiet Easter at home with the kids."
+        }
+      ]
+    },
+    {
+      "id": "christmas-planning",
+      "tags": [
+        "general"
+      ],
+      "title": "Christmas Planning",
+      "description": "The holidays are approaching and the budget, schedule, and family expectations need aligning.",
+      "wisdom": "Christmas has a way of becoming everything except what it started as. Protecting the meaning of the season from the spending pressure is an active choice, not a default.",
+      "choices": [
+        {
+          "label": "Set a budget and stick to it",
+          "effects": {
+            "money": -600,
+            "children": 8,
+            "marriage": 6,
+            "stress": 4
+          },
+          "memory": "You planned Christmas with a clear budget and kept the meaning intact."
+        },
+        {
+          "label": "Go all out",
+          "effects": {
+            "money": -1800,
+            "children": 12,
+            "stress": 10,
+            "marriage": 3
+          },
+          "memory": "You went all out for Christmas and loved every moment."
+        },
+        {
+          "label": "Simplify this year",
+          "effects": {
+            "money": -250,
+            "children": 5,
+            "stress": -5,
+            "marriage": 4
+          },
+          "memory": "You simplified Christmas and everyone felt the relief."
+        }
+      ]
+    },
+    {
+      "id": "mission-trip-signup",
+      "tags": [
+        "general"
+      ],
+      "title": "Mission Trip Signup",
+      "description": "The church is organizing a short-term mission trip and spots are filling fast.",
+      "wisdom": "Stepping outside your comfort zone in service of others is one of the fastest ways to gain perspective on your own life. These trips change the people who go, not just the people they serve.",
+      "choices": [
+        {
+          "label": "Sign up and fundraise",
+          "effects": {
+            "money": -800,
+            "stress": 7,
+            "marriage": 5,
+            "health": 3
+          },
+          "memory": "You committed to the mission trip and started fundraising."
+        },
+        {
+          "label": "Donate to send someone else",
+          "effects": {
+            "money": -200,
+            "stress": -1,
             "marriage": 2
           },
-          "memory": "You volunteered at the school fundraiser booth."
+          "memory": "You supported the mission trip financially instead of going."
         },
         {
-          "label": "Donate quietly",
-          "effects": {
-            "money": -100,
-            "children": 3,
-            "stress": -1
-          },
-          "memory": "You donated to the school fundraiser without taking a shift."
-        },
-        {
-          "label": "Opt out",
+          "label": "Pass this year",
           "effects": {
             "stress": -3,
-            "children": -2
+            "marriage": -1
           },
-          "memory": "You opted out of the school fundraiser."
+          "memory": "You decided not to join the mission trip this cycle."
+        }
+      ]
+    },
+    {
+      "id": "faith-and-doubt",
+      "tags": [
+        "general"
+      ],
+      "title": "A Season of Doubt",
+      "description": "You've been wrestling with questions about faith and haven't told anyone.",
+      "wisdom": "Doubt that's hidden becomes corrosive. Doubt that's brought into the light\u2014with a pastor, a friend, or a good book\u2014tends to become the foundation of something stronger.",
+      "choices": [
+        {
+          "label": "Talk to your pastor",
+          "effects": {
+            "stress": -6,
+            "health": 3,
+            "marriage": 3
+          },
+          "memory": "You opened up about your doubts and found an honest conversation."
+        },
+        {
+          "label": "Read and journal privately",
+          "effects": {
+            "stress": -2,
+            "health": 2
+          },
+          "memory": "You worked through doubt quietly through reading and journaling."
+        },
+        {
+          "label": "Keep it to yourself",
+          "effects": {
+            "stress": 6,
+            "health": -2,
+            "marriage": -2
+          },
+          "memory": "You kept your doubts bottled up and the weight grew."
+        }
+      ]
+    },
+    {
+      "id": "marriage-conflict",
+      "tags": [
+        "general"
+      ],
+      "title": "Unresolved Argument",
+      "description": "You and your spouse went to bed angry two nights in a row.",
+      "wisdom": "Letting things sit doesn't resolve them\u2014it compounds them. Every day you leave something unaddressed is a day it quietly grows a root.",
+      "choices": [
+        {
+          "label": "Initiate the conversation",
+          "effects": {
+            "stress": -4,
+            "marriage": 10
+          },
+          "memory": "You broke the silence and worked through the conflict."
+        },
+        {
+          "label": "Write a letter first",
+          "effects": {
+            "stress": -2,
+            "marriage": 7
+          },
+          "memory": "You wrote out your feelings before talking it through."
+        },
+        {
+          "label": "Let more time pass",
+          "effects": {
+            "stress": 5,
+            "marriage": -8
+          },
+          "memory": "You avoided the conversation and the tension grew."
+        }
+      ]
+    },
+    {
+      "id": "anniversary",
+      "tags": [
+        "general"
+      ],
+      "title": "Wedding Anniversary",
+      "description": "Your anniversary is this week\u2014it snuck up on you.",
+      "wisdom": "The years go faster than you think. Marking your anniversary intentionally\u2014even simply\u2014says to your partner that you still choose them.",
+      "choices": [
+        {
+          "label": "Plan a special dinner",
+          "effects": {
+            "money": -180,
+            "marriage": 12,
+            "stress": -3
+          },
+          "memory": "You made your anniversary feel special with a real dinner out."
+        },
+        {
+          "label": "Cook at home together",
+          "effects": {
+            "money": -60,
+            "marriage": 9,
+            "stress": -4
+          },
+          "memory": "You cooked a meaningful dinner at home for your anniversary."
+        },
+        {
+          "label": "Forget until it's over",
+          "effects": {
+            "marriage": -10,
+            "stress": 6
+          },
+          "memory": "You forgot your anniversary until it was too late."
+        }
+      ]
+    },
+    {
+      "id": "marriage-counseling",
+      "tags": [
+        "general"
+      ],
+      "title": "Marriage Counseling",
+      "description": "A friend recommends a counselor after noticing the strain in your marriage.",
+      "wisdom": "Going to counseling before things are broken is the smartest use of it. Waiting until the wheels are off is harder on everyone.",
+      "choices": [
+        {
+          "label": "Book a session together",
+          "effects": {
+            "money": -180,
+            "marriage": 12,
+            "stress": -5
+          },
+          "memory": "You and your spouse started marriage counseling."
+        },
+        {
+          "label": "Read a marriage book first",
+          "effects": {
+            "money": -25,
+            "marriage": 5,
+            "stress": -2
+          },
+          "memory": "You read a marriage book and started applying the ideas."
+        },
+        {
+          "label": "Dismiss the suggestion",
+          "effects": {
+            "marriage": -6,
+            "stress": 4
+          },
+          "memory": "You brushed off the counseling suggestion."
+        }
+      ]
+    },
+    {
+      "id": "spouse-hard-week",
+      "tags": [
+        "general"
+      ],
+      "title": "Spouse's Hard Week",
+      "description": "Your spouse has had a brutal week at work and seems depleted.",
+      "wisdom": "Sometimes the most loving thing you can do is absorb the slack without being asked. Noticing and acting before you're prompted is what makes a partner feel truly seen.",
+      "choices": [
+        {
+          "label": "Take over the house for the evening",
+          "effects": {
+            "marriage": 10,
+            "stress": 3,
+            "children": 3
+          },
+          "memory": "You took over dinner, kids, and dishes so your spouse could rest."
+        },
+        {
+          "label": "Order food and watch a show together",
+          "effects": {
+            "money": -45,
+            "marriage": 6,
+            "stress": -2
+          },
+          "memory": "You gave your spouse an easy evening with takeout and a show."
+        },
+        {
+          "label": "Don't notice until too late",
+          "effects": {
+            "marriage": -6,
+            "stress": 3
+          },
+          "memory": "You missed your spouse's hard week and they felt invisible."
+        }
+      ]
+    },
+    {
+      "id": "in-laws-visit",
+      "tags": [
+        "general"
+      ],
+      "title": "In-Laws Visiting",
+      "description": "Your in-laws are coming to stay for the weekend and opinions about it differ.",
+      "wisdom": "In-law visits rarely go perfectly. Your job is to stay a team with your spouse\u2014that means running interference for each other and debriefing honestly afterwards.",
+      "choices": [
+        {
+          "label": "Prepare and welcome them",
+          "effects": {
+            "money": -150,
+            "marriage": 7,
+            "stress": 5
+          },
+          "memory": "You prepped the house and hosted a good visit with the in-laws."
+        },
+        {
+          "label": "Keep it short and simple",
+          "effects": {
+            "money": -60,
+            "marriage": 4,
+            "stress": 2
+          },
+          "memory": "You managed a low-key in-law visit without drama."
+        },
+        {
+          "label": "Let tensions fester",
+          "effects": {
+            "marriage": -8,
+            "stress": 9
+          },
+          "memory": "The in-law visit turned into a source of real tension."
+        }
+      ]
+    },
+    {
+      "id": "spouse-career-change",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Spouse Wants a Career Change",
+      "description": "Your spouse wants to leave their stable job to pursue something more meaningful.",
+      "wisdom": "Supporting your spouse's growth is part of the long game. Fear is a legitimate input\u2014but it shouldn't be the only one. Talk it through honestly before the resentment of an unanswered dream grows.",
+      "choices": [
+        {
+          "label": "Discuss a transition plan",
+          "effects": {
+            "money": -200,
+            "marriage": 10,
+            "stress": 4
+          },
+          "memory": "You and your spouse mapped out a realistic career transition plan."
+        },
+        {
+          "label": "Express concern but support",
+          "effects": {
+            "marriage": 7,
+            "stress": 3
+          },
+          "memory": "You shared your worries honestly and stood behind your spouse."
+        },
+        {
+          "label": "Push back hard",
+          "effects": {
+            "money": 400,
+            "marriage": -10,
+            "stress": 8
+          },
+          "memory": "You resisted the career change and damaged trust in the process."
+        }
+      ]
+    },
+    {
+      "id": "lost-intimacy",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Lost Intimacy",
+      "description": "You realize you and your spouse haven't truly connected in weeks.",
+      "wisdom": "Intimacy doesn't disappear in one dramatic moment\u2014it fades from a hundred small neglects. Naming the distance is the first step toward closing it.",
+      "choices": [
+        {
+          "label": "Name it and plan a reconnect",
+          "effects": {
+            "marriage": 12,
+            "stress": -4
+          },
+          "memory": "You named the distance and planned a real reconnect."
+        },
+        {
+          "label": "Plan a surprise date",
+          "effects": {
+            "money": -100,
+            "marriage": 9,
+            "stress": -2
+          },
+          "memory": "You surprised your spouse with an intentional evening together."
+        },
+        {
+          "label": "Hope it fixes itself",
+          "effects": {
+            "marriage": -8,
+            "stress": 5,
+            "health": -1
+          },
+          "memory": "You ignored the distance and the gap quietly widened."
+        }
+      ]
+    },
+    {
+      "id": "screen-time-battle",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Screen Time Battle",
+      "description": "Fights over devices are happening daily and you need a household policy.",
+      "wisdom": "Rules without relationship don't work. A screen-time policy that your kids helped create is one they're more likely to follow\u2014and it models the kind of problem-solving you want them to internalize.",
+      "choices": [
+        {
+          "label": "Create family screen rules together",
+          "effects": {
+            "children": 9,
+            "stress": -3,
+            "marriage": 4
+          },
+          "memory": "You created a family screen-time agreement everyone signed."
+        },
+        {
+          "label": "Install parental controls",
+          "effects": {
+            "children": 5,
+            "stress": -2
+          },
+          "memory": "You set up parental controls and reduced the daily arguments."
+        },
+        {
+          "label": "Keep fighting about it",
+          "effects": {
+            "children": -6,
+            "stress": 8
+          },
+          "memory": "Screen time stayed a daily battleground."
+        }
+      ]
+    },
+    {
+      "id": "teenager-attitude",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Teenager's Attitude",
+      "description": "Your teenager has been dismissive and rude all week and it's wearing on you.",
+      "wisdom": "Teenagers push against the people they're safest with. The dismissal is real but it's usually not personal. Staying curious instead of reactive keeps the door open for the conversations that actually matter.",
+      "choices": [
+        {
+          "label": "Stay curious and ask questions",
+          "effects": {
+            "children": 10,
+            "stress": 2
+          },
+          "memory": "You stayed curious about what was behind your teen's attitude."
+        },
+        {
+          "label": "Set clear expectations calmly",
+          "effects": {
+            "children": 6,
+            "stress": 3
+          },
+          "memory": "You addressed the attitude directly without escalating."
+        },
+        {
+          "label": "Match the energy and escalate",
+          "effects": {
+            "children": -9,
+            "stress": 10,
+            "marriage": -3
+          },
+          "memory": "The argument with your teenager blew up."
+        }
+      ]
+    },
+    {
+      "id": "childs-birthday-party",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Child's Birthday Party",
+      "description": "Your child's birthday is coming up and friends are expecting an invitation.",
+      "wisdom": "The party doesn't have to be Instagram-worthy to be meaningful. What your child will remember is whether they felt celebrated\u2014not whether the balloon arch was symmetrical.",
+      "choices": [
+        {
+          "label": "Host a real party",
+          "effects": {
+            "money": -350,
+            "children": 12,
+            "stress": 6
+          },
+          "memory": "You threw a birthday party your child talked about for weeks."
+        },
+        {
+          "label": "Small gathering of close friends",
+          "effects": {
+            "money": -120,
+            "children": 9,
+            "stress": 2
+          },
+          "memory": "You kept the birthday intimate and meaningful."
+        },
+        {
+          "label": "Low-key family only",
+          "effects": {
+            "money": -60,
+            "children": 5,
+            "stress": -3
+          },
+          "memory": "You kept the birthday small and easy."
+        }
+      ]
+    },
+    {
+      "id": "kids-chores",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Chore System",
+      "description": "The kids aren't pulling any weight around the house and resentment is building.",
+      "wisdom": "Kids who have chores learn that belonging to a family means contributing to it. The earlier they learn this, the less jarring the adult world will be.",
+      "choices": [
+        {
+          "label": "Create a chore chart with consequences",
+          "effects": {
+            "children": 7,
+            "stress": -4,
+            "marriage": 3
+          },
+          "memory": "You launched a family chore system that actually stuck."
+        },
+        {
+          "label": "Assign simple daily tasks",
+          "effects": {
+            "children": 5,
+            "stress": -2
+          },
+          "memory": "You started small with a couple of daily chores each."
+        },
+        {
+          "label": "Keep doing it yourself",
+          "effects": {
+            "children": -3,
+            "stress": 5,
+            "health": -1
+          },
+          "memory": "You stayed the only one doing housework and burned out."
+        }
+      ]
+    },
+    {
+      "id": "child-mental-health",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Child Seems Anxious",
+      "description": "Your child has been withdrawn, tearful, and refusing school. Something feels off.",
+      "wisdom": "Children show distress in behavior before they can name it in words. The earlier you take it seriously and get support, the less it compounds.",
+      "choices": [
+        {
+          "label": "Schedule a pediatric evaluation",
+          "effects": {
+            "money": -220,
+            "children": 12,
+            "stress": 5
+          },
+          "memory": "You got your child evaluated and started the path to support."
+        },
+        {
+          "label": "Talk to the school counselor",
+          "effects": {
+            "children": 8,
+            "stress": 3
+          },
+          "memory": "You looped in the school counselor and made a plan."
+        },
+        {
+          "label": "Wait and hope it passes",
+          "effects": {
+            "children": -10,
+            "stress": 7,
+            "health": -2
+          },
+          "memory": "You waited on your child's distress and it grew."
+        }
+      ]
+    },
+    {
+      "id": "adult-child-moving-out",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Adult Child Moving Out",
+      "description": "Your oldest is leaving home for the first time and the house will feel different.",
+      "wisdom": "This is what you raised them for. Pride and grief can coexist. Your job now is to launch them well\u2014not hold on.",
+      "choices": [
+        {
+          "label": "Help them set up their place",
+          "effects": {
+            "money": -300,
+            "children": 12,
+            "stress": 4,
+            "marriage": 5
+          },
+          "memory": "You helped your oldest move out and felt proud doing it."
+        },
+        {
+          "label": "Celebrate the milestone",
+          "effects": {
+            "money": -100,
+            "children": 9,
+            "marriage": 4
+          },
+          "memory": "You marked the launch with a real celebration."
+        },
+        {
+          "label": "Struggle to let go",
+          "effects": {
+            "children": -5,
+            "stress": 8,
+            "marriage": -3
+          },
+          "memory": "You had a hard time letting your child go and it showed."
+        }
+      ]
+    },
+    {
+      "id": "summer-camp-decision",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Summer Camp Decision",
+      "description": "Church summer camp registration is open and your child is begging to go.",
+      "wisdom": "Camp is where a lot of kids encounter something bigger than their parents' faith for the first time. The independence and community it builds is hard to replicate anywhere else.",
+      "choices": [
+        {
+          "label": "Register for the full week",
+          "effects": {
+            "money": -480,
+            "children": 11,
+            "stress": 2
+          },
+          "memory": "You sent your child to church camp and they came home changed."
+        },
+        {
+          "label": "Attend a day program",
+          "effects": {
+            "money": -150,
+            "children": 7,
+            "stress": -1
+          },
+          "memory": "You found a day camp option that worked for the budget."
+        },
+        {
+          "label": "Skip this year",
+          "effects": {
+            "children": -5,
+            "stress": -2
+          },
+          "memory": "You skipped camp to protect the summer budget."
+        }
+      ]
+    },
+    {
+      "id": "college-talk",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "College Conversation",
+      "description": "Your teenager starts asking serious questions about college and what it costs.",
+      "wisdom": "The earlier you have an honest conversation about college finances, the fewer surprises land at signing time. Your kid can handle the truth\u2014they just need it early enough to make good choices.",
+      "choices": [
+        {
+          "label": "Map it out together honestly",
+          "effects": {
+            "money": 300,
+            "children": 9,
+            "stress": 4
+          },
+          "memory": "You had an honest college planning conversation with your teenager."
+        },
+        {
+          "label": "Start a college savings push",
+          "effects": {
+            "money": -400,
+            "children": 7,
+            "stress": 3
+          },
+          "memory": "You opened or boosted a college savings account."
+        },
+        {
+          "label": "Avoid the topic for now",
+          "effects": {
+            "children": -6,
+            "money": -500,
+            "stress": 5
+          },
+          "memory": "You avoided the college money talk and it will cost you later."
+        }
+      ]
+    },
+    {
+      "id": "aging-parent-health",
+      "tags": [
+        "eldercare",
+        "midlife",
+        "general"
+      ],
+      "title": "Aging Parent's Health",
+      "description": "Your parent's doctor flagged some concerning test results and wants a follow-up.",
+      "wisdom": "The medical decisions that get made for aging parents often happen fast, under pressure. Being involved and informed now is far better than scrambling later.",
+      "choices": [
+        {
+          "label": "Attend the appointment with them",
+          "effects": {
+            "money": -80,
+            "children": 5,
+            "stress": 5,
+            "marriage": 3
+          },
+          "memory": "You went to the doctor with your parent and advocated for them."
+        },
+        {
+          "label": "Call the doctor yourself for a briefing",
+          "effects": {
+            "stress": 3,
+            "children": 4
+          },
+          "memory": "You called the doctor to understand your parent's situation."
+        },
+        {
+          "label": "Leave it to your parent to handle",
+          "effects": {
+            "children": -5,
+            "stress": 6,
+            "health": -1
+          },
+          "memory": "You stayed on the sidelines of your parent's health scare."
+        }
+      ]
+    },
+    {
+      "id": "parent-driving",
+      "tags": [
+        "eldercare",
+        "midlife",
+        "general"
+      ],
+      "title": "Parent Shouldn't Drive",
+      "description": "You've noticed your parent making errors behind the wheel that worry you.",
+      "wisdom": "This is one of the hardest conversations in eldercare and one of the most important. Driving is tied to identity and independence. Handle it with love and facts, not guilt.",
+      "choices": [
+        {
+          "label": "Have the honest conversation",
+          "effects": {
+            "stress": 5,
+            "children": 8,
+            "marriage": 4
+          },
+          "memory": "You had the difficult driving conversation with your parent."
+        },
+        {
+          "label": "Suggest a driving evaluation",
+          "effects": {
+            "stress": 3,
+            "children": 5
+          },
+          "memory": "You steered your parent toward a professional driving evaluation."
+        },
+        {
+          "label": "Avoid the topic",
+          "effects": {
+            "children": -8,
+            "stress": 8,
+            "health": -3
+          },
+          "memory": "You avoided the driving conversation and the risk remained."
+        }
+      ]
+    },
+    {
+      "id": "nursing-home-decision",
+      "tags": [
+        "eldercare",
+        "midlife",
+        "general"
+      ],
+      "title": "Nursing Home Decision",
+      "description": "Your parent can no longer safely live alone and the family needs to make a plan.",
+      "wisdom": "No decision in eldercare is without grief. The question isn't which option is painless\u2014it's which one best honors your parent's dignity and your family's real capacity to care.",
+      "choices": [
+        {
+          "label": "Research care facilities together",
+          "effects": {
+            "money": -500,
+            "stress": 8,
+            "marriage": 5,
+            "children": 7
+          },
+          "memory": "You led the family through a thoughtful care facility search."
+        },
+        {
+          "label": "Explore moving them in with you",
+          "effects": {
+            "money": -800,
+            "stress": 12,
+            "marriage": -4,
+            "children": 6
+          },
+          "memory": "You brought your parent home and took on the caregiving role."
+        },
+        {
+          "label": "Delay the decision",
+          "effects": {
+            "stress": 10,
+            "children": -6,
+            "health": -3
+          },
+          "memory": "You delayed the care decision and the situation deteriorated."
+        }
+      ]
+    },
+    {
+      "id": "parent-loneliness",
+      "tags": [
+        "eldercare",
+        "general"
+      ],
+      "title": "Parent's Loneliness",
+      "description": "Your widowed parent mentions for the third time this week that they feel alone.",
+      "wisdom": "Loneliness in older adults is a health crisis, not just a mood. Regular connection\u2014even brief\u2014dramatically changes the trajectory for aging parents.",
+      "choices": [
+        {
+          "label": "Set up weekly visits",
+          "effects": {
+            "money": -80,
+            "children": 8,
+            "stress": 3,
+            "marriage": 3
+          },
+          "memory": "You committed to weekly visits with your lonely parent."
+        },
+        {
+          "label": "Connect them with a senior group",
+          "effects": {
+            "money": -30,
+            "children": 6,
+            "stress": 1
+          },
+          "memory": "You helped your parent find a senior community group."
+        },
+        {
+          "label": "Send more texts and calls",
+          "effects": {
+            "children": 4,
+            "stress": -1
+          },
+          "memory": "You increased your digital check-ins with your parent."
+        }
+      ]
+    },
+    {
+      "id": "sibling-caregiving-dispute",
+      "tags": [
+        "eldercare",
+        "midlife",
+        "general"
+      ],
+      "title": "Sibling Caregiving Dispute",
+      "description": "You and a sibling disagree over how to handle care for an aging parent\u2014and it's getting personal.",
+      "wisdom": "Caregiver conflict between siblings is almost universal and almost always about more than the presenting issue. Name the real concern, not just the logistics.",
+      "choices": [
+        {
+          "label": "Call a family meeting",
+          "effects": {
+            "stress": 5,
+            "marriage": 3,
+            "children": 6
+          },
+          "memory": "You called a family meeting and worked toward a caregiving agreement."
+        },
+        {
+          "label": "Bring in a social worker to mediate",
+          "effects": {
+            "money": -200,
+            "stress": 3,
+            "children": 7
+          },
+          "memory": "You brought in a professional mediator for the caregiving dispute."
+        },
+        {
+          "label": "Let resentment build",
+          "effects": {
+            "stress": 10,
+            "children": -8,
+            "marriage": -4
+          },
+          "memory": "The sibling dispute over your parent's care festered without resolution."
+        }
+      ]
+    },
+    {
+      "id": "power-of-attorney",
+      "tags": [
+        "eldercare",
+        "midlife",
+        "general"
+      ],
+      "title": "Power of Attorney",
+      "description": "Your parent's health is declining and legal documents need to be in order.",
+      "wisdom": "A power of attorney set up in advance is a gift to everyone involved\u2014especially your parent. Legal clarity during a health crisis is far easier than scrambling after the fact.",
+      "choices": [
+        {
+          "label": "Consult an elder law attorney",
+          "effects": {
+            "money": -400,
+            "stress": 4,
+            "children": 8,
+            "marriage": 4
+          },
+          "memory": "You got the legal documents in order while there was still time."
+        },
+        {
+          "label": "Use an online template",
+          "effects": {
+            "money": -80,
+            "stress": 2,
+            "children": 5
+          },
+          "memory": "You used a legal template to get basic documents completed."
+        },
+        {
+          "label": "Assume it can wait",
+          "effects": {
+            "stress": 8,
+            "children": -7,
+            "money": -600
+          },
+          "memory": "You delayed the legal planning and it caused a crisis later."
+        }
+      ]
+    },
+    {
+      "id": "emergency-fund",
+      "tags": [
+        "general"
+      ],
+      "title": "Emergency Fund Gap",
+      "description": "You realize your emergency fund covers less than one month of expenses.",
+      "wisdom": "An emergency fund is the difference between a bad week and a financial crisis. Building it slowly and consistently is boring\u2014which is exactly what financial safety is supposed to feel like.",
+      "choices": [
+        {
+          "label": "Auto-transfer monthly to savings",
+          "effects": {
+            "money": -300,
+            "stress": -5
+          },
+          "memory": "You automated monthly contributions to rebuild your emergency fund."
+        },
+        {
+          "label": "Cut one expense and redirect it",
+          "effects": {
+            "money": -120,
+            "stress": -2
+          },
+          "memory": "You found one budget cut and started funneling it into savings."
+        },
+        {
+          "label": "Keep it for later",
+          "effects": {
+            "stress": 5,
+            "health": -1
+          },
+          "memory": "You acknowledged the gap in your emergency fund and did nothing."
+        }
+      ]
+    },
+    {
+      "id": "credit-card-debt",
+      "tags": [
+        "general"
+      ],
+      "title": "Credit Card Balance",
+      "description": "You've been carrying a credit card balance for six months and the interest is adding up.",
+      "wisdom": "Credit card interest is a tax on avoidance. The fastest path through it is the one most people resist: pay more than the minimum, every single month, starting now.",
+      "choices": [
+        {
+          "label": "Start an aggressive paydown plan",
+          "effects": {
+            "money": -400,
+            "stress": 2
+          },
+          "memory": "You attacked the credit card balance with a focused paydown plan."
+        },
+        {
+          "label": "Transfer to a 0% card",
+          "effects": {
+            "money": -80,
+            "stress": -1
+          },
+          "memory": "You moved your balance to a lower-rate card and got ahead of it."
+        },
+        {
+          "label": "Keep paying the minimum",
+          "effects": {
+            "money": -90,
+            "stress": 4
+          },
+          "memory": "You kept paying minimum balances and watched the interest climb."
+        }
+      ]
+    },
+    {
+      "id": "unexpected-tax-bill",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Unexpected Tax Bill",
+      "description": "You owe more in taxes than expected this year and the deadline is close.",
+      "wisdom": "Owing taxes isn't a failure\u2014being caught off guard is the problem. This is information to adjust withholding or quarterly payments so next year looks different.",
+      "choices": [
+        {
+          "label": "Pay it and adjust withholding",
+          "effects": {
+            "money": -900,
+            "stress": 3
+          },
+          "memory": "You paid the tax bill and corrected your withholding going forward."
+        },
+        {
+          "label": "Set up an installment plan with the IRS",
+          "effects": {
+            "money": -250,
+            "stress": 1
+          },
+          "memory": "You set up a payment plan with the IRS to manage the bill."
+        },
+        {
+          "label": "Ignore it past the deadline",
+          "effects": {
+            "money": -1400,
+            "stress": 12
+          },
+          "memory": "You ignored the tax bill and faced penalties on top of it."
+        }
+      ]
+    },
+    {
+      "id": "life-insurance-review",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Life Insurance Review",
+      "description": "You haven't reviewed your life insurance coverage since before the kids were born.",
+      "wisdom": "Life insurance is an act of love for the people who depend on you. Most people are either underinsured or paying for the wrong thing. A quick review costs nothing and matters enormously.",
+      "choices": [
+        {
+          "label": "Meet with an advisor",
+          "effects": {
+            "money": -200,
+            "stress": -4,
+            "marriage": 5
+          },
+          "memory": "You reviewed your coverage and updated it for where your family is now."
+        },
+        {
+          "label": "Run the numbers yourself",
+          "effects": {
+            "stress": -2,
+            "marriage": 3
+          },
+          "memory": "You did a self-audit of your life insurance needs."
+        },
+        {
+          "label": "Put it off again",
+          "effects": {
+            "stress": 4,
+            "marriage": -2
+          },
+          "memory": "You postponed the insurance review for another year."
+        }
+      ]
+    },
+    {
+      "id": "identity-theft",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Identity Theft Alert",
+      "description": "A fraud alert appears on your credit card from a retailer you don't recognize.",
+      "wisdom": "Identity theft caught early is a headache. Caught late, it's a disaster. Act fast, freeze what needs freezing, and don't assume it'll sort itself out.",
+      "choices": [
+        {
+          "label": "Freeze credit and dispute immediately",
+          "effects": {
+            "money": -50,
+            "stress": 5
+          },
+          "memory": "You acted fast on the fraud alert and contained the damage."
+        },
+        {
+          "label": "Call the bank only",
+          "effects": {
+            "stress": 3
+          },
+          "memory": "You disputed the charge but didn't lock down your credit."
+        },
+        {
+          "label": "Assume it's a false alarm",
+          "effects": {
+            "money": -800,
+            "stress": 10
+          },
+          "memory": "You ignored the fraud alert and paid a much larger price."
+        }
+      ]
+    },
+    {
+      "id": "chronic-pain",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Chronic Back Pain",
+      "description": "Back pain has been limiting your daily activity for months and you've been ignoring it.",
+      "wisdom": "Chronic pain that goes untreated tends to compound\u2014in your body and in your mood. Most back pain responds well to early, consistent intervention. Waiting makes everything harder.",
+      "choices": [
+        {
+          "label": "See a physical therapist",
+          "effects": {
+            "money": -360,
+            "health": 10,
+            "stress": -4
+          },
+          "memory": "You started physical therapy and began recovering."
+        },
+        {
+          "label": "See your GP first",
+          "effects": {
+            "money": -140,
+            "health": 5,
+            "stress": -2
+          },
+          "memory": "You got a proper diagnosis from your doctor."
+        },
+        {
+          "label": "Manage with painkillers and push through",
+          "effects": {
+            "health": -5,
+            "stress": 5,
+            "money": -80
+          },
+          "memory": "You masked the pain with medication instead of treating it."
+        }
+      ]
+    },
+    {
+      "id": "alcohol-habits",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Drinking Habits Check",
+      "description": "You've been reaching for a drink most evenings and it's becoming automatic.",
+      "wisdom": "Habitual drinking creeps in quietly. If you need it to decompress, that's worth examining\u2014not with shame, but honestly. The habit is usually doing something that a better tool could do instead.",
+      "choices": [
+        {
+          "label": "Try a dry month",
+          "effects": {
+            "health": 8,
+            "stress": -2,
+            "marriage": 5
+          },
+          "memory": "You took a dry month and discovered you didn't need it as much as you thought."
+        },
+        {
+          "label": "Cut back to weekends only",
+          "effects": {
+            "health": 4,
+            "stress": -1,
+            "marriage": 3
+          },
+          "memory": "You reduced drinking to weekends and felt the improvement."
+        },
+        {
+          "label": "Keep the current pattern",
+          "effects": {
+            "health": -4,
+            "stress": 3,
+            "marriage": -3
+          },
+          "memory": "The nightly habit continued and the effects started to show."
+        }
+      ]
+    },
+    {
+      "id": "mental-burnout",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Mental Burnout",
+      "description": "You can't remember the last day you felt rested, motivated, or yourself.",
+      "wisdom": "Burnout isn't weakness\u2014it's a signal that the output has exceeded the input for too long. Recovery requires intentional rest, not just a long weekend.",
+      "choices": [
+        {
+          "label": "Take a mental health day",
+          "effects": {
+            "health": 6,
+            "stress": -8,
+            "money": -200
+          },
+          "memory": "You took a real mental health day and actually rested."
+        },
+        {
+          "label": "Talk to a therapist",
+          "effects": {
+            "money": -150,
+            "health": 5,
+            "stress": -7
+          },
+          "memory": "You unpacked the burnout with a therapist and started recovering."
+        },
+        {
+          "label": "White-knuckle through it",
+          "effects": {
+            "health": -6,
+            "stress": 8,
+            "marriage": -4
+          },
+          "memory": "You pushed through burnout and paid for it on the other side."
+        }
+      ]
+    },
+    {
+      "id": "mammogram-or-prostate",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Preventive Cancer Screening",
+      "description": "Your doctor recommends a routine cancer screening based on your age.",
+      "wisdom": "The screenings you skip are the ones that would have caught something early. Early detection is the single biggest factor in cancer outcomes. This is not optional self-care\u2014it's common sense.",
+      "choices": [
+        {
+          "label": "Schedule it this week",
+          "effects": {
+            "money": -180,
+            "health": 9,
+            "stress": -3
+          },
+          "memory": "You scheduled and completed your preventive cancer screening."
+        },
+        {
+          "label": "Schedule for next month",
+          "effects": {
+            "health": 5,
+            "stress": -1
+          },
+          "memory": "You booked the screening for next month."
+        },
+        {
+          "label": "Skip it this year",
+          "effects": {
+            "health": -6,
+            "stress": 4
+          },
+          "memory": "You skipped the cancer screening and pushed the risk forward."
+        }
+      ]
+    },
+    {
+      "id": "job-offer",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Unexpected Job Offer",
+      "description": "A recruiter reaches out with an offer that pays more but means relocating.",
+      "wisdom": "A higher salary is only one variable. Relocation costs, school disruption, and the social capital you'd leave behind are all real. Run the full calculation, not just the number.",
+      "choices": [
+        {
+          "label": "Negotiate and seriously evaluate",
+          "effects": {
+            "money": 600,
+            "stress": 8,
+            "marriage": -3,
+            "children": -3
+          },
+          "memory": "You entered serious negotiations on the job offer."
+        },
+        {
+          "label": "Decline and use it for a raise where you are",
+          "effects": {
+            "money": 300,
+            "stress": 3,
+            "marriage": 4
+          },
+          "memory": "You used the competing offer to negotiate a raise at your current job."
+        },
+        {
+          "label": "Decline without exploring",
+          "effects": {
+            "stress": -2,
+            "money": -200
+          },
+          "memory": "You turned down the offer without fully exploring it."
+        }
+      ]
+    },
+    {
+      "id": "difficult-coworker",
+      "tags": [
+        "general"
+      ],
+      "title": "Difficult Coworker",
+      "description": "A coworker's behavior is making your work environment toxic.",
+      "wisdom": "Difficult coworkers rarely resolve themselves. Addressing it directly\u2014or escalating thoughtfully\u2014is better than absorbing the stress indefinitely.",
+      "choices": [
+        {
+          "label": "Address it directly with them",
+          "effects": {
+            "stress": -4,
+            "money": 100
+          },
+          "memory": "You addressed the coworker issue directly and the dynamic shifted."
+        },
+        {
+          "label": "Raise it with your manager",
+          "effects": {
+            "stress": -2,
+            "money": 50
+          },
+          "memory": "You looped in your manager and a path forward emerged."
+        },
+        {
+          "label": "Suffer quietly and complain at home",
+          "effects": {
+            "stress": 8,
+            "marriage": -4,
+            "health": -2
+          },
+          "memory": "You absorbed the coworker toxicity and brought it home with you."
+        }
+      ]
+    },
+    {
+      "id": "performance-review",
+      "tags": [
+        "general"
+      ],
+      "title": "Performance Review",
+      "description": "Your annual review is next week and you haven't prepared anything.",
+      "wisdom": "A performance review you're prepared for is an opportunity. One you walk into unprepared is a missed chance to advocate for yourself.",
+      "choices": [
+        {
+          "label": "Document your wins and prepare",
+          "effects": {
+            "money": 500,
+            "stress": 3
+          },
+          "memory": "You walked into your review prepared and earned recognition."
+        },
+        {
+          "label": "Ask a mentor to coach you",
+          "effects": {
+            "money": 300,
+            "stress": 2
+          },
+          "memory": "You got coaching before your review and it showed."
+        },
+        {
+          "label": "Wing it",
+          "effects": {
+            "money": -100,
+            "stress": 5
+          },
+          "memory": "You went into the review underprepared and it cost you."
+        }
+      ]
+    },
+    {
+      "id": "layoff-news",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Layoff Announcement",
+      "description": "The company announces layoffs and your role may be at risk.",
+      "wisdom": "A layoff threat is a signal to act, not panic. The people who move fast\u2014updating their network, their resume, their options\u2014are the ones who land best.",
+      "choices": [
+        {
+          "label": "Update resume and activate your network",
+          "effects": {
+            "money": 400,
+            "stress": 6
+          },
+          "memory": "You moved fast on the layoff news and put yourself in a strong position."
+        },
+        {
+          "label": "Have an honest conversation with your manager",
+          "effects": {
+            "stress": 3,
+            "money": 200
+          },
+          "memory": "You got clarity from your manager about where you stood."
+        },
+        {
+          "label": "Hope it doesn't affect you",
+          "effects": {
+            "money": -1500,
+            "stress": 12
+          },
+          "memory": "You did nothing and were caught flat-footed when the layoff came."
+        }
+      ]
+    },
+    {
+      "id": "work-life-boundaries",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Work Creeping Into Evenings",
+      "description": "Work emails and calls have been bleeding into family evenings for weeks.",
+      "wisdom": "A boundary that's never enforced isn't a boundary\u2014it's just a preference you announce. Evenings belong to the people who need you most, not whoever sends the last email.",
+      "choices": [
+        {
+          "label": "Set a hard phone cutoff at 6pm",
+          "effects": {
+            "stress": -5,
+            "marriage": 7,
+            "children": 5
+          },
+          "memory": "You set a firm evening boundary and protected family time."
+        },
+        {
+          "label": "Talk to your manager about expectations",
+          "effects": {
+            "stress": -3,
+            "money": 100
+          },
+          "memory": "You had a clear conversation about after-hours expectations."
+        },
+        {
+          "label": "Keep responding after hours",
+          "effects": {
+            "stress": 7,
+            "marriage": -5,
+            "children": -4,
+            "health": -2
+          },
+          "memory": "Work kept taking your evenings and your family felt it."
+        }
+      ]
+    },
+    {
+      "id": "friend-in-crisis",
+      "tags": [
+        "general"
+      ],
+      "title": "Friend in Crisis",
+      "description": "A close friend is going through a divorce and calls asking for support.",
+      "wisdom": "Showing up for a friend in crisis is inconvenient and uncomfortable. It's also one of the most defining things you can do for a friendship. Presence matters more than perfect words.",
+      "choices": [
+        {
+          "label": "Drop everything and be there",
+          "effects": {
+            "money": -60,
+            "stress": 4,
+            "marriage": 5,
+            "health": 2
+          },
+          "memory": "You showed up fully for a friend in crisis."
+        },
+        {
+          "label": "Call and listen for an hour",
+          "effects": {
+            "stress": 2,
+            "marriage": 3
+          },
+          "memory": "You gave a friend real time and a listening ear."
+        },
+        {
+          "label": "Send a text saying you're thinking of them",
+          "effects": {
+            "stress": -1,
+            "marriage": -2
+          },
+          "memory": "You sent a check-in text but kept your distance."
+        }
+      ]
+    },
+    {
+      "id": "political-tension-family",
+      "tags": [
+        "general"
+      ],
+      "title": "Political Tension at Family Gathering",
+      "description": "A family dinner turns toward politics and tensions are rising fast.",
+      "wisdom": "Winning an argument with a family member costs more than the argument is worth. The relationship matters more than the point. You can be right and leave still connected, or you can be right and leave with a fracture.",
+      "choices": [
+        {
+          "label": "Redirect with curiosity, not combat",
+          "effects": {
+            "stress": -3,
+            "marriage": 4,
+            "children": 3
+          },
+          "memory": "You steered the family political conversation away from conflict."
+        },
+        {
+          "label": "Speak your view calmly and briefly",
+          "effects": {
+            "stress": 2,
+            "marriage": 2
+          },
+          "memory": "You said your piece without letting it escalate."
+        },
+        {
+          "label": "Engage and dig in",
+          "effects": {
+            "stress": 8,
+            "marriage": -5,
+            "children": -4
+          },
+          "memory": "The family dinner became a political argument that damaged the evening."
+        }
+      ]
+    },
+    {
+      "id": "summer-vacation",
+      "tags": [
+        "general"
+      ],
+      "title": "Summer Vacation Planning",
+      "description": "Summer is approaching and the family wants a vacation\u2014the budget is unclear.",
+      "wisdom": "A vacation that leaves you in debt isn't a vacation\u2014it's a purchase of future stress. The trip that fits your actual budget almost always becomes the story you tell anyway.",
+      "choices": [
+        {
+          "label": "Plan a real trip within budget",
+          "effects": {
+            "money": -1800,
+            "marriage": 10,
+            "children": 12,
+            "stress": 4
+          },
+          "memory": "You took a planned, budgeted family vacation that everyone loved."
+        },
+        {
+          "label": "Road trip to somewhere local",
+          "effects": {
+            "money": -500,
+            "marriage": 8,
+            "children": 9,
+            "stress": -2
+          },
+          "memory": "You did a local road trip that punched above its weight."
+        },
+        {
+          "label": "Stay home but plan day trips",
+          "effects": {
+            "money": -200,
+            "marriage": 5,
+            "children": 6,
+            "stress": -4
+          },
+          "memory": "You turned the staycation into something worth remembering."
+        }
+      ]
+    },
+    {
+      "id": "school-choice-decision",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "School Choice Decision",
+      "description": "Enrollment season opens for next year and you're considering switching schools.",
+      "wisdom": "School decisions carry weight but they're rarely permanent. The question to ask isn't just which school is better in theory\u2014but which environment fits your specific child right now.",
+      "choices": [
+        {
+          "label": "Research and visit both options",
+          "effects": {
+            "money": -80,
+            "children": 8,
+            "stress": 4
+          },
+          "memory": "You did the research and made a confident school decision."
+        },
+        {
+          "label": "Ask your child's current teacher",
+          "effects": {
+            "children": 7,
+            "stress": 2
+          },
+          "memory": "You consulted your child's teacher before deciding on enrollment."
+        },
+        {
+          "label": "Default to the same school without looking",
+          "effects": {
+            "children": -2,
+            "stress": -1
+          },
+          "memory": "You renewed enrollment without researching alternatives."
+        }
+      ]
+    },
+    {
+      "id": "appliance-replacement",
+      "tags": [
+        "general"
+      ],
+      "title": "Appliance Breakdown",
+      "description": "The washing machine breaks mid-cycle with laundry inside and a full week ahead.",
+      "wisdom": "An appliance failure always happens at the worst possible time. The decision is usually less about repair vs replace than it is about how quickly you act versus how long you delay.",
+      "choices": [
+        {
+          "label": "Replace it right away",
+          "effects": {
+            "money": -900,
+            "stress": 3,
+            "marriage": 5
+          },
+          "memory": "You replaced the washing machine and got the week back on track."
+        },
+        {
+          "label": "Get a repair quote first",
+          "effects": {
+            "money": -400,
+            "stress": 2
+          },
+          "memory": "You got the washing machine repaired for far less than replacement."
+        },
+        {
+          "label": "Use the laundromat and delay",
+          "effects": {
+            "money": -120,
+            "stress": 8,
+            "marriage": -3
+          },
+          "memory": "You used the laundromat while delaying the appliance decision."
+        }
+      ]
+    },
+    {
+      "id": "move-to-new-city",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Considering a Move",
+      "description": "A job offer or life change means a possible move to a different city.",
+      "wisdom": "Moving is among the most disruptive decisions a family can make. The financial upside is only one variable. Schools, community, family proximity, and spouse career impact all deserve equal weight.",
+      "choices": [
+        {
+          "label": "Visit first and evaluate together",
+          "effects": {
+            "money": -500,
+            "stress": 5,
+            "marriage": 7
+          },
+          "memory": "You visited the new city as a family and made a thoughtful decision."
+        },
+        {
+          "label": "Research extensively and weigh all factors",
+          "effects": {
+            "stress": 4,
+            "marriage": 6
+          },
+          "memory": "You put real rigor into the relocation decision."
+        },
+        {
+          "label": "Accept on excitement alone",
+          "effects": {
+            "money": -2000,
+            "stress": 12,
+            "marriage": -5,
+            "children": -6
+          },
+          "memory": "You moved without fully thinking it through and paid the price."
+        }
+      ]
+    },
+    {
+      "id": "foster-care-inquiry",
+      "tags": [
+        "general"
+      ],
+      "title": "Foster Care Inquiry",
+      "description": "A church announcement about foster care need sparks a real conversation between you and your spouse.",
+      "wisdom": "Fostering is one of the most demanding and meaningful things a family can do. The call to consider it is worth sitting with seriously\u2014not dismissing, and not rushing.",
+      "choices": [
+        {
+          "label": "Attend an informational meeting",
+          "effects": {
+            "marriage": 7,
+            "children": 4,
+            "stress": 3
+          },
+          "memory": "You went to the foster care info night and began the real conversation."
+        },
+        {
+          "label": "Discuss deeply as a couple",
+          "effects": {
+            "marriage": 8,
+            "stress": 2
+          },
+          "memory": "You had a serious, honest conversation about what fostering would mean."
+        },
+        {
+          "label": "Dismiss it as too overwhelming",
+          "effects": {
+            "marriage": -3,
+            "stress": -1
+          },
+          "memory": "You closed the conversation before it really opened."
+        }
+      ]
+    },
+    {
+      "id": "grief-loss",
+      "tags": [
+        "general"
+      ],
+      "title": "Grieving a Loss",
+      "description": "Someone you love has died and the grief is hitting in waves.",
+      "wisdom": "Grief doesn't follow a schedule and it doesn't respond to being pushed down. The people who do best are the ones who let it move through them\u2014with support, not in silence.",
+      "choices": [
+        {
+          "label": "Accept support from your community",
+          "effects": {
+            "stress": -6,
+            "marriage": 6,
+            "health": 3
+          },
+          "memory": "You let people in during your grief and didn't carry it alone."
+        },
+        {
+          "label": "See a grief counselor",
+          "effects": {
+            "money": -150,
+            "stress": -5,
+            "health": 4
+          },
+          "memory": "You got professional support to move through the grief."
+        },
+        {
+          "label": "Isolate and tough it out",
+          "effects": {
+            "stress": 8,
+            "health": -5,
+            "marriage": -5
+          },
+          "memory": "You grieved alone and it took a longer, harder toll."
+        }
+      ]
+    },
+    {
+      "id": "adoption-conversation",
+      "tags": [
+        "general"
+      ],
+      "title": "Adoption Conversation",
+      "description": "You and your spouse have been circling the topic of adoption for months.",
+      "wisdom": "Adoption is one of the most profound things a family can do and one of the most complex. The question isn't whether the impulse is good\u2014it is. The question is whether you go in with full awareness of what it asks of you.",
+      "choices": [
+        {
+          "label": "Meet with an adoption agency",
+          "effects": {
+            "money": -200,
+            "marriage": 9,
+            "stress": 5,
+            "children": 6
+          },
+          "memory": "You took the first concrete step toward adoption together."
+        },
+        {
+          "label": "Read and research deeply first",
+          "effects": {
+            "marriage": 7,
+            "stress": 3
+          },
+          "memory": "You spent time researching adoption to approach it honestly."
+        },
+        {
+          "label": "Shelve the conversation for now",
+          "effects": {
+            "marriage": -3,
+            "stress": 2
+          },
+          "memory": "You put the adoption conversation on hold indefinitely."
+        }
+      ]
+    },
+    {
+      "id": "church-conflict",
+      "tags": [
+        "general"
+      ],
+      "title": "Church Conflict",
+      "description": "A disagreement with church leadership or a fellow member is creating real tension.",
+      "wisdom": "The church is made of people and people have conflict. How you handle it\u2014with grace and directness rather than gossip and drift\u2014says more about your faith than your attendance record.",
+      "choices": [
+        {
+          "label": "Address it directly with the person",
+          "effects": {
+            "stress": -4,
+            "marriage": 5
+          },
+          "memory": "You handled the church conflict with grace and got to resolution."
+        },
+        {
+          "label": "Pray about it and give it time",
+          "effects": {
+            "stress": -2,
+            "marriage": 3
+          },
+          "memory": "You stepped back and gave the conflict space to settle."
+        },
+        {
+          "label": "Quietly pull away from the church",
+          "effects": {
+            "stress": 4,
+            "marriage": -5,
+            "health": -2
+          },
+          "memory": "You withdrew from the church rather than working through the conflict."
+        }
+      ]
+    },
+    {
+      "id": "financial-advisor",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Financial Advisor Meeting",
+      "description": "A friend suggests seeing a financial advisor but the fees feel unnecessary.",
+      "wisdom": "Most people are flying blind on retirement and long-term wealth. A fee-only advisor pays for themselves in the decisions they help you make\u2014and avoid.",
+      "choices": [
+        {
+          "label": "Book a session with a fee-only advisor",
+          "effects": {
+            "money": -300,
+            "stress": -5,
+            "marriage": 6
+          },
+          "memory": "You got a real financial plan and felt more in control."
+        },
+        {
+          "label": "Do a free consultation first",
+          "effects": {
+            "stress": -2,
+            "marriage": 3
+          },
+          "memory": "You started with a free consultation to test the value."
+        },
+        {
+          "label": "Keep managing it yourself",
+          "effects": {
+            "money": -400,
+            "stress": 4,
+            "marriage": -2
+          },
+          "memory": "You stayed self-directed on finances and gaps went unaddressed."
+        }
+      ]
+    },
+    {
+      "id": "family-meeting",
+      "tags": [
+        "general"
+      ],
+      "title": "Family Meeting",
+      "description": "Several issues have been simmering and the family needs to talk.",
+      "wisdom": "Families that meet regularly handle problems before they compound. A recurring family meeting sounds corporate until you see what goes unaddressed in families that don't have one.",
+      "choices": [
+        {
+          "label": "Call a structured family meeting",
+          "effects": {
+            "children": 8,
+            "marriage": 7,
+            "stress": -4
+          },
+          "memory": "You held a family meeting that cleared the air and aligned everyone."
+        },
+        {
+          "label": "Have casual dinner conversations",
+          "effects": {
+            "children": 5,
+            "marriage": 5,
+            "stress": -2
+          },
+          "memory": "You opened conversations over dinner and the issues got aired."
+        },
+        {
+          "label": "Keep hoping things sort themselves",
+          "effects": {
+            "children": -6,
+            "marriage": -5,
+            "stress": 7
+          },
+          "memory": "The unaddressed issues kept piling up and the tension built."
+        }
+      ]
+    },
+    {
+      "id": "unexpected-pregnancy",
+      "tags": [
+        "general"
+      ],
+      "title": "Unexpected Pregnancy",
+      "severity": "major",
+      "description": "A pregnancy test brings news that wasn't in the plan.",
+      "wisdom": "Life rarely follows the plan exactly. The most important decisions made in this moment are about communication, support, and facing it as a team\u2014not making major choices in isolation.",
+      "choices": [
+        {
+          "label": "Sit with it together and talk deeply",
+          "effects": {
+            "marriage": 10,
+            "stress": 5
+          },
+          "memory": "You and your spouse faced the unexpected news together."
+        },
+        {
+          "label": "Talk to your pastor or counselor first",
+          "effects": {
+            "stress": -3,
+            "marriage": 8,
+            "health": 3
+          },
+          "memory": "You sought guidance before making any decisions."
+        },
+        {
+          "label": "React with fear and pull apart",
+          "effects": {
+            "marriage": -10,
+            "stress": 12,
+            "health": -4
+          },
+          "memory": "Fear drove you apart at the moment you needed each other most."
+        }
+      ]
+    },
+    {
+      "id": "job-loss",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Job Loss",
+      "severity": "major",
+      "surprise": true,
+      "description": "You receive unexpected notice that your position has been eliminated.",
+      "wisdom": "Losing a job is one of the highest-stress events a family can face\u2014but it's also one of the most revealing ones. How you handle the first week often sets the tone for how long recovery takes.",
+      "choices": [
+        {
+          "label": "File for benefits and activate network immediately",
+          "effects": {
+            "money": 500,
+            "stress": 7,
+            "marriage": 5
+          },
+          "memory": "You acted fast after job loss and built momentum quickly."
+        },
+        {
+          "label": "Take a week to regroup as a family",
+          "effects": {
+            "money": -200,
+            "marriage": 10,
+            "stress": -3,
+            "children": 5
+          },
+          "memory": "You took a breath with your family before launching the job search."
+        },
+        {
+          "label": "Panic and isolate",
+          "effects": {
+            "money": -800,
+            "stress": 14,
+            "marriage": -8,
+            "health": -4
+          },
+          "memory": "Job loss sent you into isolation and the situation worsened."
+        }
+      ]
+    },
+    {
+      "id": "water-heater-failure",
+      "tags": [
+        "general"
+      ],
+      "title": "Water Heater Fails",
+      "severity": "moderate",
+      "surprise": true,
+      "description": "You wake up to cold water and the water heater is clearly at the end of its life.",
+      "choices": [
+        {
+          "label": "Replace it today",
+          "effects": {
+            "money": -1100,
+            "stress": 3,
+            "marriage": 4
+          },
+          "memory": "You replaced the water heater before the week got more complicated."
+        },
+        {
+          "label": "Get three quotes first",
+          "effects": {
+            "money": -850,
+            "stress": 2,
+            "marriage": 3
+          },
+          "memory": "You shopped quotes and saved money on the water heater replacement."
+        },
+        {
+          "label": "Cold showers for a week",
+          "effects": {
+            "money": -200,
+            "stress": 9,
+            "marriage": -5,
+            "health": -2
+          },
+          "memory": "You delayed replacing the water heater and everyone suffered for it."
+        }
+      ]
+    },
+    {
+      "id": "medical-bill-surprise",
+      "tags": [
+        "general"
+      ],
+      "title": "Surprise Medical Bill",
+      "severity": "major",
+      "surprise": true,
+      "description": "A bill arrives for a procedure that was supposed to be covered\u2014and it's thousands of dollars.",
+      "wisdom": "Medical billing errors are common. A bill is not a verdict. Calling and asking questions\u2014or hiring a patient advocate\u2014resolves a huge percentage of surprise bills.",
+      "choices": [
+        {
+          "label": "Call the billing department and negotiate",
+          "effects": {
+            "money": 600,
+            "stress": 4
+          },
+          "memory": "You challenged the medical bill and got a significant reduction."
+        },
+        {
+          "label": "Set up a payment plan",
+          "effects": {
+            "money": -300,
+            "stress": 2
+          },
+          "memory": "You arranged a manageable payment plan for the medical bill."
+        },
+        {
+          "label": "Pay it immediately without questioning",
+          "effects": {
+            "money": -2400,
+            "stress": 7
+          },
+          "memory": "You paid the surprise medical bill in full without pushing back."
+        }
+      ]
+    },
+    {
+      "id": "pipe-burst",
+      "tags": [
+        "general"
+      ],
+      "title": "Pipe Bursts",
+      "severity": "major",
+      "surprise": true,
+      "description": "A pipe bursts during a cold night and water is spreading through part of the house.",
+      "choices": [
+        {
+          "label": "Call emergency plumber immediately",
+          "effects": {
+            "money": -2200,
+            "stress": 8,
+            "marriage": 3
+          },
+          "memory": "You responded fast to the burst pipe and contained the damage."
+        },
+        {
+          "label": "Shut the water and assess damage",
+          "effects": {
+            "money": -1400,
+            "stress": 5,
+            "marriage": 4
+          },
+          "memory": "You shut off the main valve and managed the pipe emergency methodically."
+        },
+        {
+          "label": "Panic and delay calling",
+          "effects": {
+            "money": -5000,
+            "stress": 14,
+            "health": -3
+          },
+          "memory": "Delayed action on the burst pipe turned a bad situation into a disaster."
+        }
+      ]
+    },
+    {
+      "id": "sick-day-coverage",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Sick Child, Work Conflict",
+      "description": "Your child wakes up sick on a day when both parents have important commitments.",
+      "wisdom": "In a two-income family, a sick child on a critical work day is a recurring test. The couples who handle it best are the ones who treat it as a shared problem, not a competition over whose day matters more.",
+      "choices": [
+        {
+          "label": "Divide the day between both parents",
+          "effects": {
+            "children": 8,
+            "marriage": 7,
+            "stress": 4
+          },
+          "memory": "You split the sick day fairly and the kid felt taken care of."
+        },
+        {
+          "label": "One parent takes the full day",
+          "effects": {
+            "money": -200,
+            "children": 9,
+            "stress": 5,
+            "marriage": 3
+          },
+          "memory": "One parent took the full sick day and covered everything."
+        },
+        {
+          "label": "Send them anyway and hope for the best",
+          "effects": {
+            "children": -7,
+            "stress": 8,
+            "money": -100
+          },
+          "memory": "You sent the sick child to school and got a call to come pick them up."
+        }
+      ]
+    },
+    {
+      "id": "parent-school-involvement",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "PTA or School Involvement",
+      "description": "The school asks for more parent involvement and you've been on the fence.",
+      "wisdom": "Parental presence in a school sends a message to your child and to their teachers. You don't have to chair a committee\u2014but showing up somewhere is worth more than people realize.",
+      "choices": [
+        {
+          "label": "Join the PTA and take a role",
+          "effects": {
+            "children": 8,
+            "stress": 4,
+            "money": -50
+          },
+          "memory": "You joined the PTA and became a presence in your child's school."
+        },
+        {
+          "label": "Volunteer for specific events",
+          "effects": {
+            "children": 6,
+            "stress": 2
+          },
+          "memory": "You signed up for select school events and it made a difference."
+        },
+        {
+          "label": "Stay uninvolved",
+          "effects": {
+            "children": -4,
+            "stress": -2
+          },
+          "memory": "You stayed out of school involvement and your child noticed."
+        }
+      ]
+    },
+    {
+      "id": "retirement-reality-check",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Retirement Reality Check",
+      "description": "You look at your retirement account and realize you're significantly behind where you should be.",
+      "wisdom": "Most people are behind on retirement savings and most people do nothing about it. The math gets harder the longer you wait, but the math never gets impossible\u2014until very late. Act now.",
+      "choices": [
+        {
+          "label": "Max contributions and build a catch-up plan",
+          "effects": {
+            "money": -600,
+            "stress": 4
+          },
+          "memory": "You faced the retirement gap honestly and started a real catch-up plan."
+        },
+        {
+          "label": "Increase contributions by 2%",
+          "effects": {
+            "money": -200,
+            "stress": -1
+          },
+          "memory": "You made a small but real move to close the retirement gap."
+        },
+        {
+          "label": "Close the tab and avoid it",
+          "effects": {
+            "money": -800,
+            "stress": 5
+          },
+          "memory": "You closed the retirement account screen and the gap quietly grew."
+        }
+      ]
+    },
+    {
+      "id": "parent-remarriage",
+      "tags": [
+        "midlife",
+        "general"
+      ],
+      "title": "Parent Remarrying",
+      "description": "Your widowed or divorced parent announces they're remarrying, and family feelings are mixed.",
+      "wisdom": "Your parent's new relationship is theirs to have. Your feelings about it are valid. The two things aren't mutually exclusive\u2014and navigating them without poisoning either takes real maturity.",
+      "choices": [
+        {
+          "label": "Support them and get to know the partner",
+          "effects": {
+            "stress": -3,
+            "marriage": 5,
+            "children": 5
+          },
+          "memory": "You chose to support your parent's new relationship with open arms."
+        },
+        {
+          "label": "Express your concerns privately to your parent",
+          "effects": {
+            "stress": 3,
+            "marriage": 3
+          },
+          "memory": "You had an honest conversation with your parent about your concerns."
+        },
+        {
+          "label": "Let resentment fester",
+          "effects": {
+            "stress": 7,
+            "marriage": -4,
+            "children": -3
+          },
+          "memory": "You let the resentment about your parent's remarriage go unspoken and grow."
+        }
+      ]
+    },
+    {
+      "id": "miscarriage",
+      "tags": [
+        "general"
+      ],
+      "title": "Pregnancy Loss",
+      "severity": "major",
+      "description": "You and your spouse experience the loss of a pregnancy.",
+      "wisdom": "Grief after pregnancy loss is real and often private\u2014which makes it heavier. Couples who talk about it, lean on community, and let themselves grieve fully recover their bond. Couples who don't can quietly fracture.",
+      "choices": [
+        {
+          "label": "Grieve together and lean on your community",
+          "effects": {
+            "marriage": 10,
+            "stress": -5,
+            "health": 3
+          },
+          "memory": "You and your spouse grieved together and didn't carry it alone."
+        },
+        {
+          "label": "Seek counseling as a couple",
+          "effects": {
+            "money": -300,
+            "marriage": 9,
+            "health": 4,
+            "stress": -4
+          },
+          "memory": "You got professional support after the loss and found your footing together."
+        },
+        {
+          "label": "Shut down and grieve separately",
+          "effects": {
+            "marriage": -10,
+            "stress": 10,
+            "health": -5
+          },
+          "memory": "You each grieved alone and the silence created distance."
+        }
+      ]
+    },
+    {
+      "id": "kids-online-safety",
+      "tags": [
+        "young-family",
+        "general"
+      ],
+      "title": "Kids Online Safety",
+      "description": "You discover your child has been using apps or sites you didn't know about.",
+      "wisdom": "Kids move faster online than parents can watch. The goal isn't perfect surveillance\u2014it's building the judgment to make good decisions when you're not looking. That starts with a calm, honest conversation.",
+      "choices": [
+        {
+          "label": "Have an open conversation about online safety",
+          "effects": {
+            "children": 9,
+            "stress": -3,
+            "marriage": 4
+          },
+          "memory": "You talked honestly with your child about online safety and trust."
+        },
+        {
+          "label": "Set up parental filters and monitor closely",
+          "effects": {
+            "children": 5,
+            "stress": -1
+          },
+          "memory": "You updated the tech controls and had the conversation."
+        },
+        {
+          "label": "Remove all devices as punishment",
+          "effects": {
+            "children": -6,
+            "stress": 5,
+            "marriage": -2
+          },
+          "memory": "You reacted with removal instead of a real conversation."
         }
       ]
     }
@@ -1251,7 +3032,7 @@
   "generatedEventBlueprints": [
     {
       "category": "Money",
-      "icon": "💳",
+      "icon": "\ud83d\udcb3",
       "accent": "amber",
       "title": "Subscription Audit",
       "description": "A forgotten subscription renewal hits your account this week.",
@@ -1282,7 +3063,7 @@
     },
     {
       "category": "Wellness",
-      "icon": "🧘",
+      "icon": "\ud83e\uddd8",
       "accent": "green",
       "title": "Morning Stretch",
       "description": "A short mobility routine could make the week feel easier.",
@@ -1313,7 +3094,7 @@
     },
     {
       "category": "Relationship",
-      "icon": "💌",
+      "icon": "\ud83d\udc8c",
       "accent": "rose",
       "title": "Thoughtful Check-In",
       "description": "Your partner seems quieter than usual after a busy day.",
@@ -1344,7 +3125,7 @@
     },
     {
       "category": "Parenting",
-      "icon": "🧩",
+      "icon": "\ud83e\udde9",
       "accent": "teal",
       "title": "Homework Spiral",
       "description": "Homework turns into frustration right before bedtime.",
@@ -1375,7 +3156,7 @@
     },
     {
       "category": "Career",
-      "icon": "📎",
+      "icon": "\ud83d\udcce",
       "accent": "indigo",
       "title": "Inbox Backlog",
       "description": "Your inbox is full of small tasks competing for attention.",
@@ -1406,7 +3187,7 @@
     },
     {
       "category": "Home",
-      "icon": "🪴",
+      "icon": "\ud83e\udeb4",
       "accent": "green",
       "title": "Plant Care",
       "description": "The houseplants are drooping and need attention.",
@@ -1435,7 +3216,7 @@
     },
     {
       "category": "Community",
-      "icon": "☕",
+      "icon": "\u2615",
       "accent": "blue",
       "title": "Coffee Invitation",
       "description": "Someone from your neighborhood suggests a low-key coffee meetup.",
@@ -1467,7 +3248,7 @@
     },
     {
       "category": "Health",
-      "icon": "🍲",
+      "icon": "\ud83c\udf72",
       "accent": "green",
       "title": "Lunch Choice",
       "description": "Lunch can be quick comfort food or something that fuels the afternoon.",
@@ -1499,7 +3280,7 @@
     },
     {
       "category": "Errands",
-      "icon": "📮",
+      "icon": "\ud83d\udcee",
       "accent": "amber",
       "title": "Post Office Run",
       "description": "A package return deadline is about to expire.",
@@ -1530,7 +3311,7 @@
     },
     {
       "category": "Recovery",
-      "icon": "🌙",
+      "icon": "\ud83c\udf19",
       "accent": "indigo",
       "title": "Early Bedtime",
       "description": "A quiet evening could become actual rest if you protect it.",
@@ -1561,7 +3342,7 @@
     },
     {
       "category": "Money",
-      "icon": "🧾",
+      "icon": "\ud83e\uddfe",
       "accent": "amber",
       "title": "Bill Review",
       "description": "A bill looks higher than expected and might be negotiable.",
@@ -1592,7 +3373,7 @@
     },
     {
       "category": "School",
-      "icon": "📚",
+      "icon": "\ud83d\udcda",
       "accent": "blue",
       "title": "Reading Log",
       "description": "The weekly reading log needs a parent signature.",
@@ -1622,7 +3403,7 @@
     },
     {
       "category": "Major life event",
-      "icon": "🏥",
+      "icon": "\ud83c\udfe5",
       "accent": "rose",
       "title": "Urgent Care Choice",
       "severity": "major",
@@ -1639,7 +3420,6 @@
       "balanced": [
         "Call nurse line",
         {
-          "money": -40,
           "health": 4,
           "stress": 1
         },
@@ -1656,7 +3436,7 @@
     },
     {
       "category": "Major family event",
-      "icon": "🛟",
+      "icon": "\ud83d\udedf",
       "accent": "rose",
       "title": "Family Emergency",
       "severity": "major",
@@ -1692,7 +3472,7 @@
     },
     {
       "category": "Major career event",
-      "icon": "🚪",
+      "icon": "\ud83d\udeaa",
       "accent": "violet",
       "title": "Job Interview",
       "severity": "major",
@@ -1717,7 +3497,6 @@
       "risky": [
         "Wing it",
         {
-          "money": -150,
           "stress": -2
         },
         "You winged an important interview."

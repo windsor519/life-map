@@ -1270,6 +1270,11 @@ export default function App() {
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
   const difficultyMultiplier = legacy.difficulty ?? getDifficultyMultiplier(legacy.runs ?? 0);
   const isSimulationLocked = simulationState.phase === "animating" || simulationState.phase === "unexpected" || simulationState.phase === "summary";
+  const seasonCarouselRef = useRef(null);
+  const seasonPanelRefs = useRef([]);
+  const seasonSwipeStartXRef = useRef(null);
+  const viewedSeasonIndexRef = useRef(Math.max(0, getSeasonIndexForMonth(game.month)));
+  const [viewedSeasonIndex, setViewedSeasonIndex] = useState(Math.max(0, getSeasonIndexForMonth(game.month)));
 
   useEffect(() => {
     document.body.dataset.season = activeSeason.id;
@@ -1277,6 +1282,68 @@ export default function App() {
       delete document.body.dataset.season;
     };
   }, [activeSeason.id]);
+
+  const goToSeasonCard = useCallback((index) => {
+    const nextIndex = (index + seasonConfig.length) % seasonConfig.length;
+    viewedSeasonIndexRef.current = nextIndex;
+    setViewedSeasonIndex(nextIndex);
+    seasonPanelRefs.current[nextIndex]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center"
+    });
+  }, []);
+
+  useEffect(() => {
+    goToSeasonCard(Math.max(0, getSeasonIndexForMonth(game.month)));
+  }, [game.month, goToSeasonCard]);
+
+  const handleSeasonCarouselScroll = () => {
+    const carousel = seasonCarouselRef.current;
+
+    if (!carousel) {
+      return;
+    }
+
+    const carouselCenter = carousel.getBoundingClientRect().left + carousel.clientWidth / 2;
+    const closestIndex = seasonPanelRefs.current.reduce((closest, panel, index) => {
+      if (!panel) {
+        return closest;
+      }
+
+      const panelRect = panel.getBoundingClientRect();
+      const distance = Math.abs(panelRect.left + panelRect.width / 2 - carouselCenter);
+
+      return distance < closest.distance ? { distance, index } : closest;
+    }, { distance: Infinity, index: viewedSeasonIndexRef.current }).index;
+
+    if (closestIndex !== viewedSeasonIndexRef.current) {
+      viewedSeasonIndexRef.current = closestIndex;
+      setViewedSeasonIndex(closestIndex);
+    }
+  };
+
+  const handleSeasonSwipeStart = (event) => {
+    seasonSwipeStartXRef.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleSeasonSwipeEnd = (event) => {
+    const startX = seasonSwipeStartXRef.current;
+    seasonSwipeStartXRef.current = null;
+
+    if (startX === null) {
+      return;
+    }
+
+    const endX = event.changedTouches[0]?.clientX ?? startX;
+    const deltaX = endX - startX;
+
+    if (Math.abs(deltaX) < 48) {
+      return;
+    }
+
+    goToSeasonCard(viewedSeasonIndexRef.current + (deltaX < 0 ? 1 : -1));
+  };
 
   const finishRunIfNeeded = (nextState, prevGame) => {
     const gameOverReason = getGameOverReason(nextState);
@@ -1854,20 +1921,51 @@ export default function App() {
               <span>{completedThisSeason}/{totalSeasonDecisions} decisions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before advancing." : "Unselected seasonal moments will auto-resolve when you simulate."}</span>
             </div>
           </div>
-          <div className="season-carousel" aria-label="Season cards">
-            {seasonConfig.map((season) => {
+          <div
+            className="season-carousel"
+            aria-label="Season cards"
+            onScroll={handleSeasonCarouselScroll}
+            onTouchStart={handleSeasonSwipeStart}
+            onTouchEnd={handleSeasonSwipeEnd}
+            ref={seasonCarouselRef}
+          >
+            {seasonConfig.map((season, seasonIndex) => {
               const isActive = season.id === activeSeason.id;
               const seasonMonthNames = getSeasonMonthNames(season);
               const cardDecisions = isActive ? seasonDecisions : [];
               const previousSelections = seasonHistory[season.id] ?? [];
 
               return (
-                <article className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""}`} key={season.id}>
+                <article
+                  className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${seasonIndex === viewedSeasonIndex ? "in-view" : ""}`}
+                  key={season.id}
+                  ref={(panel) => {
+                    seasonPanelRefs.current[seasonIndex] = panel;
+                  }}
+                >
                   <div className="season-panel-header">
                     <span className="season-icon" aria-hidden="true">{season.icon}</span>
                     <div>
                       <p className="eyebrow">{season.palette} season</p>
                       <h3>{season.label}</h3>
+                    </div>
+                    <div className="season-card-nav" aria-label={`${season.label} card navigation`}>
+                      <button
+                        className="season-card-arrow"
+                        type="button"
+                        aria-label={`Show previous season card before ${season.label}`}
+                        onClick={() => goToSeasonCard(seasonIndex - 1)}
+                      >
+                        ←
+                      </button>
+                      <button
+                        className="season-card-arrow"
+                        type="button"
+                        aria-label={`Show next season card after ${season.label}`}
+                        onClick={() => goToSeasonCard(seasonIndex + 1)}
+                      >
+                        →
+                      </button>
                     </div>
                   </div>
                   <p>{season.description}</p>

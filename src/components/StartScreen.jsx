@@ -7,6 +7,54 @@ const startingStatSliders = [
   { key: "wallet", description: "Your starting financial cushion and resource stability." }
 ];
 
+
+const familyGroupFields = {
+  grandparents: { ageKey: "grandparentsAges", sexKey: "grandparentsSexes" },
+  greatGrandparents: { ageKey: "greatGrandparentsAges", sexKey: "greatGrandparentsSexes" },
+  kids: { ageKey: "kidsAges", sexKey: "kidsSexes" }
+};
+
+const splitFamilyValues = (value) =>
+  String(value ?? "")
+    .split(/[\n,]+/)
+    .map((item) => item.trim());
+
+const getFamilyMembersForGroup = (familyInput, groupKey) => {
+  const fieldConfig = familyGroupFields[groupKey];
+  const groupValue = familyInput?.[groupKey];
+
+  if (Array.isArray(groupValue)) {
+    return groupValue.map((member) => ({
+      name: member?.name ?? "",
+      age: member?.age ?? "",
+      sex: member?.sex ?? "female"
+    }));
+  }
+
+  const names = splitFamilyValues(groupValue).filter(Boolean);
+  const ages = splitFamilyValues(familyInput?.[fieldConfig.ageKey]);
+  const sexes = splitFamilyValues(familyInput?.[fieldConfig.sexKey]);
+  const memberCount = Math.max(names.length, ages.filter(Boolean).length, sexes.filter(Boolean).length);
+
+  return Array.from({ length: memberCount }, (_, index) => ({
+    name: names[index] ?? "",
+    age: ages[index] ?? "",
+    sex: sexes[index] || "female"
+  }));
+};
+
+const getSpouseField = (familyInput, field) => {
+  if (familyInput?.spouse && typeof familyInput.spouse === "object") {
+    return familyInput.spouse[field] ?? "";
+  }
+
+  if (field === "name") return familyInput?.spouse ?? "";
+  if (field === "age") return familyInput?.spouseAge ?? "";
+  if (field === "sex") return familyInput?.spouseSex ?? "";
+
+  return "";
+};
+
 // 🎨 Clean, localized inline styles to skip writing external CSS
 const styles = {
   sectionGroup: {
@@ -152,9 +200,15 @@ export default function StartScreen({
   statConfig
 }) {
 
+  const familyMembers = {
+    grandparents: getFamilyMembersForGroup(familyInput, "grandparents"),
+    greatGrandparents: getFamilyMembersForGroup(familyInput, "greatGrandparents"),
+    kids: getFamilyMembersForGroup(familyInput, "kids")
+  };
+
   const updateFamilyMember = (groupKey, index, field, value) => {
     setFamilyInput((prev) => {
-      const updatedGroup = [...(prev[groupKey] || [])];
+      const updatedGroup = getFamilyMembersForGroup(prev, groupKey);
       updatedGroup[index] = { ...updatedGroup[index], [field]: value };
       return { ...prev, [groupKey]: updatedGroup };
     });
@@ -162,8 +216,9 @@ export default function StartScreen({
 
   const addFamilyMember = (groupKey, maxCount) => {
     setFamilyInput((prev) => {
-      const currentGroup = prev[groupKey] || [];
+      const currentGroup = getFamilyMembersForGroup(prev, groupKey);
       if (currentGroup.length >= maxCount) return prev;
+
       return {
         ...prev,
         [groupKey]: [...currentGroup, { name: "", age: "", sex: "female" }]
@@ -172,16 +227,21 @@ export default function StartScreen({
   };
 
   const removeFamilyMember = (groupKey, index) => {
-    setFamilyInput((prev) => ({
-      ...prev,
-      [groupKey]: (prev[groupKey] || []).filter((_, i) => i !== index)
-    }));
+    setFamilyInput((prev) => {
+      const updatedGroup = getFamilyMembersForGroup(prev, groupKey).filter((_, i) => i !== index);
+      return { ...prev, [groupKey]: updatedGroup };
+    });
   };
 
   const updateSpouse = (field, value) => {
     setFamilyInput((prev) => ({
       ...prev,
-      spouse: { ...prev.spouse, [field]: value }
+      spouse: {
+        name: getSpouseField(prev, "name"),
+        age: getSpouseField(prev, "age"),
+        sex: getSpouseField(prev, "sex"),
+        [field]: value
+      }
     }));
   };
 
@@ -244,7 +304,7 @@ export default function StartScreen({
               label="Grandparents" 
               groupKey="grandparents" 
               maxCount={4} 
-              members={familyInput.grandparents}
+              members={familyMembers.grandparents}
               onUpdate={updateFamilyMember}
               onAdd={addFamilyMember}
               onRemove={removeFamilyMember}
@@ -255,7 +315,7 @@ export default function StartScreen({
               groupKey="greatGrandparents" 
               maxCount={4} 
               description="Optional bonus family ties" 
-              members={familyInput.greatGrandparents}
+              members={familyMembers.greatGrandparents}
               onUpdate={updateFamilyMember}
               onAdd={addFamilyMember}
               onRemove={removeFamilyMember}
@@ -273,19 +333,19 @@ export default function StartScreen({
                   type="text"
                   placeholder="Partner's Name"
                   style={styles.nameInput}
-                  value={familyInput.spouse?.name || ""}
+                  value={getSpouseField(familyInput, "name")}
                   onChange={(e) => updateSpouse("name", e.target.value)}
                 />
                 <input
                   type="number"
                   placeholder="Age"
                   style={styles.ageInput}
-                  value={familyInput.spouse?.age || ""}
+                  value={getSpouseField(familyInput, "age")}
                   onChange={(e) => updateSpouse("age", e.target.value)}
                 />
                 <select
                   style={styles.selectInput}
-                  value={familyInput.spouse?.sex || ""}
+                  value={getSpouseField(familyInput, "sex")}
                   onChange={(e) => updateSpouse("sex", e.target.value)}
                 >
                   <option value="">Sex...</option>
@@ -300,7 +360,7 @@ export default function StartScreen({
               label="Kids" 
               groupKey="kids" 
               maxCount={6} 
-              members={familyInput.kids}
+              members={familyMembers.kids}
               onUpdate={updateFamilyMember}
               onAdd={addFamilyMember}
               onRemove={removeFamilyMember}

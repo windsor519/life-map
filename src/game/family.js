@@ -42,10 +42,53 @@ const normalizeSex = (value) => {
 
 export const countFamilyNames = (value) => splitFamilyNames(value).length;
 
-export const normalizeFamily = (family) => ({
-  ...createEmptyFamily(),
-  ...(family && typeof family === "object" ? family : {})
-});
+const joinMemberField = (members, field) =>
+  members
+    .map((member) => String(member?.[field] ?? "").trim())
+    .join("\n");
+
+const normalizeFamilyGroup = (family, groupKey, field) => {
+  const groupValue = family?.[groupKey];
+
+  if (!Array.isArray(groupValue)) {
+    return {};
+  }
+
+  return {
+    [groupKey]: joinMemberField(groupValue, "name"),
+    [field.ageKey]: joinMemberField(groupValue, "age"),
+    [field.sexKey]: joinMemberField(groupValue, "sex")
+  };
+};
+
+const normalizeSpouse = (family) => {
+  if (!family?.spouse || typeof family.spouse !== "object" || Array.isArray(family.spouse)) {
+    return {};
+  }
+
+  return {
+    spouse: String(family.spouse.name ?? "").trim(),
+    spouseAge: String(family.spouse.age ?? "").trim(),
+    spouseSex: String(family.spouse.sex ?? "").trim()
+  };
+};
+
+export const normalizeFamily = (family) => {
+  const familyObject = family && typeof family === "object" ? family : {};
+
+  return {
+    ...createEmptyFamily(),
+    ...familyObject,
+    ...Object.entries(familyFields).reduce(
+      (normalizedGroups, [groupKey, field]) => ({
+        ...normalizedGroups,
+        ...normalizeFamilyGroup(familyObject, groupKey, field)
+      }),
+      {}
+    ),
+    ...normalizeSpouse(familyObject)
+  };
+};
 
 const formatAge = (age) => {
   if (!Number.isFinite(age)) return "age ?";

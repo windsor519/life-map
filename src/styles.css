@@ -3020,3 +3020,87 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.family-stage-card {
+  grid-column: 1 / -1;
+}
+
+.family-stage-card .section-heading {
+  margin-bottom: 1rem;
+}
+
+.family-stage {
+  display: flex;
+  min-height: 18rem;
+  align-items: flex-end;
+  gap: 0.75rem;
+  overflow-x: auto;
+  border-bottom: 5px solid rgba(203, 213, 225, 0.28);
+  padding: 1rem 0.5rem 0;
+}
+
+.family-member {
+  display: grid;
+  min-width: 5rem;
+  flex: 1 0 5rem;
+  justify-items: center;
+  align-items: end;
+  gap: 0.28rem;
+  color: #e5eefc;
+  text-align: center;
+}
+
+.family-avatar {
+  position: relative;
+  display: flex;
+  width: 2.25rem;
+  height: var(--avatar-height);
+  min-height: 2.25rem;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 999px 999px 0.55rem 0.55rem;
+  background: linear-gradient(180deg, #38bdf8, #2563eb);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.28);
+  transition: height 600ms ease;
+}
+
+.family-avatar span {
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.family-greatgrand .family-avatar {
+  background: linear-gradient(180deg, #cbd5e1, #64748b);
+}
+
+.family-grandparent .family-avatar {
+  background: linear-gradient(180deg, #94a3b8, #475569);
+}
+
+.family-child .family-avatar {
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+}
+
+.family-child .family-avatar span {
+  color: #422006;
+}
+
+.family-female .family-avatar {
+  box-shadow: 0 14px 30px rgba(236, 72, 153, 0.2);
+}
+
+.family-member strong {
+  max-width: 7rem;
+  overflow: hidden;
+  color: #f8fbff;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.family-member small {
+  color: #bfdbfe;
+  font-size: 0.72rem;
+}

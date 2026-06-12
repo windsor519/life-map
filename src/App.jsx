@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import events from "./data/events.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
+import StartScreen from "./components/StartScreen.jsx";
+import { countFamilyNames, createEmptyFamily, getFamilySummary, normalizeFamily } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const createIdleSimulationState = () => ({
@@ -72,69 +74,6 @@ const createDefaultLegacy = () => ({
   lastRun: null
 });
 
-
-const createEmptyFamily = () => ({
-  grandparents: "",
-  grandparentsAges: "",
-  greatGrandparents: "",
-  greatGrandparentsAges: "",
-  spouse: "",
-  spouseAge: "",
-  kids: "",
-  kidsAges: ""
-});
-const familyFields = {
-  grandparents: { label: "Grandparents", ageKey: "grandparentsAges" },
-  greatGrandparents: { label: "Great-grandparents", ageKey: "greatGrandparentsAges" },
-  spouse: { label: "Spouse / partner", ageKey: "spouseAge" },
-  kids: { label: "Kids", ageKey: "kidsAges" }
-};
-const splitFamilyNames = (value) =>
-  String(value ?? "")
-    .split(/[\n,]+/)
-    .map((name) => name.trim())
-    .filter(Boolean);
-const countFamilyNames = (value) => splitFamilyNames(value).length;
-const normalizeFamily = (family) => ({
-  ...createEmptyFamily(),
-  ...(family && typeof family === "object" ? family : {})
-});
-const getFamilySummary = (family) => {
-  const normalizedFamily = normalizeFamily(family);
-  const entries = Object.entries(familyFields)
-    .map(([key, field]) => {
-      const names = splitFamilyNames(normalizedFamily[key]);
-      const ages = splitFamilyNames(normalizedFamily[field.ageKey]);
-      const people = names.map((name, index) => ages[index] ? `${name} (${ages[index]})` : name);
-      return people.length ? `${field.label}: ${people.join(", ")}` : null;
-    })
-    .filter(Boolean);
-
-  return entries.length ? entries.join(" · ") : "No family entered yet";
-};
-
-const EVENT_PROMPT_GUIDE = `Create 3-5 Life Map custom events for this family. Return ONLY a JSON array.
-Each event must use this shape:
-[
-  {
-    "id": "unique-kebab-case-id",
-    "title": "Short event title",
-    "category": "Family / Health / Relationship / Community / School / Work",
-    "description": "A specific situation using the player's family names and ages.",
-    "severity": "minor | moderate | major",
-    "icon": "emoji",
-    "accent": "blue | green | rose | amber | teal | violet | indigo",
-    "tags": ["general"],
-    "choices": [
-      {
-        "label": "Choice text",
-        "effects": { "health": 0, "marriage": 0, "children": 0, "stress": 0 },
-        "memory": "Past-tense memory of what happened."
-      }
-    ]
-  }
-]
-Rules: do not include money, debt, budgets, prices, or currency. Use only health, marriage, children, and stress effects between -20 and 20. Make each choice emotionally distinct.`;
 
 const allowedEffectKeys = new Set(summaryStatKeys);
 const sanitizeEffects = (effects) => Object.fromEntries(
@@ -1274,134 +1213,26 @@ export default function App() {
 
   if (!game.initialized) {
     return (
-      <main className="app-shell setup-shell">
-        <section className="hero-card">
-          <div>
-            <p className="eyebrow">Life simulator</p>
-            <h1>Navigate a challenging phase of life.</h1>
-            <p className="subtitle">With kids, aging grandparents, and hard choices—can you make it through?</p>
-          </div>
-          <div className="life-board" aria-hidden="true">
-            <span className="board-node node-heart">💞</span>
-            <span className="board-node node-health">💪</span>
-            <span className="board-node node-family">🌱</span>
-            <span className="board-route" />
-          </div>
-        </section>
-
-        <form className="panel setup-form" onSubmit={startNewGame}>
-          <section className="family-panel" aria-label="Family setup">
-            <div className="randomizer-heading">
-              <div>
-                <p className="eyebrow">Family first</p>
-                <h2>Enter your family</h2>
-                <p>No premade characters. Start by naming the people in your life—grandparents, great-grandparents if you have them, spouse or partner, and kids.</p>
-              </div>
-            </div>
-
-            <div className="family-grid">
-              <label>
-                <span>Grandparents</span>
-                <textarea value={familyInput.grandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, grandparents: event.target.value }))} placeholder="Example: Nana Rose, Grandpa Lee" rows={3} />
-              </label>
-              <label>
-                <span>Grandparents ages</span>
-                <textarea value={familyInput.grandparentsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, grandparentsAges: event.target.value }))} placeholder="Example: 72, 74" rows={3} />
-              </label>
-              <label>
-                <span>Great-grandparents (if any)</span>
-                <textarea value={familyInput.greatGrandparents} onChange={(event) => setFamilyInput((family) => ({ ...family, greatGrandparents: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
-              </label>
-              <label>
-                <span>Great-grandparents ages</span>
-                <textarea value={familyInput.greatGrandparentsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, greatGrandparentsAges: event.target.value }))} placeholder="Optional ages, same order" rows={3} />
-              </label>
-              <label>
-                <span>Spouse / partner</span>
-                <input type="text" value={familyInput.spouse} onChange={(event) => setFamilyInput((family) => ({ ...family, spouse: event.target.value }))} placeholder="Optional" />
-              </label>
-              <label>
-                <span>Spouse / partner age</span>
-                <input type="text" value={familyInput.spouseAge} onChange={(event) => setFamilyInput((family) => ({ ...family, spouseAge: event.target.value }))} placeholder="Optional age" />
-              </label>
-              <label>
-                <span>Kids</span>
-                <textarea value={familyInput.kids} onChange={(event) => setFamilyInput((family) => ({ ...family, kids: event.target.value }))} placeholder="Optional names, separated by commas" rows={3} />
-              </label>
-              <label>
-                <span>Kids ages</span>
-                <textarea value={familyInput.kidsAges} onChange={(event) => setFamilyInput((family) => ({ ...family, kidsAges: event.target.value }))} placeholder="Optional ages, same order" rows={3} />
-              </label>
-            </div>
-          </section>
-
-          <div className="form-grid">
-            <label>
-              <span>Starting age</span>
-              <input type="number" value={startAge} onChange={(event) => setStartAge(event.target.value)} min={12} max={100} />
-            </label>
-          </div>
-
-          <section className="custom-events-panel" aria-label="Custom events setup">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">Custom events</p>
-                <h2>Add AI-made events</h2>
-              </div>
-              <span>{customEventsText.trim() ? "Ready to import" : "Optional"}</span>
-            </div>
-            <p>Paste JSON events from an AI assistant to personalize the season around your family. Money effects are ignored so the game stays focused on relationships, health, family, and stress.</p>
-            <label>
-              <span>Custom events JSON</span>
-              <textarea value={customEventsText} onChange={(event) => setCustomEventsText(event.target.value)} placeholder='[{"id":"teen-driving-lesson","title":"Driving Lesson Nerves","description":"Your teen asks for practice before a big milestone.","severity":"moderate","icon":"🚗","accent":"teal","tags":["general"],"choices":[{"label":"Practice patiently","effects":{"children":8,"stress":4},"memory":"You practiced driving patiently."}]}]' rows={8} />
-            </label>
-            {customEventError ? <p className="form-error" role="alert">{customEventError}</p> : null}
-            <details className="prompt-guide">
-              <summary>Prompt guide for AI</summary>
-              <p>Copy this prompt into an AI assistant, then paste the JSON result above.</p>
-              <textarea readOnly value={`${EVENT_PROMPT_GUIDE}\n\nPlayer family: ${getFamilySummary(familyInput)}\nPlayer age: ${startAge}`} rows={12} />
-            </details>
-          </section>
-
-          <fieldset>
-            <legend>How often do you exercise?</legend>
-            <label><input type="radio" name="exercise" checked={quiz.exercise === "regularly"} onChange={() => setQuiz((q) => ({ ...q, exercise: "regularly" }))} /> Regularly</label>
-            <label><input type="radio" name="exercise" checked={quiz.exercise === "sometimes"} onChange={() => setQuiz((q) => ({ ...q, exercise: "sometimes" }))} /> Sometimes</label>
-            <label><input type="radio" name="exercise" checked={quiz.exercise === "never"} onChange={() => setQuiz((q) => ({ ...q, exercise: "never" }))} /> Rarely / Never</label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Do you have a stable job?</legend>
-            <label><input type="radio" name="stableJob" checked={quiz.stableJob === "yes"} onChange={() => setQuiz((q) => ({ ...q, stableJob: "yes" }))} /> Yes</label>
-            <label><input type="radio" name="stableJob" checked={quiz.stableJob === "no"} onChange={() => setQuiz((q) => ({ ...q, stableJob: "no" }))} /> No</label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Social circle</legend>
-            <label><input type="radio" name="social" checked={quiz.social === "strong"} onChange={() => setQuiz((q) => ({ ...q, social: "strong" }))} /> Strong</label>
-            <label><input type="radio" name="social" checked={quiz.social === "weak"} onChange={() => setQuiz((q) => ({ ...q, social: "weak" }))} /> Weak</label>
-          </fieldset>
-
-          {legacy.runs > 0 ? (
-            <section className="legacy-preview" aria-label="New Game Plus bonuses">
-              <div>
-                <strong>New Game+ Run {runNumber}</strong>
-                <span>{difficultyMultiplier.toFixed(2)}× difficulty · {Math.round((legacy.carryRate ?? 0) * 100)}% carryover + skill boosts</span>
-              </div>
-              <div className="legacy-preview-stats">
-                {summaryStatKeys.map((key) => (
-                  <span key={key}>{statConfig[key].icon} {formatSummaryDelta(key, totalLegacyBonuses[key] ?? 0)}</span>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <div className="actions">
-            <button type="submit">Start Game</button>
-            <button type="button" className="secondary" onClick={resetGame}>Reset</button>
-          </div>
-        </form>
-      </main>
+      <StartScreen
+        customEventError={customEventError}
+        customEventsText={customEventsText}
+        difficultyMultiplier={difficultyMultiplier}
+        familyInput={familyInput}
+        formatSummaryDelta={formatSummaryDelta}
+        legacy={legacy}
+        onResetGame={resetGame}
+        onStartGame={startNewGame}
+        quiz={quiz}
+        runNumber={runNumber}
+        setCustomEventsText={setCustomEventsText}
+        setFamilyInput={setFamilyInput}
+        setQuiz={setQuiz}
+        setStartAge={setStartAge}
+        startAge={startAge}
+        statConfig={statConfig}
+        summaryStatKeys={summaryStatKeys}
+        totalLegacyBonuses={totalLegacyBonuses}
+      />
     );
   }
 

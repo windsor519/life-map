@@ -480,38 +480,32 @@ const summaryCopy = {
   chaos: {
     mood: "🔥",
     headline: "Your calendar chose violence",
-    joke: "Stress went up so fast it probably needs its own zip code.",
-    award: "Certified Chaos Goblin Week"
+    joke: "Stress went up so fast it probably needs its own zip code."
   },
   glow: {
     mood: "💪",
     headline: "Suspiciously responsible behavior",
-    joke: "Health improved. Your couch has filed a missing person report.",
-    award: "Unexpectedly Functional Adult"
+    joke: "Health improved. Your couch has filed a missing person report."
   },
   romance: {
     mood: "💞",
     headline: "Main character relationship arc",
-    joke: "The relationship meter blushed. Extremely unprofessional.",
-    award: "Rom-Com Side Quest Complete"
+    joke: "The relationship meter blushed. Extremely unprofessional."
   },
   family: {
     mood: "🌱",
     headline: "Family bond power-up",
-    joke: "The kids may remember this fondly, pending snack availability.",
-    award: "Snack-Based Legacy Builder"
+    joke: "The kids may remember this fondly, pending snack availability."
   },
   legend: {
     mood: "🏆",
     headline: "Tiny wins, suspicious vibes",
-    joke: "Nothing exploded, which experts are calling personal growth.",
-    award: "Least Unhinged Week"
+    joke: "Nothing exploded, which experts are calling personal growth."
   },
   survived: {
     mood: "😵‍💫",
     headline: "You made it through somehow",
-    joke: "No one knows how, but the week has legally ended.",
-    award: "Emotional Support Calendar Needed"
+    joke: "No one knows how, but the week has legally ended."
   }
 };
 
@@ -534,7 +528,7 @@ const getLifeWeather = (deltas) => {
   return "Partly chaotic, clearing by next Monday 😵‍💫";
 };
 
-const createSeasonalSummary = ({ previousGame, nextState, highlights = [] }) => {
+const createSeasonalSummary = ({ previousGame, nextState }) => {
   const startStats = previousGame.weekStartStats ?? captureStats(previousGame);
   const endStats = captureStats(nextState);
   const deltas = summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: endStats[key] - (startStats[key] ?? previousGame[key] ?? 0) }), {});
@@ -547,7 +541,6 @@ const createSeasonalSummary = ({ previousGame, nextState, highlights = [] }) => 
     season: getSeasonForMonth(previousGame.month).label,
     age: previousGame.age,
     deltas,
-    highlights: highlights.slice(-3),
     weather: getLifeWeather(deltas),
     ...copy
   };
@@ -1116,7 +1109,6 @@ export default function App() {
     let nextState = game;
     const steps = [];
     const simulatedMemories = [];
-    const summaryHighlights = [];
 
     schedule.forEach((day, dayIndex) => {
       const randomDayResults = [];
@@ -1135,7 +1127,6 @@ export default function App() {
             visual: decision.visual,
             severity: decision.severity
           });
-          summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${selectedChoice.label}`);
           return;
         }
 
@@ -1153,7 +1144,6 @@ export default function App() {
           severity: decision.severity
         });
         randomDayResults.push(`${decision.title}: ${choice.label}`);
-        summaryHighlights.push(`${day.dayLabel}: ${decision.title} → ${choice.label}`);
       });
 
       if (randomDayResults.length > 0) {
@@ -1179,7 +1169,6 @@ export default function App() {
         description: unexpectedEvent.description
       };
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${unexpectedEvent.memory}`);
-      summaryHighlights.push(`${unexpectedEvent.icon} Unexpected: ${unexpectedEvent.title}`);
     }
 
     if (steps.length === 0 && !unexpectedStep) {
@@ -1193,7 +1182,6 @@ export default function App() {
         visual: { icon: "🌙", accent: "blue", label: "Calm" },
         severity: "minor"
       });
-      summaryHighlights.push("Quiet season: no unresolved choices or emergencies.");
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: The season stayed unusually calm.`);
     }
 
@@ -1205,7 +1193,7 @@ export default function App() {
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
       memories: [...game.memories, ...simulatedMemories].slice(-8)
     };
-    const monthlySummary = createSeasonalSummary({ previousGame: game, nextState, highlights: summaryHighlights });
+    const monthlySummary = createSeasonalSummary({ previousGame: game, nextState });
     const finalGame = finishRunIfNeeded({
       ...advancedGame,
       weekStartStats: captureStats(advancedGame),
@@ -1354,12 +1342,10 @@ export default function App() {
       {settingsModal}
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
-          <p className="eyebrow">Game over</p>
           <h1>New Game+ unlocked</h1>
           <p className="subtitle">{game.gameOverReason}</p>
           <div className="legacy-meta-grid">
             <span><strong>{Math.round((legacy.carryRate ?? 0) * 100)}%</strong> Carryover rate</span>
-            <span><strong>{legacy.skills ? Object.values(legacy.skills).reduce((sum, level) => sum + level, 0) : 0}</strong> Skill levels saved</span>
           </div>
           <div className="legacy-stat-grid" aria-label="Total New Game Plus bonuses">
             {displayStatKeys.map((key) => (
@@ -1367,7 +1353,7 @@ export default function App() {
                 <span>{displayStatConfig[key].icon}</span>
                 <strong>{displayStatConfig[key].label}</strong>
                 <em>{formatSummaryDelta(key, getDisplayDeltaValue(totalLegacyBonuses, key))}</em>
-                <small>carry + skills</small>
+                <small>carryover</small>
               </article>
             ))}
           </div>
@@ -1377,23 +1363,6 @@ export default function App() {
             <button type="button" className="secondary" onClick={resetGame}>Wipe Legacy</button>
           </div>
         </section>
-        <aside className="panel legacy-card">
-          <div className="section-heading">
-            <h2>Legacy skills</h2>
-            <span>scaled, not OP</span>
-          </div>
-          <div className="skill-list">
-            {Object.entries(legacySkillConfig).map(([key, skill]) => (
-              <article key={key}>
-                <span aria-hidden="true">{skill.icon}</span>
-                <div>
-                  <strong>{skill.label} Lv. {legacy.skills?.[key] ?? 0}</strong>
-                  <small>{skill.description}</small>
-                </div>
-              </article>
-            ))}
-          </div>
-        </aside>
       </main>
       </>
     );
@@ -1674,20 +1643,6 @@ export default function App() {
             <div className="summary-deltas" aria-label="Seasonal stat changes">
               {displayStatKeys.map((key) => renderSummaryDelta(key, getDisplayDeltaValue(activeMonthlySummary.deltas, key)))}
             </div>
-            <div className="summary-award">
-              <span aria-hidden="true">🏅</span>
-              <div>
-                <small>Fake award</small>
-                <strong>{activeMonthlySummary.award}</strong>
-              </div>
-            </div>
-            {(activeMonthlySummary.highlights ?? []).length > 0 ? (
-              <ul className="summary-highlights">
-                {(activeMonthlySummary.highlights ?? []).map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-            ) : null}
             <button className="next-turn-button" type="button" onClick={closeSummaryModal}>Continue</button>
           </section>
         </div>

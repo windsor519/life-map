@@ -165,7 +165,7 @@ export default function StartScreen({
           <section className="legacy-preview" aria-label="New Game Plus bonuses">
             <div>
               <strong>New Game+</strong>
-              <span>{Math.round((legacy.carryRate ?? 0) * 100)}% carryover + skill boosts</span>
+              <span>{Math.round((legacy.carryRate ?? 0) * 100)}% carryover</span>
             </div>
             <div className="legacy-preview-stats">
               {legacyPreviewStats.map((stat) => (

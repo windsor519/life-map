@@ -938,6 +938,7 @@ export default function App() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [familySidebarOpen, setFamilySidebarOpen] = useState(false);
+  const [wisdomSidebarOpen, setWisdomSidebarOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
 
@@ -954,19 +955,20 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
-    if (!familySidebarOpen || typeof window === "undefined") {
+    if ((!familySidebarOpen && !wisdomSidebarOpen) || typeof window === "undefined") {
       return undefined;
     }
 
     const closeOnEscape = (event) => {
       if (event.key === "Escape") {
         setFamilySidebarOpen(false);
+        setWisdomSidebarOpen(false);
       }
     };
 
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [familySidebarOpen]);
+  }, [familySidebarOpen, wisdomSidebarOpen]);
 
   useEffect(() => () => stopZenMusic(false), []);
 
@@ -1143,6 +1145,8 @@ export default function App() {
 
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
+    setFamilySidebarOpen(false);
+    setWisdomSidebarOpen(false);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
@@ -1654,12 +1658,30 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-actions">
+          {game.newYearWisdom ? (
+            <button
+              className="secondary wisdom-sidebar-toggle"
+              type="button"
+              aria-controls="wisdom-sidebar"
+              aria-expanded={wisdomSidebarOpen}
+              onClick={() => {
+                setFamilySidebarOpen(false);
+                setWisdomSidebarOpen(true);
+              }}
+            >
+              <span aria-hidden="true">✨</span>
+              New Year Wisdom
+            </button>
+          ) : null}
           <button
             className="secondary family-sidebar-toggle"
             type="button"
             aria-controls="family-sidebar"
             aria-expanded={familySidebarOpen}
-            onClick={() => setFamilySidebarOpen(true)}
+            onClick={() => {
+              setWisdomSidebarOpen(false);
+              setFamilySidebarOpen(true);
+            }}
           >
             <span aria-hidden="true">👨‍👩‍👧‍👦</span>
             Family View
@@ -1725,24 +1747,6 @@ export default function App() {
             <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
           </div>
           <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)}.</p>
-          {game.newYearWisdom ? (
-            <section className="new-year-wisdom-card inline-wisdom-card" aria-live="polite">
-              <div className="section-heading summary-heading">
-                <div>
-                  <p className="eyebrow">New year wisdom</p>
-                  <h2>{game.newYearWisdom.title}</h2>
-                </div>
-                <span>✨</span>
-              </div>
-              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
-              <p>{game.newYearWisdom.summary}</p>
-              <div className="wisdom-expect">
-                <span>Expect</span>
-                <strong>{game.newYearWisdom.expect}</strong>
-              </div>
-              <small>{game.newYearWisdom.focus}</small>
-            </section>
-          ) : null}
           <div className="flow-panel">
             <div>
               <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
@@ -1826,9 +1830,45 @@ export default function App() {
           </div>
         </section>
 
-        {familySidebarOpen ? <button className="sidebar-backdrop" type="button" aria-label="Close family sidebar" onClick={() => setFamilySidebarOpen(false)} /> : null}
+        {familySidebarOpen || wisdomSidebarOpen ? (
+          <button
+            className="sidebar-backdrop"
+            type="button"
+            aria-label="Close sidebar"
+            onClick={() => {
+              setFamilySidebarOpen(false);
+              setWisdomSidebarOpen(false);
+            }}
+          />
+        ) : null}
+        {game.newYearWisdom ? (
+          <aside
+            className={`side-stack game-sidebar wisdom-sidebar ${wisdomSidebarOpen ? "open" : ""}`}
+            id="wisdom-sidebar"
+            aria-label="New year wisdom sidebar"
+            aria-hidden={!wisdomSidebarOpen}
+          >
+            <div className="sidebar-header">
+              <div>
+                <p className="eyebrow">New year wisdom</p>
+                <h2>{game.newYearWisdom.title}</h2>
+              </div>
+              <button className="secondary sidebar-close" type="button" onClick={() => setWisdomSidebarOpen(false)}>Close</button>
+            </div>
+            <section className="panel new-year-wisdom-card sidebar-wisdom-card" aria-live="polite">
+              <div className="wisdom-hero" aria-hidden="true">✨</div>
+              <p className="wisdom-range">{game.newYearWisdom.ageRangeLabel}</p>
+              <p>{game.newYearWisdom.summary}</p>
+              <div className="wisdom-expect">
+                <span>Expect</span>
+                <strong>{game.newYearWisdom.expect}</strong>
+              </div>
+              <small>{game.newYearWisdom.focus}</small>
+            </section>
+          </aside>
+        ) : null}
         <aside
-          className={`side-stack game-sidebar ${familySidebarOpen ? "open" : ""}`}
+          className={`side-stack game-sidebar family-sidebar ${familySidebarOpen ? "open" : ""}`}
           id="family-sidebar"
           aria-label="Family and recap sidebar"
           aria-hidden={!familySidebarOpen}

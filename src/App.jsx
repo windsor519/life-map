@@ -834,6 +834,61 @@ const createSeasonalSummary = ({ previousGame, nextState }) => {
   };
 };
 
+
+const statScoreHumor = {
+  wellbeing: {
+    critical: "Your nervous system has requested a manager, a nap, and possibly a tiny parade.",
+    low: "The vibes are running on low battery and one suspicious granola bar.",
+    steady: "Stable enough to answer emails, not stable enough to read the comments section.",
+    strong: "Basically a houseplant with boundaries: hydrated, thriving, mildly smug."
+  },
+  marriage: {
+    critical: "The relationship meter is wearing a fake mustache and trying to leave town.",
+    low: "Romance is buffering. Please stand by with snacks and one sincere apology.",
+    steady: "Solid teammate energy: not fireworks, but nobody has rage-labeled the dishwasher.",
+    strong: "Power-couple glow detected. Nearby calendars are asking for mentorship."
+  },
+  children: {
+    critical: "Family bond is hiding under the couch with the missing socks.",
+    low: "The kid connection needs a firmware update and probably more snacks.",
+    steady: "The bond is holding. The snack economy remains cautiously optimistic.",
+    strong: "Peak family glue. Even the couch crumbs feel emotionally supported."
+  },
+  wallet: {
+    critical: "The budget goblin is awake, caffeinated, and holding a tiny clipboard.",
+    low: "Wallet is making dial-up noises. Spend gently.",
+    steady: "Money is behaving like a responsible adult, which is frankly suspicious.",
+    strong: "Wallet has main-character posture. Try not to buy a decorative canoe."
+  }
+};
+
+const getStatScoreHumor = (key, value) => statScoreHumor[key]?.[getStatBand(value)] ?? "This score contains multitudes and at least one spreadsheet.";
+
+const getRecentStatDecisions = (gameState, statKey, limit = 6) => {
+  const currentSeasonLabel = getSeasonForMonth(gameState.month).label;
+  const currentSelections = Object.values(gameState.selectedChoices ?? {}).map((selection, index) => ({
+    ...selection,
+    id: `current-${selection.eventTitle ?? "decision"}-${selection.label ?? "choice"}-${index}`,
+    seasonLabel: currentSeasonLabel,
+    timing: "Current season"
+  }));
+  const historicalSelections = Object.entries(gameState.seasonHistory ?? {}).flatMap(([seasonId, selections]) => {
+    const seasonLabel = seasonConfig.find((season) => season.id === seasonId)?.label ?? seasonId;
+
+    return (selections ?? []).map((selection, index) => ({
+      ...selection,
+      id: selection.id ?? `${seasonId}-${selection.eventTitle ?? "decision"}-${selection.label ?? "choice"}-${index}`,
+      seasonLabel,
+      timing: "Previous season"
+    }));
+  });
+
+  return [...historicalSelections, ...currentSelections]
+    .filter((selection) => Number(sanitizeEffects(selection.effects)[statKey] ?? 0) !== 0)
+    .slice(-limit)
+    .reverse();
+};
+
 const formatSummaryDelta = (_key, value) => {
   const prefix = value > 0 ? "+" : "";
   return `${prefix}${value}`;
@@ -1014,6 +1069,7 @@ export default function App() {
   const [customEventsText, setCustomEventsText] = useState("");
   const [customEventError, setCustomEventError] = useState("");
   const [activeDecisionContext, setActiveDecisionContext] = useState(null);
+  const [activeStatKey, setActiveStatKey] = useState(null);
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
   const [seasonTransition, setSeasonTransition] = useState(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -1209,6 +1265,7 @@ export default function App() {
     }
     stopZenMusic();
     setSimulationState(createIdleSimulationState());
+    setActiveStatKey(null);
     setGame(createDefaultGame());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
@@ -1220,6 +1277,7 @@ export default function App() {
 
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
+    setActiveStatKey(null);
     setFamilySidebarOpen(false);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
@@ -1462,6 +1520,7 @@ export default function App() {
       memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     };
     setActiveDecisionContext(null);
+    setActiveStatKey(null);
     setSeasonTransition({
       previousSeasonId: getSeasonForMonth(game.month).id,
       targetSeasonId: getSeasonForMonth(nextSeasonState.month).id,
@@ -1489,6 +1548,7 @@ export default function App() {
     }
 
     setActiveDecisionContext(null);
+    setActiveStatKey(null);
 
     const schedule = getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game);
     let nextState = game;
@@ -1650,21 +1710,23 @@ export default function App() {
   };
 
   const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
+  const closeStatModal = useCallback(() => setActiveStatKey(null), []);
 
   useEffect(() => {
-    if (!activeDecisionContext || typeof window === "undefined") {
+    if ((!activeDecisionContext && !activeStatKey) || typeof window === "undefined") {
       return undefined;
     }
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         closeDecisionModal();
+        closeStatModal();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeDecisionContext, closeDecisionModal]);
+  }, [activeDecisionContext, activeStatKey, closeDecisionModal, closeStatModal]);
 
   const renderEffectPreview = (effects) => {
     const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
@@ -1708,6 +1770,14 @@ export default function App() {
     : simulationState.steps[simulationState.currentIndex];
   const activeMonthlySummary = simulationState.phase === "summary"
     ? simulationState.summary?.monthlySummary ?? simulationState.summary?.finalGame?.weeklySummary
+    : null;
+  const activeStatDetails = activeStatKey && displayStatConfig[activeStatKey]
+    ? {
+      key: activeStatKey,
+      config: displayStatConfig[activeStatKey],
+      value: getDisplayStatValue(game, activeStatKey),
+      decisions: getRecentStatDecisions(game, activeStatKey)
+    }
     : null;
   const settingsModal = (
     <Setting
@@ -1837,10 +1907,14 @@ export default function App() {
               const ringFill = config.max ? `${normalizedValue * 3.6}deg` : "360deg";
 
               return (
-                <article
-                  className={`stat-card stat-${key} ${severity ? `severity-${severity}` : ""}`}
+                <button
+                  aria-haspopup="dialog"
+                  aria-label={`Open ${config.label} details: current score ${config.formatter ? config.formatter(value) : value}`}
+                  className={`stat-card stat-card-button stat-${key} ${severity ? `severity-${severity}` : ""}`}
                   key={key}
+                  onClick={() => setActiveStatKey(key)}
                   style={{ "--stat-accent": config.accent, "--stat-glow": config.glow, "--stat-fill": ringFill }}
+                  type="button"
                 >
                   <div className="stat-orb" aria-hidden="true">
                     <span className="stat-icon">{config.icon}</span>
@@ -1859,7 +1933,8 @@ export default function App() {
                   <div className={`meter ${config.tone}`} aria-hidden="true">
                     <span style={{ width: percentage }} />
                   </div>
-                </article>
+                  <span className="stat-open-cue" aria-hidden="true">Details ↗</span>
+                </button>
               );
             })}
           </section>
@@ -2123,6 +2198,70 @@ export default function App() {
               {displayStatKeys.map((key) => renderSummaryDelta(key, getDisplayDeltaValue(activeMonthlySummary.deltas, key)))}
             </div>
             <button className="next-turn-button" type="button" onClick={closeSummaryModal}>Continue</button>
+          </section>
+        </div>
+      ) : null}
+
+      {activeStatDetails ? (
+        <div
+          className="decision-modal-backdrop"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              closeStatModal();
+            }
+          }}
+        >
+          <section
+            className="decision-modal stat-detail-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="stat-detail-modal-title"
+            style={{ "--stat-accent": activeStatDetails.config.accent, "--stat-glow": activeStatDetails.config.glow }}
+          >
+            <div className="decision-modal-header stat-detail-header">
+              <div className="decision-title">
+                <span className="mini-icon" aria-hidden="true">{activeStatDetails.config.icon}</span>
+                <span>
+                  <small>{activeStatDetails.config.signal}</small>
+                  <h2 id="stat-detail-modal-title">{activeStatDetails.config.label}</h2>
+                </span>
+              </div>
+              <button
+                className="decision-modal-close"
+                type="button"
+                aria-label="Close stat details"
+                onClick={closeStatModal}
+              >
+                ×
+              </button>
+            </div>
+            <div className="stat-detail-score">
+              <span>Current score</span>
+              <strong>{activeStatDetails.config.formatter ? activeStatDetails.config.formatter(activeStatDetails.value) : activeStatDetails.value}</strong>
+              <p>{getStatScoreHumor(activeStatDetails.key, activeStatDetails.value)}</p>
+            </div>
+            <div className="stat-detail-decisions">
+              <div className="stat-detail-section-heading">
+                <span>Recent decisions affecting this score</span>
+                <small>{activeStatDetails.decisions.length} found</small>
+              </div>
+              {activeStatDetails.decisions.length > 0 ? activeStatDetails.decisions.map((selection) => {
+                const effectValue = sanitizeEffects(selection.effects)[activeStatDetails.key] ?? 0;
+
+                return (
+                  <article className="stat-detail-decision" key={selection.id}>
+                    <div>
+                      <span>{selection.seasonLabel} · {selection.dayName ?? selection.timing}</span>
+                      <strong>{selection.eventTitle}</strong>
+                      <small>{selection.label}</small>
+                    </div>
+                    <em className={effectValue >= 0 ? "positive" : "negative"}>{effectValue > 0 ? "+" : ""}{effectValue}</em>
+                  </article>
+                );
+              }) : (
+                <p className="stat-detail-empty">No recent choices have moved this stat yet. It is either peaceful or plotting a subplot.</p>
+              )}
+            </div>
           </section>
         </div>
       ) : null}

@@ -18,7 +18,7 @@ const familyPhotoCss = `
   --shirt: #38bdf8;
   position: relative;
   display: inline-grid;
-  --person-size: 50px;
+  --person-size: 60px;
   width: var(--person-size);
   height: var(--person-size);
   place-items: center;

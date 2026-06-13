@@ -1120,6 +1120,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
+  const buttonFeedbackAudioRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1133,7 +1134,74 @@ export default function App() {
     }
   }, [settings]);
 
-  useEffect(() => () => stopZenMusic(false), []);
+  useEffect(() => () => {
+    stopZenMusic(false);
+    buttonFeedbackAudioRef.current?.close();
+    buttonFeedbackAudioRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) {
+      return undefined;
+    }
+
+    const playRelaxingButtonFeedback = (event) => {
+      const button = event.target?.closest?.("button");
+
+      if (!button || button.disabled || button.getAttribute("aria-disabled") === "true") {
+        return;
+      }
+
+      if (settings.masterVolume <= 0) {
+        return;
+      }
+
+      const context = audioRef.current?.context ?? buttonFeedbackAudioRef.current ?? new AudioContext();
+
+      if (!audioRef.current?.context && !buttonFeedbackAudioRef.current) {
+        buttonFeedbackAudioRef.current = context;
+      }
+
+      if (context.state === "suspended") {
+        context.resume();
+      }
+
+      const now = context.currentTime;
+      const master = audioRef.current?.master ?? context.destination;
+      const volume = audioRef.current?.master ? 0.12 : (settings.masterVolume / 100) * 0.045;
+      const notes = [523.25, 659.25];
+
+      notes.forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        const startTime = now + index * 0.045;
+        const endTime = startTime + 0.42;
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(volume * (index === 0 ? 0.7 : 1), startTime + 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+        oscillator.connect(gain);
+        gain.connect(master);
+        oscillator.onended = () => {
+          oscillator.disconnect();
+          gain.disconnect();
+        };
+        oscillator.start(startTime);
+        oscillator.stop(endTime + 0.02);
+      });
+    };
+
+    document.addEventListener("click", playRelaxingButtonFeedback, true);
+    return () => document.removeEventListener("click", playRelaxingButtonFeedback, true);
+  }, [settings.masterVolume]);
 
   useEffect(() => {
     if (audioRef.current?.master) {

@@ -116,12 +116,12 @@ const getFamilyPeople = (normalizedFamily, key, field) => {
   }));
 };
 
-export const getFamilySummary = (family) => {
+export const getFamilySummary = (family, { includeAges = true } = {}) => {
   const normalizedFamily = normalizeFamily(family);
   const entries = Object.entries(familyFields)
     .map(([key, field]) => {
       const people = getFamilyPeople(normalizedFamily, key, field).map((person) => {
-        const age = person.ageValue ? ` (${person.ageValue})` : "";
+        const age = includeAges && person.ageValue ? ` (${person.ageValue})` : "";
         const sex = normalizeSex(person.sexValue);
         const symbol = sex === "male" ? " ♂" : sex === "female" ? " ♀" : "";
         return `${person.name}${age}${symbol}`;

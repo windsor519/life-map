@@ -140,26 +140,38 @@ const updateSeasonScores = (previousGame, finalSeasonGame = previousGame) => {
 const seasonalAudioConfig = {
   spring: {
     padFrequencies: [196, 293.66, 349.23, 440],
+    melodyFrequencies: [659.25, 783.99, 880, 783.99, 987.77],
     chimeFrequencies: [659.25, 783.99, 880, 987.77],
-    chimeInterval: 4800,
-    chimePeak: 0.15,
+    chimeInterval: 4600,
+    chimePeak: 0.13,
+    chimeDuration: 1.8,
+    melodyStep: 0.18,
     padMix: 0.16,
+    leadType: "triangle",
     oscillatorTypes: ["sine", "triangle", "sine", "triangle"]
   },
   summer: {
     padFrequencies: [220, 329.63, 392, 493.88],
+    melodyFrequencies: [523.25, 659.25, 783.99, 659.25, 587.33, 783.99],
     chimeFrequencies: [523.25, 587.33, 659.25, 783.99],
-    chimeInterval: 4200,
-    chimePeak: 0.17,
+    chimeInterval: 3600,
+    chimePeak: 0.16,
+    chimeDuration: 1.35,
+    melodyStep: 0.13,
     padMix: 0.2,
+    leadType: "square",
     oscillatorTypes: ["triangle", "sine", "triangle", "sine"]
   },
   fall: {
     padFrequencies: [164.81, 246.94, 329.63, 392],
+    melodyFrequencies: [392, 329.63, 493.88, 440, 329.63],
     chimeFrequencies: [392, 493.88, 587.33, 659.25],
-    chimeInterval: 6200,
-    chimePeak: 0.13,
+    chimeInterval: 6400,
+    chimePeak: 0.12,
+    chimeDuration: 2.4,
+    melodyStep: 0.24,
     padMix: 0.17,
+    leadType: "sawtooth",
     oscillatorTypes: ["sine", "sine", "triangle", "sine"]
   },
   winter: {
@@ -1188,25 +1200,45 @@ export default function App() {
       nodes.push(oscillator, voiceGain);
     });
 
-    const playChime = () => {
-      const now = context.currentTime;
+    const playTone = ({ frequency, startTime, duration = 2.8, peak = config.chimePeak, type = "sine" }) => {
       const oscillator = context.createOscillator();
       const chimeGain = context.createGain();
-      const frequency = config.chimeFrequencies[Math.floor(Math.random() * config.chimeFrequencies.length)];
 
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(frequency, now);
-      chimeGain.gain.setValueAtTime(0, now);
-      chimeGain.gain.linearRampToValueAtTime(config.chimePeak, now + 0.08);
-      chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      chimeGain.gain.setValueAtTime(0, startTime);
+      chimeGain.gain.linearRampToValueAtTime(peak, startTime + 0.08);
+      chimeGain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
       oscillator.connect(chimeGain);
       chimeGain.connect(master);
       oscillator.onended = () => {
         oscillator.disconnect();
         chimeGain.disconnect();
       };
-      oscillator.start(now);
-      oscillator.stop(now + 3);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration + 0.2);
+    };
+
+    const playChime = () => {
+      const now = context.currentTime;
+
+      if (config.melodyFrequencies?.length) {
+        const melodyStart = Math.floor(Math.random() * config.melodyFrequencies.length);
+        config.melodyFrequencies.forEach((_, index) => {
+          const frequency = config.melodyFrequencies[(melodyStart + index) % config.melodyFrequencies.length];
+          playTone({
+            frequency,
+            startTime: now + index * config.melodyStep,
+            duration: config.chimeDuration,
+            peak: Math.max(0.001, config.chimePeak - index * 0.012),
+            type: config.leadType
+          });
+        });
+        return;
+      }
+
+      const frequency = config.chimeFrequencies[Math.floor(Math.random() * config.chimeFrequencies.length)];
+      playTone({ frequency, startTime: now });
     };
 
     const chimeTimer = window.setInterval(playChime, config.chimeInterval);
@@ -1874,7 +1906,7 @@ export default function App() {
             <span>👨‍👩‍👧‍👦</span>
             <div>
               <strong>Your family</strong>
-              <small>{getFamilySummary(game.family)}</small>
+              <small>{getFamilySummary(game.family, { includeAges: false })}</small>
             </div>
           </div>
         </div>

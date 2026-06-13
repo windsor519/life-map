@@ -2338,7 +2338,11 @@ export default function App() {
                         key={choice.label}
                         onClick={() => {
                           handleChoice(choice, decision, dayLabel);
-                          closeDecisionModal();
+                          if (nextDecision) {
+                            openDecisionAtIndex(currentIndex + 1);
+                          } else {
+                            closeDecisionModal();
+                          }
                         }}
                       >
                         <span className="choice-label-row">

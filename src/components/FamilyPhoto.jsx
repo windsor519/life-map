@@ -80,18 +80,14 @@ const familyPhotoCss = `
   --shirt: #fb7185;
 }
 
-.family-photo-member.family-female::before {
-  z-index: 4;
-}
+/* Fixed: Removed the ::before z-index update that was burying the hair underneath the face skin */
 
 .family-photo-member.family-female .family-photo-hair {
-  top: calc(var(--person-size) * 0.03);
-  z-index: 3;
-  width: calc(var(--person-size) * 0.82);
-  height: calc(var(--person-size) * 0.84);
-  background:
-    radial-gradient(ellipse at 50% 10%, rgba(255, 255, 255, 0.14), transparent 34%),
-    var(--hair);
+  top: calc(var(--person-size) * 0.04);
+  z-index: 4; /* Raised to render cleanly over top of the face layer */
+  width: calc(var(--person-size) * 0.78);
+  height: calc(var(--person-size) * 0.9);
+  background: var(--hair);
   border-radius:
     calc(var(--person-size) * 0.42)
     calc(var(--person-size) * 0.42)
@@ -262,18 +258,24 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
 
   return (
     <div className="family-photo-strip" aria-label={`${members.length} family members`}>
-      {members.map((member) => (
-        <span
-          className={`family-photo-member family-${member.role} family-${member.sex}`}
-          key={member.id}
-          role="img"
-          aria-label={getMemberLabel(member)}
-          title={getMemberLabel(member)}
-        >
-          <span className="family-photo-hair" aria-hidden="true" />
-          <span className="family-photo-age" aria-hidden="true">{getMemberAgeBadge(member)}</span>
-        </span>
-      ))}
+      {members.map((member) => {
+        // Dynamic safeguarding: ensure raw data formats from API/state (e.g. "M"/"F") 
+        // are normalized into exact string keys expected by your CSS ("male"/"female")
+        const resolvedSex = normalizeCharacterSex(member.sex);
+
+        return (
+          <span
+            className={`family-photo-member family-${member.role} family-${resolvedSex}`}
+            key={member.id}
+            role="img"
+            aria-label={getMemberLabel(member)}
+            title={getMemberLabel(member)}
+          >
+            <span className="family-photo-hair" aria-hidden="true" />
+            <span className="family-photo-age" aria-hidden="true">{getMemberAgeBadge(member)}</span>
+          </span>
+        );
+      })}
     </div>
   );
 }

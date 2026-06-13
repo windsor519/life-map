@@ -317,9 +317,12 @@ export default function StartScreen({
         <div>
           <div className="brand-lockup startup-brand">
             <img src={`${import.meta.env.BASE_URL}life-map-logo.svg`} alt="" aria-hidden="true" />
-            <span>Life Map</span>
+            <span className="startup-brand-copy">
+              <span className="startup-brand-title">Life Map</span>
+              <span className="startup-brand-kicker">Seasonal life simulator</span>
+            </span>
           </div>
-          <p className="eyebrow">Life simulator</p>
+          <p className="seasonal-proverb">☀️ Summer proverb: SPF now, plot twists later.</p>
           <h1>Map a life that keeps moving.</h1>
           <p className="subtitle">Pick a starting point, add your household, and follow each season.</p>
           <div className="startup-highlights" aria-label="Game highlights">

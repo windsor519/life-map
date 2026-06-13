@@ -18,31 +18,32 @@ const familyPhotoCss = `
   --shirt: #38bdf8;
   position: relative;
   display: inline-grid;
-  width: 30px;
-  height: 30px;
+  --person-size: 50px;
+  width: var(--person-size);
+  height: var(--person-size);
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 999px;
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.34), transparent 12px),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.34), transparent calc(var(--person-size) * 0.4)),
     linear-gradient(180deg, rgba(224, 242, 254, 0.54), rgba(30, 41, 59, 0.28));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0.35rem 0.9rem rgba(2, 6, 23, 0.2);
 }
 
 .family-photo-member::before {
   position: absolute;
-  top: 5px;
+  top: calc(var(--person-size) * 0.17);
   left: 50%;
   z-index: 2;
-  width: 15px;
-  height: 15px;
+  width: calc(var(--person-size) * 0.5);
+  height: calc(var(--person-size) * 0.5);
   border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: 47% 47% 44% 44%;
   background:
-    radial-gradient(circle at 35% 48%, #3f1f12 0 1px, transparent 1.6px),
-    radial-gradient(circle at 65% 48%, #3f1f12 0 1px, transparent 1.6px),
-    radial-gradient(ellipse at 50% 72%, rgba(127, 29, 29, 0.62) 0 1.4px, transparent 1.8px),
+    radial-gradient(circle at 35% 48%, #3f1f12 0 calc(var(--person-size) * 0.033), transparent calc(var(--person-size) * 0.053)),
+    radial-gradient(circle at 65% 48%, #3f1f12 0 calc(var(--person-size) * 0.033), transparent calc(var(--person-size) * 0.053)),
+    radial-gradient(ellipse at 50% 72%, rgba(127, 29, 29, 0.62) 0 calc(var(--person-size) * 0.047), transparent calc(var(--person-size) * 0.06)),
     var(--skin);
   content: "";
   transform: translateX(-50%);
@@ -50,12 +51,12 @@ const familyPhotoCss = `
 
 .family-photo-member::after {
   position: absolute;
-  bottom: -4px;
+  bottom: calc(var(--person-size) * -0.13);
   left: 50%;
-  width: 24px;
-  height: 15px;
+  width: calc(var(--person-size) * 0.8);
+  height: calc(var(--person-size) * 0.5);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px 12px 4px 4px;
+  border-radius: calc(var(--person-size) * 0.4) calc(var(--person-size) * 0.4) calc(var(--person-size) * 0.13) calc(var(--person-size) * 0.13);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 45%), var(--shirt);
   content: "";
   transform: translateX(-50%);
@@ -63,11 +64,11 @@ const familyPhotoCss = `
 
 .family-photo-hair {
   position: absolute;
-  top: 3px;
+  top: calc(var(--person-size) * 0.1);
   left: 50%;
   z-index: 3;
-  width: 17px;
-  height: 8px;
+  width: calc(var(--person-size) * 0.57);
+  height: calc(var(--person-size) * 0.27);
   border-radius: 55% 55% 34% 34%;
   background: var(--hair);
   clip-path: polygon(3% 48%, 15% 10%, 46% 0, 80% 8%, 100% 40%, 86% 100%, 18% 88%);
@@ -80,10 +81,10 @@ const familyPhotoCss = `
 }
 
 .family-photo-member.family-female .family-photo-hair {
-  top: 3px;
-  width: 18px;
-  height: 17px;
-  border-radius: 9px 9px 7px 7px;
+  top: calc(var(--person-size) * 0.1);
+  width: calc(var(--person-size) * 0.6);
+  height: calc(var(--person-size) * 0.57);
+  border-radius: calc(var(--person-size) * 0.3) calc(var(--person-size) * 0.3) calc(var(--person-size) * 0.23) calc(var(--person-size) * 0.23);
   clip-path: polygon(10% 4%, 50% 0, 90% 6%, 100% 34%, 88% 100%, 13% 100%, 0 36%);
 }
 

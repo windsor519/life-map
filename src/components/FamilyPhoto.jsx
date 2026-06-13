@@ -85,12 +85,29 @@ const familyPhotoCss = `
 }
 
 .family-photo-member.family-female .family-photo-hair {
-  top: calc(var(--person-size) * 0.08);
+  top: calc(var(--person-size) * 0.04);
   z-index: 3;
-  width: calc(var(--person-size) * 0.68);
-  height: calc(var(--person-size) * 0.64);
-  border-radius: calc(var(--person-size) * 0.34) calc(var(--person-size) * 0.34) calc(var(--person-size) * 0.24) calc(var(--person-size) * 0.24);
-  clip-path: polygon(15% 4%, 50% 0, 85% 4%, 100% 32%, 88% 100%, 12% 100%, 0 32%);
+  width: calc(var(--person-size) * 0.78);
+  height: calc(var(--person-size) * 0.9);
+  background: var(--hair);
+  border-radius:
+    calc(var(--person-size) * 0.4)
+    calc(var(--person-size) * 0.4)
+    calc(var(--person-size) * 0.25)
+    calc(var(--person-size) * 0.25);
+  clip-path: polygon(
+    15% 0%,
+    50% 0%,
+    85% 0%,
+    100% 25%,
+    92% 100%,
+    75% 90%,
+    60% 100%,
+    40% 100%,
+    25% 90%,
+    8% 100%,
+    0% 25%
+  );
 }
 
 .family-photo-member.family-male {
@@ -106,6 +123,32 @@ const familyPhotoCss = `
 .family-photo-member.family-child {
   --skin: #f8d7bd;
   --shirt: #facc15;
+  --person-size: 52px;
+}
+
+.family-photo-member.family-child::before {
+  top: calc(var(--person-size) * 0.12);
+  width: calc(var(--person-size) * 0.58);
+  height: calc(var(--person-size) * 0.58);
+  border-radius: 50%;
+}
+
+.family-photo-member.family-child::after {
+  width: calc(var(--person-size) * 0.62);
+  height: calc(var(--person-size) * 0.38);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2),
+      transparent 40%
+    ),
+    #facc15;
+}
+
+.family-photo-member.family-child .family-photo-hair {
+  width: calc(var(--person-size) * 0.52);
+  height: calc(var(--person-size) * 0.22);
+  border-radius: 60% 60% 40% 40%;
 }
 
 .family-photo-member.family-grandparent,

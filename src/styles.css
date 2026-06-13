@@ -131,9 +131,8 @@ button {
 
 button:hover,
 button:focus-visible {
-  box-shadow: 0 22px 54px rgba(124, 58, 237, 0.44);
-  filter: saturate(1.15) brightness(1.06);
-  transform: translateY(-2px);
+  box-shadow: 0 18px 42px rgba(124, 58, 237, 0.32);
+  filter: none;
 }
 
 input,

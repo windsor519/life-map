@@ -1152,7 +1152,7 @@ export default function App() {
     }
 
     const playRelaxingButtonFeedback = (event) => {
-      const button = event.target?.closest?.("button");
+      const button = event.target?.closest?.("button[data-button-feedback='season-simulate']");
 
       if (!button || button.disabled || button.getAttribute("aria-disabled") === "true") {
         return;
@@ -2024,7 +2024,14 @@ export default function App() {
             })}
           </section>
         </div>
-        <button className="next-turn-button" onClick={handleSimulateSeason} disabled={isSimulationLocked}>▶ Simulate Season</button>
+        <button
+          className="next-turn-button"
+          data-button-feedback="season-simulate"
+          onClick={handleSimulateSeason}
+          disabled={isSimulationLocked}
+        >
+          ▶ Simulate Season
+        </button>
       </section>
 
       <div className="game-layout">

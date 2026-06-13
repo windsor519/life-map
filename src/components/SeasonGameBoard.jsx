@@ -203,6 +203,7 @@ export default function SeasonGameBoard({
             const cardDecisions = isActive ? seasonDecisions : [];
             const previousSelections = getPreviousSelections({ historyKey, offset, season });
             const seasonScore = seasonScores?.[historyKey];
+            const futureSeasonDistance = Math.abs(offset);
 
             return (
               <article
@@ -294,10 +295,17 @@ export default function SeasonGameBoard({
                           );
                         })}
                       </div>
+                    ) : isFuture ? (
+                      <div className="season-preview future-season-preview" aria-label={`${season.label} ${seasonYear} is a future season`}>
+                        <span className="future-season-lock" aria-hidden="true">🔒</span>
+                        <strong>Future season — not playable yet</strong>
+                        <span>{futureSeasonDistance} season{futureSeasonDistance === 1 ? "" : "s"} ahead · {seasonMonthNames} {seasonYear}</span>
+                        <small>Finish the current season to unlock this plan. Decisions will appear when this season becomes current.</small>
+                      </div>
                     ) : (
                       <div className="season-preview">
                         <strong>{season.months.length} month arc</strong>
-                        <span>{isFuture ? `${Math.abs(offset)} season${Math.abs(offset) === 1 ? "" : "s"} ahead` : `No selections saved for ${seasonYear}`}</span>
+                        <span>{`No selections saved for ${seasonYear}`}</span>
                       </div>
                     )}
                   </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const formatDelta = (value = 0) => `${value > 0 ? "+" : ""}${value}`;
 
@@ -24,38 +24,76 @@ export default function SeasonGameBoard({
   const seasonPanelRefs = useRef([]);
   const seasonSwipeStartXRef = useRef(null);
   const activeSeasonIndex = Math.max(0, seasonConfig.findIndex((season) => season.id === activeSeason.id));
-  const visibleSeasonOffsets = Array.from({ length: 11 }, (_, index) => index - 7);
-  const seasonTimeline = visibleSeasonOffsets.map((offset) => {
+  const hasYearHistory = Object.keys(seasonHistory ?? {}).some((key) => /^\d{4}-/.test(key));
+  const getTimelineItem = (offset) => {
     const absoluteIndex = activeSeasonIndex + offset;
     const seasonIndex = ((absoluteIndex % seasonConfig.length) + seasonConfig.length) % seasonConfig.length;
     const yearOffset = Math.floor(absoluteIndex / seasonConfig.length);
+    const season = seasonConfig[seasonIndex];
+    const seasonYear = year + yearOffset;
+    const historyKey = `${seasonYear}-${season.id}`;
 
     return {
       offset,
-      season: seasonConfig[seasonIndex],
+      season,
       seasonIndex,
-      year: year + yearOffset
+      year: seasonYear,
+      historyKey
     };
-  });
+  };
+  const getPreviousSelections = ({ historyKey, offset, season }) =>
+    seasonHistory[historyKey] ?? (!hasYearHistory && offset < 0 ? seasonHistory[season.id] ?? [] : []);
+  const pastSeasonTimeline = Array.from({ length: 7 }, (_, index) => getTimelineItem(index - 7))
+    .filter((item) => getPreviousSelections(item).length > 0);
+  const futureSeasonTimeline = Array.from({ length: 3 }, (_, index) => getTimelineItem(index + 1));
+  const seasonTimeline = [
+    ...pastSeasonTimeline,
+    getTimelineItem(0),
+    ...futureSeasonTimeline
+  ];
   const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0);
-  const hasYearHistory = Object.keys(seasonHistory ?? {}).some((key) => /^\d{4}-/.test(key));
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
   const statEntries = Object.entries(statConfig ?? {});
 
-  const goToSeasonCard = useCallback((index) => {
+  const scrollToSeasonCard = useCallback((index, behavior = "smooth") => {
+    const carousel = seasonCarouselRef.current;
+    const panel = seasonPanelRefs.current[index];
+
+    if (!carousel || !panel) {
+      return;
+    }
+
+    const preferStartAlignment = typeof window !== "undefined"
+      && window.matchMedia("(max-width: 1120px)").matches;
+    const centeredLeft = panel.offsetLeft - carousel.offsetLeft - ((carousel.clientWidth - panel.clientWidth) / 2);
+    const startLeft = panel.offsetLeft - carousel.offsetLeft;
+    const targetLeft = preferStartAlignment ? startLeft : centeredLeft;
+    const maxLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+
+    carousel.scrollTo({
+      left: Math.max(0, Math.min(targetLeft, maxLeft)),
+      behavior
+    });
+  }, []);
+
+  const goToSeasonCard = useCallback((index, behavior = "smooth") => {
     const nextIndex = Math.max(0, Math.min(index, seasonTimeline.length - 1));
     viewedSeasonIndexRef.current = nextIndex;
     setViewedSeasonIndex(nextIndex);
-    seasonPanelRefs.current[nextIndex]?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center"
-    });
-  }, [seasonTimeline.length]);
+    scrollToSeasonCard(nextIndex, behavior);
+  }, [scrollToSeasonCard, seasonTimeline.length]);
+
+  useLayoutEffect(() => {
+    goToSeasonCard(activeTimelineIndex, "auto");
+  }, [activeTimelineIndex, goToSeasonCard]);
 
   useEffect(() => {
-    goToSeasonCard(activeTimelineIndex);
+    const frameId = window.requestAnimationFrame(() => {
+      goToSeasonCard(activeTimelineIndex, "auto");
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, [activeTimelineIndex, goToSeasonCard]);
 
   const handleSeasonCarouselScroll = () => {
@@ -150,14 +188,13 @@ export default function SeasonGameBoard({
           onTouchEnd={handleSeasonSwipeEnd}
           ref={seasonCarouselRef}
         >
-          {seasonTimeline.map(({ season, offset, year: seasonYear }, timelineIndex) => {
+          {seasonTimeline.map(({ season, offset, year: seasonYear, historyKey }, timelineIndex) => {
             const isActive = offset === 0;
             const isPast = offset < 0;
             const isFuture = offset > 0;
             const seasonMonthNames = getSeasonMonthNames(season);
             const cardDecisions = isActive ? seasonDecisions : [];
-            const historyKey = `${seasonYear}-${season.id}`;
-            const previousSelections = seasonHistory[historyKey] ?? (!hasYearHistory && isPast ? seasonHistory[season.id] ?? [] : []);
+            const previousSelections = getPreviousSelections({ historyKey, offset, season });
             const seasonScore = seasonScores?.[historyKey];
 
             return (
@@ -237,14 +274,21 @@ export default function SeasonGameBoard({
                     ) : null}
                     {previousSelections.length > 0 ? (
                       <div className="season-history" aria-label={`${season.label} ${seasonYear} selected choices`}>
-                        <strong>{seasonYear} selections</strong>
-                        {previousSelections.slice(0, 4).map((selection) => (
-                          <div className="season-history-item" key={selection.id}>
-                            <span>{selection.dayName}</span>
-                            <em>{selection.eventTitle}</em>
-                            <strong>{selection.label}</strong>
-                          </div>
-                        ))}
+                        <strong>{seasonYear} decisions</strong>
+                        {previousSelections.slice(0, 4).map((selection) => {
+                          const source = selection.source ?? "Selected";
+
+                          return (
+                            <div className="season-history-item" key={selection.id}>
+                              <span>
+                                {selection.dayName}
+                                <small className={`season-history-source source-${source.toLowerCase()}`}>{source}</small>
+                              </span>
+                              <em>{selection.eventTitle}</em>
+                              <strong>{selection.label}</strong>
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="season-preview">

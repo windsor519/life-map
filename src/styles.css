@@ -1462,11 +1462,34 @@ textarea:focus {
 }
 
 .season-history-item span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   color: #93c5fd;
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.season-history-source {
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.16);
+  color: #dbeafe;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  padding: 0.12rem 0.38rem;
+}
+
+.season-history-source.source-auto {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fde68a;
+}
+
+.season-history-source.source-unexpected {
+  background: rgba(251, 113, 133, 0.18);
+  color: #fecdd3;
 }
 
 .season-history-item em {

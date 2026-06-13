@@ -2798,7 +2798,7 @@ textarea:focus {
 }
 
 .starting-stat-heading {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;

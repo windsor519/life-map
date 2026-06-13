@@ -1970,13 +1970,6 @@ export default function App() {
       <header className="topbar">
         <div>
           <h1><span className="brand-lockup"><img src={`${import.meta.env.BASE_URL}life-map-logo.svg`} alt="" aria-hidden="true" /><span>Life Map</span></span></h1>
-          <div className="active-character">
-            <span>👨‍👩‍👧‍👦</span>
-            <div>
-              <strong>Your family</strong>
-              <small>{getFamilySummary(game.family, { includeAges: false })}</small>
-            </div>
-          </div>
         </div>
         <div className="topbar-actions">
           <button className="secondary music-toggle" aria-label={musicPlaying ? "Music playing" : "Music paused"} onClick={() => setSettingsOpen(true)}>

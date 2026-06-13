@@ -3672,6 +3672,10 @@ textarea:focus {
   min-width: 0;
 }
 
+.brand-lockup h1 {
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+}
+
 .brand-lockup img {
   width: clamp(2.4rem, 5vw, 3.7rem);
   height: clamp(2.4rem, 5vw, 3.7rem);

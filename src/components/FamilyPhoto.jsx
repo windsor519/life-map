@@ -193,7 +193,7 @@ const familyPhotoCss = `
   border-radius: 60% 60% 40% 40%;
 }
 
-.family-photo-member.family-child.family-female .family-photo-hair {
+.family-photo-member.family-child.family-female .family-photo-back-hair {
   top: calc(var(--person-size) * 0.03);
   width: calc(var(--person-size) * 0.82);
   height: calc(var(--person-size) * 0.84);
@@ -202,6 +202,26 @@ const familyPhotoCss = `
     calc(var(--person-size) * 0.42)
     calc(var(--person-size) * 0.26)
     calc(var(--person-size) * 0.26);
+}
+
+.family-photo-member.family-child.family-female .family-photo-hair {
+  top: calc(var(--person-size) * 0.06);
+  width: calc(var(--person-size) * 0.6);
+  height: calc(var(--person-size) * 0.24);
+  border-radius: 64% 64% 46% 46%;
+  clip-path: polygon(
+    0% 52%,
+    16% 12%,
+    38% 0%,
+    62% 0%,
+    84% 12%,
+    100% 52%,
+    82% 92%,
+    62% 62%,
+    50% 100%,
+    38% 62%,
+    18% 92%
+  );
 }
 
 .family-photo-member.family-grandparent,

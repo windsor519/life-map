@@ -25,5 +25,878 @@
     "summary": "Your family may ask you to balance work momentum, long-term money choices, and care for more than one generation.",
     "expect": "Boundaries and planned rest will be as strategic as ambition.",
     "focus": "Spend attention like a limited resource: deliberately, visibly, and before burnout invoices arrive."
+  },
+  {
+    "id": "routine-compounds-4",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Routine compounds 4",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-5",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Friendship season 5",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-6",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Growth edge 6",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-7",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Attention budget 7",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-8",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Identity shift 8",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-9",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Family rhythm 9",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-10",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "The long view 10",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-11",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Quiet investments 11",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-12",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Every season teaches 12",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-13",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Gratitude anchor 13",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-14",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Routine compounds 14",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-15",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Friendship season 15",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-16",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Growth edge 16",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-17",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Attention budget 17",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-18",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Identity shift 18",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-19",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Family rhythm 19",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-20",
+    "minAge": 50,
+    "maxAge": 59,
+    "title": "The long view 20",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-21",
+    "minAge": 60,
+    "maxAge": 69,
+    "title": "Quiet investments 21",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-22",
+    "minAge": 70,
+    "maxAge": 80,
+    "title": "Every season teaches 22",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-23",
+    "minAge": 81,
+    "maxAge": 95,
+    "title": "Gratitude anchor 23",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-24",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Routine compounds 24",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-25",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Friendship season 25",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-26",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Growth edge 26",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-27",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Attention budget 27",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-28",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Identity shift 28",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-29",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Family rhythm 29",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-30",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "The long view 30",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-31",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Quiet investments 31",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-32",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Every season teaches 32",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-33",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Gratitude anchor 33",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-34",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Routine compounds 34",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-35",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Friendship season 35",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-36",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Growth edge 36",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-37",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Attention budget 37",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-38",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Identity shift 38",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-39",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Family rhythm 39",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-40",
+    "minAge": 50,
+    "maxAge": 59,
+    "title": "The long view 40",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-41",
+    "minAge": 60,
+    "maxAge": 69,
+    "title": "Quiet investments 41",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-42",
+    "minAge": 70,
+    "maxAge": 80,
+    "title": "Every season teaches 42",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-43",
+    "minAge": 81,
+    "maxAge": 95,
+    "title": "Gratitude anchor 43",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-44",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Routine compounds 44",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-45",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Friendship season 45",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-46",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Growth edge 46",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-47",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Attention budget 47",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-48",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Identity shift 48",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-49",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Family rhythm 49",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-50",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "The long view 50",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-51",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Quiet investments 51",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-52",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Every season teaches 52",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-53",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Gratitude anchor 53",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-54",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Routine compounds 54",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-55",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Friendship season 55",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-56",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Growth edge 56",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-57",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Attention budget 57",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-58",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Identity shift 58",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-59",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Family rhythm 59",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-60",
+    "minAge": 50,
+    "maxAge": 59,
+    "title": "The long view 60",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-61",
+    "minAge": 60,
+    "maxAge": 69,
+    "title": "Quiet investments 61",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-62",
+    "minAge": 70,
+    "maxAge": 80,
+    "title": "Every season teaches 62",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-63",
+    "minAge": 81,
+    "maxAge": 95,
+    "title": "Gratitude anchor 63",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-64",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Routine compounds 64",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-65",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Friendship season 65",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-66",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Growth edge 66",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-67",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Attention budget 67",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-68",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Identity shift 68",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-69",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Family rhythm 69",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-70",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "The long view 70",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-71",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Quiet investments 71",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-72",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Every season teaches 72",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-73",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Gratitude anchor 73",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-74",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Routine compounds 74",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-75",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Friendship season 75",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-76",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Growth edge 76",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-77",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Attention budget 77",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-78",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Identity shift 78",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-79",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Family rhythm 79",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-80",
+    "minAge": 50,
+    "maxAge": 59,
+    "title": "The long view 80",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-81",
+    "minAge": 60,
+    "maxAge": 69,
+    "title": "Quiet investments 81",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-82",
+    "minAge": 70,
+    "maxAge": 80,
+    "title": "Every season teaches 82",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-83",
+    "minAge": 81,
+    "maxAge": 95,
+    "title": "Gratitude anchor 83",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-84",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Routine compounds 84",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-85",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Friendship season 85",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-86",
+    "minAge": 0,
+    "maxAge": 5,
+    "title": "Growth edge 86",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-87",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Attention budget 87",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-88",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Identity shift 88",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-89",
+    "minAge": 6,
+    "maxAge": 12,
+    "title": "Family rhythm 89",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-90",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "The long view 90",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
+  },
+  {
+    "id": "quiet-investments-91",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Quiet investments 91",
+    "summary": "The most important investments are often invisible at first.",
+    "expect": "Small efforts may take years to show results.",
+    "focus": "Keep showing up consistently."
+  },
+  {
+    "id": "seasonal-wisdom-92",
+    "minAge": 13,
+    "maxAge": 18,
+    "title": "Every season teaches 92",
+    "summary": "Each stage of life solves one problem and introduces another.",
+    "expect": "No season stays forever.",
+    "focus": "Learn what this one is trying to teach."
+  },
+  {
+    "id": "gratitude-anchor-93",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Gratitude anchor 93",
+    "summary": "Gratitude rarely changes circumstances but often changes perspective.",
+    "expect": "There will always be reasons for concern.",
+    "focus": "Practice noticing what is already good."
+  },
+  {
+    "id": "routine-compounds-94",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Routine compounds 94",
+    "summary": "Ordinary habits quietly shape extraordinary outcomes.",
+    "expect": "Consistency will usually outperform intensity.",
+    "focus": "Build systems that work on tired days."
+  },
+  {
+    "id": "friendship-season-95",
+    "minAge": 19,
+    "maxAge": 29,
+    "title": "Friendship season 95",
+    "summary": "Relationships often become the invisible support structure of life.",
+    "expect": "Some friendships will deepen while others fade.",
+    "focus": "Invest in people before you need them."
+  },
+  {
+    "id": "growth-edge-96",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Growth edge 96",
+    "summary": "The next stage often feels awkward before it feels rewarding.",
+    "expect": "Progress may be difficult to recognize while it is happening.",
+    "focus": "Stay curious longer than is comfortable."
+  },
+  {
+    "id": "attention-budget-97",
+    "minAge": 30,
+    "maxAge": 39,
+    "title": "Attention budget 97",
+    "summary": "Time is limited, but attention is usually the scarcer resource.",
+    "expect": "Competing priorities will all feel urgent.",
+    "focus": "Choose what deserves your best energy."
+  },
+  {
+    "id": "identity-shift-98",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Identity shift 98",
+    "summary": "Life changes often require a new understanding of yourself.",
+    "expect": "Old strengths may not solve new challenges.",
+    "focus": "Adapt before frustration hardens."
+  },
+  {
+    "id": "family-rhythm-99",
+    "minAge": 40,
+    "maxAge": 49,
+    "title": "Family rhythm 99",
+    "summary": "Families rarely thrive by accident.",
+    "expect": "The healthiest seasons often have intentional rhythms.",
+    "focus": "Protect what regularly brings people together."
+  },
+  {
+    "id": "long-view-100",
+    "minAge": 50,
+    "maxAge": 59,
+    "title": "The long view 100",
+    "summary": "Many worries shrink when measured in years instead of days.",
+    "expect": "Short-term discomfort may create long-term strength.",
+    "focus": "Think beyond the current moment."
   }
 ]

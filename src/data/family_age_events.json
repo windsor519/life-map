@@ -16,9 +16,6 @@
     "familyAgeGroups": [
       {
         "label": "Toddler in the family",
-        "roles": [
-          "child"
-        ],
         "minAge": 1,
         "maxAge": 3
       }
@@ -70,9 +67,6 @@
     "familyAgeGroups": [
       {
         "label": "Driving-age teen in the family",
-        "roles": [
-          "child"
-        ],
         "minAge": 15,
         "maxAge": 17
       }

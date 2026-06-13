@@ -564,12 +564,7 @@ const matchesFamilyAgeRequirement = (member, requirement) => {
 
   const minAge = Number(requirement?.minAge ?? requirement?.min);
   const maxAge = Number(requirement?.maxAge ?? requirement?.max);
-  const roles = Array.isArray(requirement?.roles) ? requirement.roles : [];
   const sexes = Array.isArray(requirement?.sexes) ? requirement.sexes : [];
-
-  if (roles.length > 0 && !roles.includes(member.role)) {
-    return false;
-  }
 
   if (sexes.length > 0 && !sexes.includes(member.sex)) {
     return false;

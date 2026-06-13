@@ -1699,6 +1699,7 @@ textarea:focus {
     linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
   box-shadow: 0 34px 90px rgba(0, 0, 0, 0.54);
   padding: clamp(1rem, 3vw, 1.4rem);
+  touch-action: pan-y;
 }
 
 .decision-modal-header {
@@ -1706,6 +1707,40 @@ textarea:focus {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.decision-modal-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.decision-modal-nav {
+  display: grid;
+  width: 2.45rem;
+  height: 2.45rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  color: #e5edff;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.decision-modal-nav:hover:not(:disabled),
+.decision-modal-nav:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.22);
+  filter: none;
+}
+
+.decision-modal-nav:disabled {
+  cursor: not-allowed;
+  opacity: 0.36;
 }
 
 .decision-modal h2 {

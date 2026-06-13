@@ -216,7 +216,7 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, wis
     let startedAt;
     let particles = [];
     let flora = [];
-    const duration = 4600;
+    const duration = 3600;
     const sourcePalette = previousSeasonId ? previousAnimation.palette : winterPalette;
 
     const resize = () => {
@@ -271,20 +271,10 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, wis
             </div>
             <p className="season-transition-wisdom-context">{wisdom.context}</p>
             <p>{wisdom.summary}</p>
-            <p>{wisdom.ageSummary}</p>
-            <div className="season-transition-wisdom-grid">
-              <span><strong>{wisdom.ageRangeLabel}</strong><small>{wisdom.ageTitle}</small></span>
-              <span><strong>{wisdom.statValue}</strong><small>{wisdom.statLabel} · {wisdom.statDeltaLabel}</small></span>
-            </div>
-            <div className="season-transition-wisdom-note">
-              <span>Expect</span>
-              <strong>{wisdom.expect}</strong>
-            </div>
-            <small>{wisdom.focus}</small>
           </section>
         ) : null}
-        <p className="season-transition-next-copy">Read the family wisdom, then press Next to continue.</p>
-        <button className="secondary" type="button" onClick={onComplete}>{animationDone ? "Next" : "Skip to wisdom / Next"}</button>
+        <p className="season-transition-next-copy">Start the next chapter when you are ready.</p>
+        <button className="secondary" type="button" onClick={onComplete}>{animationDone ? "Begin new season" : "Skip to new season"}</button>
       </div>
     </div>
   );

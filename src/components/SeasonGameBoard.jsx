@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-const formatDelta = (value = 0) => `${value > 0 ? "+" : ""}${value}`;
-
 export default function SeasonGameBoard({
   activeSeason,
   completedDecisions,
@@ -258,14 +256,11 @@ export default function SeasonGameBoard({
                         <div>
                           {statEntries.map(([key, config]) => {
                             const score = seasonScore.stats?.[key] ?? 0;
-                            const delta = seasonScore.deltas?.[key] ?? 0;
 
                             return (
-                              <span className="season-score-pill" key={key} style={{ "--stat-accent": config.accent }}>
+                              <span className="season-score-pill" key={key} style={{ "--stat-accent": config.accent }} title={`${config.label}: ${score}`}>
                                 <span aria-hidden="true">{config.icon}</span>
-                                <small>{config.label}</small>
                                 <strong>{score}</strong>
-                                <em className={delta >= 0 ? "positive" : "negative"}>{formatDelta(delta)}</em>
                               </span>
                             );
                           })}

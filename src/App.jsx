@@ -1685,7 +1685,7 @@ export default function App() {
         ...prevSimulationState,
         phase: "summary"
       }));
-    }, 1200);
+    }, 800);
 
     return () => window.clearTimeout(timer);
   }, [simulationState]);
@@ -1865,7 +1865,6 @@ export default function App() {
       ) : null}
       <header className="topbar">
         <div>
-          <p className="eyebrow">{activeSeason.label} · {getSeasonMonthNames(activeSeason)} · Age {game.age}</p>
           <h1><span className="brand-lockup"><img src={`${import.meta.env.BASE_URL}life-map-logo.svg`} alt="" aria-hidden="true" /><span>Life Map</span></span></h1>
           <div className="active-character">
             <span>👨‍👩‍👧‍👦</span>

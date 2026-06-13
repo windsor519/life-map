@@ -89,6 +89,7 @@ const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month)
     dayName: selection.dayName,
     eventTitle: selection.eventTitle,
     label: selection.label,
+    source: selection.source ?? selection.choiceSource ?? "Selected",
     effects: sanitizeEffects(selection.effects)
   }));
 };
@@ -1449,7 +1450,8 @@ export default function App() {
           label: choice.label,
           effects: modifiedEffects,
           originalEffects: choice.effects,
-          memory: choice.memory
+          memory: choice.memory,
+          source: "Selected"
         }
       };
       const completedDecisions = Object.keys(selectedChoices);
@@ -1524,6 +1526,7 @@ export default function App() {
     const schedule = getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game);
     let nextState = game;
     const steps = [];
+    const resolvedSeasonChoices = {};
     const simulatedMemories = [];
 
     schedule.forEach((day, dayIndex) => {
@@ -1533,6 +1536,12 @@ export default function App() {
         const selectedChoice = game.selectedChoices?.[decision.key];
 
         if (selectedChoice) {
+          resolvedSeasonChoices[decision.key] = {
+            ...selectedChoice,
+            dayName: selectedChoice.dayName ?? day.dayLabel,
+            eventTitle: selectedChoice.eventTitle ?? decision.title,
+            source: "Selected"
+          };
           steps.push({
             key: `${decision.key}-selected`,
             dayLabel: day.dayLabel,
@@ -1549,6 +1558,15 @@ export default function App() {
         const choice = getRandomChoice(game.eventSeed, day.month, dayIndex, decisionIndex, decision.choices);
         const modifiedEffects = resolveChoiceEffects(nextState, choice.effects, game.legacy?.difficulty ?? 1);
         nextState = applyEffects(nextState, modifiedEffects);
+        resolvedSeasonChoices[decision.key] = {
+          dayName: day.dayLabel,
+          eventTitle: decision.title,
+          label: choice.label,
+          effects: modifiedEffects,
+          originalEffects: choice.effects,
+          memory: choice.memory,
+          source: "Auto"
+        };
         steps.push({
           key: `${decision.key}-random`,
           dayLabel: day.dayLabel,
@@ -1573,6 +1591,14 @@ export default function App() {
     if (unexpectedEvent) {
       const modifiedEffects = resolveChoiceEffects(nextState, unexpectedEvent.effects, game.legacy?.difficulty ?? 1);
       nextState = applyEffects(nextState, modifiedEffects);
+      resolvedSeasonChoices[`unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`] = {
+        dayName: "Surprise",
+        eventTitle: unexpectedEvent.title,
+        label: "Life happens",
+        effects: modifiedEffects,
+        memory: unexpectedEvent.memory,
+        source: "Unexpected"
+      };
       unexpectedStep = {
         key: `unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`,
         dayLabel: "Surprise",
@@ -1602,10 +1628,14 @@ export default function App() {
     }
 
     const nextSeasonState = getNextSeasonState(game.month, game.age, game.year);
+    const seasonHistoryState = {
+      ...nextState,
+      selectedChoices: resolvedSeasonChoices
+    };
     const advancedGameBase = {
       ...nextState,
       ...nextSeasonState,
-      seasonHistory: updateSeasonHistory(nextState),
+      seasonHistory: updateSeasonHistory(seasonHistoryState),
       seasonScores: updateSeasonScores(game, nextState),
       completedDecisions: [],
       selectedChoices: {},

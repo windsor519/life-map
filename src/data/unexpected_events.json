@@ -661,5 +661,604 @@
       "op": "gte",
       "value": 50
     }
+  },
+  {
+    "id": "marriage-counseling-breakthrough",
+    "title": "Counseling Breakthrough",
+    "severity": "moderate",
+    "category": "Relationship recovery",
+    "icon": "🛋️",
+    "accent": "rose",
+    "description": "A difficult counseling session finally turns honest, and both of you leave with something real to work on.",
+    "effects": {
+      "wellbeing": 6,
+      "marriage": 9
+    },
+    "memory": "A counseling breakthrough gave the marriage a path forward when things felt stuck.",
+    "condition": {
+      "stat": "marriage",
+      "op": "lte",
+      "value": 45
+    }
+  },
+  {
+    "id": "spouse-forgets-important-date",
+    "title": "Forgotten Anniversary",
+    "severity": "minor",
+    "category": "Relationship strain",
+    "icon": "📅",
+    "accent": "blue",
+    "description": "An important date passes almost unnoticed, and the hurt is quieter than an argument but still lands hard.",
+    "effects": {
+      "wellbeing": -4,
+      "marriage": -7
+    },
+    "memory": "A forgotten anniversary reopened old feelings of being overlooked.",
+    "condition": {
+      "stat": "marriage",
+      "op": "lte",
+      "value": 60
+    }
+  },
+  {
+    "id": "romantic-weekend-away",
+    "title": "Romantic Getaway",
+    "severity": "minor",
+    "category": "Relationship joy",
+    "icon": "🏨",
+    "accent": "rose",
+    "description": "You manage to get away for a weekend, and the space from daily routines helps you remember each other again.",
+    "effects": {
+      "wellbeing": 7,
+      "marriage": 10,
+      "wallet": -3
+    },
+    "memory": "A weekend away brought laughter, rest, and a fresh spark back into the relationship.",
+    "condition": {
+      "stat": "marriage",
+      "op": "gte",
+      "value": 65
+    }
+  },
+  {
+    "id": "child-bad-report-card",
+    "title": "Bad Report Card",
+    "severity": "moderate",
+    "category": "Parenting disruption",
+    "icon": "📉",
+    "accent": "amber",
+    "description": "Grades come home worse than expected, forcing uncomfortable conversations about school, effort, and support.",
+    "effects": {
+      "wellbeing": -4,
+      "children": -7,
+      "marriage": -2
+    },
+    "memory": "A rough report card made it clear your child needed more help than anyone realized.",
+    "condition": {
+      "stat": "children",
+      "op": "lte",
+      "value": 55
+    }
+  },
+  {
+    "id": "child-makes-honor-roll",
+    "title": "Honor Roll Achievement",
+    "severity": "minor",
+    "category": "Parenting joy",
+    "icon": "🎓",
+    "accent": "green",
+    "description": "Your child makes the honor roll after a season of steady effort, and the pride hits everyone at once.",
+    "effects": {
+      "wellbeing": 5,
+      "children": 9,
+      "marriage": 3
+    },
+    "memory": "Your child made the honor roll and reminded the family what persistence can do.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 65
+    }
+  },
+  {
+    "id": "family-argument",
+    "title": "Family Argument Escalates",
+    "severity": "moderate",
+    "category": "Family strain",
+    "icon": "🗯️",
+    "accent": "rose",
+    "description": "A small disagreement turns into a full household argument, leaving everyone tense afterward.",
+    "effects": {
+      "wellbeing": -6,
+      "children": -6,
+      "marriage": -4
+    },
+    "memory": "A family argument escalated and left the house feeling brittle for days.",
+    "condition": {
+      "stat": "children",
+      "op": "lte",
+      "value": 50
+    }
+  },
+  {
+    "id": "college-scholarship",
+    "title": "Scholarship Awarded",
+    "severity": "moderate",
+    "category": "Parenting win",
+    "icon": "🏅",
+    "accent": "green",
+    "description": "A scholarship offer arrives and turns a future expense into a shared celebration.",
+    "effects": {
+      "wallet": 8,
+      "wellbeing": 7,
+      "children": 10,
+      "marriage": 4
+    },
+    "memory": "A scholarship award brought pride, relief, and a glimpse of a brighter future.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 75
+    }
+  },
+  {
+    "id": "mental-health-day",
+    "title": "Mental Health Reset",
+    "severity": "minor",
+    "category": "Health recovery",
+    "icon": "🌿",
+    "accent": "green",
+    "description": "You finally cancel what can be canceled and take a day to breathe before things get worse.",
+    "effects": {
+      "wellbeing": 8,
+      "marriage": 2
+    },
+    "memory": "A mental health day helped you catch your breath before burnout took over completely.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "lte",
+      "value": 40
+    }
+  },
+  {
+    "id": "panic-attack",
+    "title": "Anxiety Episode",
+    "severity": "major",
+    "category": "Health disruption",
+    "icon": "🫨",
+    "accent": "violet",
+    "description": "Stress crests into a frightening anxiety episode that forces everyone to take your limits seriously.",
+    "effects": {
+      "wellbeing": -10,
+      "marriage": -3,
+      "wallet": -2
+    },
+    "memory": "An anxiety episode made it impossible to ignore how much pressure had been building.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "lte",
+      "value": 30
+    }
+  },
+  {
+    "id": "fitness-breakthrough",
+    "title": "Fitness Milestone",
+    "severity": "minor",
+    "category": "Health win",
+    "icon": "🏃",
+    "accent": "green",
+    "description": "A routine you've been sticking with suddenly pays off, and you feel stronger than you have in years.",
+    "effects": {
+      "wellbeing": 8,
+      "marriage": 2
+    },
+    "memory": "A fitness milestone gave you confidence and energy that spilled into the rest of life.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "gte",
+      "value": 70
+    }
+  },
+  {
+    "id": "vacation-recharges",
+    "title": "Refreshing Vacation",
+    "severity": "minor",
+    "category": "Family joy",
+    "icon": "🌴",
+    "accent": "blue",
+    "description": "A short vacation does what you hoped: resets nerves, softens tempers, and gives everyone better memories.",
+    "effects": {
+      "wellbeing": 9,
+      "marriage": 5,
+      "children": 5,
+      "wallet": -4
+    },
+    "memory": "A vacation recharged the family at exactly the moment everyone needed a reset.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "lte",
+      "value": 60
+    }
+  },
+  {
+    "id": "chronic-stress",
+    "title": "Stress Accumulates",
+    "severity": "moderate",
+    "category": "Health disruption",
+    "icon": "🧱",
+    "accent": "amber",
+    "description": "No single crisis causes it, but the constant pressure starts showing up in sleep, patience, and mood.",
+    "effects": {
+      "wellbeing": -8,
+      "marriage": -3,
+      "children": -2
+    },
+    "memory": "Chronic stress built quietly until it started shaping the whole household.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "lte",
+      "value": 50
+    }
+  },
+  {
+    "id": "investment-pays-off",
+    "title": "Investment Pays Off",
+    "severity": "moderate",
+    "category": "Financial win",
+    "icon": "📊",
+    "accent": "green",
+    "description": "A decision you made months ago finally pays off and gives the budget a welcome lift.",
+    "effects": {
+      "wallet": 9,
+      "wellbeing": 5,
+      "marriage": 2
+    },
+    "memory": "An investment paid off and made you feel more secure about the future.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 60
+    }
+  },
+  {
+    "id": "investment-loss",
+    "title": "Investment Drops",
+    "severity": "moderate",
+    "category": "Financial shock",
+    "icon": "📉",
+    "accent": "rose",
+    "description": "An investment dips at the worst possible time, and the paper loss still feels painfully real.",
+    "effects": {
+      "wallet": -7,
+      "wellbeing": -5,
+      "marriage": -2
+    },
+    "memory": "A sudden investment drop shook your confidence and tightened the financial mood.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 40
+    }
+  },
+  {
+    "id": "credit-card-maxed",
+    "title": "Credit Limit Reached",
+    "severity": "major",
+    "category": "Financial shock",
+    "icon": "💳",
+    "accent": "rose",
+    "description": "A necessary purchase gets declined, revealing just how thin the financial margin has become.",
+    "effects": {
+      "wallet": -8,
+      "wellbeing": -7,
+      "marriage": -4
+    },
+    "memory": "Hitting the credit limit made the financial strain impossible to avoid.",
+    "condition": {
+      "stat": "wallet",
+      "op": "lte",
+      "value": 25
+    }
+  },
+  {
+    "id": "emergency-fund-complete",
+    "title": "Emergency Fund Complete",
+    "severity": "moderate",
+    "category": "Financial win",
+    "icon": "🏦",
+    "accent": "green",
+    "description": "The emergency fund finally reaches its goal, changing the way every surprise expense feels.",
+    "effects": {
+      "wallet": 6,
+      "wellbeing": 8,
+      "marriage": 4
+    },
+    "memory": "Completing the emergency fund brought a steadier kind of peace to the household.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 75
+    }
+  },
+  {
+    "id": "home-renovation",
+    "title": "Renovation Opportunity",
+    "severity": "minor",
+    "category": "Home improvement",
+    "icon": "🛠️",
+    "accent": "teal",
+    "description": "You finally have enough room in the budget to improve a part of the house everyone uses.",
+    "effects": {
+      "wallet": -5,
+      "wellbeing": 6,
+      "marriage": 4,
+      "children": 3
+    },
+    "memory": "A long-awaited home improvement made daily life feel a little easier and brighter.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 70
+    }
+  },
+  {
+    "id": "utility-bill-spike",
+    "title": "Massive Utility Bill",
+    "severity": "minor",
+    "category": "Financial disruption",
+    "icon": "⚡",
+    "accent": "amber",
+    "description": "A utility bill arrives far higher than expected, and nobody can quite explain where the usage came from.",
+    "effects": {
+      "wallet": -5,
+      "wellbeing": -3,
+      "marriage": -1
+    },
+    "memory": "A massive utility bill added one more frustrating squeeze to the budget.",
+    "condition": {
+      "stat": "wallet",
+      "op": "lte",
+      "value": 40
+    }
+  },
+  {
+    "id": "midlife-reflection",
+    "title": "Life Reassessment",
+    "severity": "minor",
+    "category": "Personal growth",
+    "icon": "🧭",
+    "accent": "violet",
+    "description": "A quiet moment turns into a bigger reflection on what you want the next chapter to look like.",
+    "effects": {
+      "wellbeing": 5,
+      "marriage": 2
+    },
+    "memory": "A season of reflection helped you name what mattered and what needed to change.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "gte",
+      "value": 60
+    }
+  },
+  {
+    "id": "family-game-night",
+    "title": "Family Game Night",
+    "severity": "minor",
+    "category": "Family joy",
+    "icon": "🎲",
+    "accent": "amber",
+    "description": "A casual game night turns silly and memorable, giving everyone a break from being serious.",
+    "effects": {
+      "wellbeing": 5,
+      "children": 6,
+      "marriage": 3
+    },
+    "memory": "A simple family game night became one of those small memories everyone kept quoting.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 50
+    }
+  },
+  {
+    "id": "empty-nest-planning",
+    "title": "Preparing for Empty Nest",
+    "severity": "minor",
+    "category": "Family transition",
+    "icon": "🪺",
+    "accent": "blue",
+    "description": "You start talking honestly about what life will look like as the kids become more independent.",
+    "effects": {
+      "wellbeing": 4,
+      "children": 4,
+      "marriage": 5
+    },
+    "memory": "Planning for an emptier nest made the future feel less frightening and more possible.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 80
+    }
+  },
+  {
+    "id": "spouse-career-change",
+    "title": "Spouse Changes Careers",
+    "severity": "moderate",
+    "category": "Relationship transition",
+    "icon": "🧳",
+    "accent": "indigo",
+    "description": "Your spouse decides to make a major career move, bringing both uncertainty and fresh hope.",
+    "effects": {
+      "wallet": -3,
+      "wellbeing": 4,
+      "marriage": 5
+    },
+    "memory": "A spouse's career change tested the household but also opened a new chapter.",
+    "condition": {
+      "stat": "marriage",
+      "op": "gte",
+      "value": 50
+    }
+  },
+  {
+    "id": "marriage-communication-breakdown",
+    "title": "Communication Breakdown",
+    "severity": "major",
+    "category": "Relationship strain",
+    "icon": "📵",
+    "accent": "rose",
+    "description": "Conversations keep turning into silence or defensiveness, and basic coordination starts to feel hard.",
+    "effects": {
+      "wellbeing": -7,
+      "marriage": -10,
+      "children": -2
+    },
+    "memory": "A communication breakdown made the marriage feel lonelier than either of you wanted to admit.",
+    "condition": {
+      "stat": "marriage",
+      "op": "lte",
+      "value": 40
+    }
+  },
+  {
+    "id": "renewed-vows",
+    "title": "Renew Wedding Vows",
+    "severity": "moderate",
+    "category": "Relationship joy",
+    "icon": "💍",
+    "accent": "rose",
+    "description": "What starts as a small idea becomes a meaningful recommitment in front of people who love you.",
+    "effects": {
+      "wellbeing": 8,
+      "marriage": 12,
+      "children": 4
+    },
+    "memory": "Renewing your vows turned years of shared history into a fresh promise.",
+    "condition": {
+      "stat": "marriage",
+      "op": "gte",
+      "value": 80
+    }
+  },
+  {
+    "id": "dream-house-found",
+    "title": "Dream Home Appears",
+    "severity": "moderate",
+    "category": "Home opportunity",
+    "icon": "🏠",
+    "accent": "green",
+    "description": "A home that seems almost perfect appears on the market while you're actually in a position to consider it.",
+    "effects": {
+      "wallet": -8,
+      "wellbeing": 8,
+      "marriage": 6,
+      "children": 5
+    },
+    "memory": "Finding the dream house made the future feel exciting, even with the financial leap involved.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 85
+    }
+  },
+  {
+    "id": "job-offer-competitor",
+    "title": "Competing Job Offer",
+    "severity": "moderate",
+    "category": "Career win",
+    "icon": "🤝",
+    "accent": "indigo",
+    "description": "A competitor reaches out with an offer that could improve pay, flexibility, or both.",
+    "effects": {
+      "wallet": 7,
+      "wellbeing": 6,
+      "marriage": 3
+    },
+    "memory": "A competing job offer gave you leverage and reminded you your work had value.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "gte",
+      "value": 50
+    }
+  },
+  {
+    "id": "community-volunteering",
+    "title": "Volunteer Opportunity",
+    "severity": "minor",
+    "category": "Social meaning",
+    "icon": "🤲",
+    "accent": "teal",
+    "description": "A volunteer opportunity fits your season of life and gives you a sense of usefulness beyond the household.",
+    "effects": {
+      "wellbeing": 6,
+      "marriage": 2,
+      "wallet": -1
+    },
+    "memory": "Volunteering connected you to people and purpose outside the usual routine.",
+    "condition": {
+      "stat": "wellbeing",
+      "op": "gte",
+      "value": 55
+    }
+  },
+  {
+    "id": "child-first-job",
+    "title": "Child Gets First Job",
+    "severity": "minor",
+    "category": "Parenting joy",
+    "icon": "🧢",
+    "accent": "green",
+    "description": "Your child gets their first job and comes home tired, proud, and a little more grown up.",
+    "effects": {
+      "children": 8,
+      "wellbeing": 5,
+      "marriage": 3
+    },
+    "memory": "Your child's first job marked a new kind of independence and pride.",
+    "condition": {
+      "stat": "children",
+      "op": "gte",
+      "value": 70
+    }
+  },
+  {
+    "id": "unexpected-lawsuit",
+    "title": "Legal Trouble",
+    "severity": "major",
+    "category": "Financial shock",
+    "icon": "⚖️",
+    "accent": "rose",
+    "description": "A legal notice arrives over something you thought was settled, bringing cost and stress with it.",
+    "effects": {
+      "wallet": -9,
+      "wellbeing": -8,
+      "marriage": -4
+    },
+    "memory": "Unexpected legal trouble drained money, attention, and emotional bandwidth.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 30
+    }
+  },
+  {
+    "id": "retirement-dreams",
+    "title": "Retirement Feels Real",
+    "severity": "moderate",
+    "category": "Financial win",
+    "icon": "🌅",
+    "accent": "green",
+    "description": "For the first time, retirement planning feels less theoretical and more like an actual destination.",
+    "effects": {
+      "wallet": 6,
+      "wellbeing": 9,
+      "marriage": 5
+    },
+    "memory": "Retirement started to feel real, and the future looked calmer than it had in years.",
+    "condition": {
+      "stat": "wallet",
+      "op": "gte",
+      "value": 90
+    }
   }
 ]

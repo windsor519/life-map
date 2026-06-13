@@ -109,6 +109,33 @@ const updateSeasonHistory = (game) => {
     [historyKey]: snapshot.length > 0 ? snapshot : nextHistory[historyKey] ?? []
   };
 };
+const createSeasonScoreSnapshot = (previousGame, finalSeasonGame = previousGame) => {
+  const season = getSeasonForMonth(previousGame.month);
+  const startStats = previousGame.weekStartStats ?? captureStats(previousGame);
+  const stats = captureStats(finalSeasonGame);
+  const deltas = summaryStatKeys.reduce((seasonDeltas, key) => ({
+    ...seasonDeltas,
+    [key]: stats[key] - (startStats[key] ?? previousGame[key] ?? 0)
+  }), {});
+
+  return {
+    id: createSeasonHistoryKey(previousGame.year, season.id),
+    seasonId: season.id,
+    seasonLabel: season.label,
+    year: previousGame.year,
+    stats,
+    deltas
+  };
+};
+const updateSeasonScores = (previousGame, finalSeasonGame = previousGame) => {
+  const snapshot = createSeasonScoreSnapshot(previousGame, finalSeasonGame);
+  const nextSeasonScores = { ...(previousGame.seasonScores ?? {}) };
+
+  return {
+    ...nextSeasonScores,
+    [snapshot.id]: snapshot
+  };
+};
 
 const seasonalAudioConfig = {
   spring: {
@@ -992,6 +1019,7 @@ const createDefaultGame = () => ({
   completedDecisions: [],
   selectedChoices: {},
   seasonHistory: createEmptySeasonHistory(),
+  seasonScores: {},
   memories: [],
   currentEventId: getRandomEventId(undefined, events),
   eventSeed: createEventSeed(),
@@ -1019,6 +1047,7 @@ const normalizeGame = (game) => ({
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
   selectedChoices: game?.selectedChoices && typeof game.selectedChoices === "object" && !Array.isArray(game.selectedChoices) ? game.selectedChoices : {},
   seasonHistory: { ...createEmptySeasonHistory(), ...(game?.seasonHistory && typeof game.seasonHistory === "object" && !Array.isArray(game.seasonHistory) ? game.seasonHistory : {}) },
+  seasonScores: game?.seasonScores && typeof game.seasonScores === "object" && !Array.isArray(game.seasonScores) ? game.seasonScores : {},
   memories: Array.isArray(game?.memories) ? game.memories.slice(-8) : [],
   eventSeed: Number.isFinite(Number(game?.eventSeed)) ? Number(game.eventSeed) : createEventSeed(),
   weekStartStats: game?.weekStartStats && typeof game.weekStartStats === "object" ? game.weekStartStats : null,
@@ -1453,6 +1482,7 @@ export default function App() {
       ...game,
       ...nextSeasonState,
       seasonHistory: updateSeasonHistory(game),
+      seasonScores: updateSeasonScores(game),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
@@ -1467,10 +1497,12 @@ export default function App() {
     });
     setGame((prevGame) => {
       const seasonHistory = updateSeasonHistory(prevGame);
+      const seasonScores = updateSeasonScores(prevGame);
       const nextGame = {
         ...prevGame,
         ...nextSeasonState,
         seasonHistory,
+        seasonScores,
         completedDecisions: [],
         selectedChoices: {},
         currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
@@ -1574,6 +1606,7 @@ export default function App() {
       ...nextState,
       ...nextSeasonState,
       seasonHistory: updateSeasonHistory(nextState),
+      seasonScores: updateSeasonScores(game, nextState),
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
@@ -1893,9 +1926,11 @@ export default function App() {
           seasonConfig={seasonConfig}
           seasonDecisions={seasonDecisions}
           seasonHistory={seasonHistory}
+          seasonScores={game.seasonScores}
           selectedChoices={selectedChoices}
           year={game.year}
           severityConfig={severityConfig}
+          statConfig={displayStatConfig}
           totalSeasonDecisions={totalSeasonDecisions}
         />
 

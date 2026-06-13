@@ -789,104 +789,6 @@ textarea:focus {
   align-items: start;
 }
 
-.side-stack {
-  display: grid;
-  gap: 1rem;
-}
-
-.game-sidebar {
-  position: fixed;
-  top: max(1rem, env(safe-area-inset-top));
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  left: max(1rem, env(safe-area-inset-left));
-  z-index: 55;
-  width: min(50vw, calc(100vw - 2rem));
-  align-self: start;
-  overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 1.6rem;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(125, 211, 252, 0.18), transparent 16rem),
-    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(7, 12, 25, 0.94));
-  box-shadow: 24px 0 90px rgba(0, 0, 0, 0.48);
-  padding: 1rem;
-  pointer-events: none;
-  transform: translateX(calc(-100% - 2rem));
-  visibility: hidden;
-  transition: transform 240ms ease, visibility 240ms ease;
-  backdrop-filter: blur(22px) saturate(1.15);
-}
-
-.game-sidebar.open {
-  pointer-events: auto;
-  transform: translateX(0);
-  visibility: visible;
-}
-
-.sidebar-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 54;
-  border: 0;
-  border-radius: 0;
-  background: rgba(3, 7, 18, 0.55);
-  box-shadow: none;
-  padding: 0;
-  cursor: default;
-}
-
-.sidebar-backdrop:hover,
-.sidebar-backdrop:focus-visible {
-  background: rgba(3, 7, 18, 0.62);
-  box-shadow: none;
-  filter: none;
-  transform: none;
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.sidebar-header h2 {
-  margin: 0;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  letter-spacing: -0.04em;
-}
-
-.sidebar-close {
-  padding: 0.65rem 0.9rem;
-}
-
-.game-sidebar .family-stage-card {
-  grid-column: auto;
-  padding: clamp(1rem, 2vw, 1.25rem);
-}
-
-.game-sidebar .family-stage-card .section-heading {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.game-sidebar .family-stage-card h2 {
-  font-size: clamp(1.35rem, 2vw, 1.8rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-}
-
-.game-sidebar .family-stage {
-  min-height: 24rem;
-  overflow: auto;
-  padding: 1rem 0.85rem;
-}
-
-.game-sidebar .family-tree {
-  min-width: max-content;
-}
-
 .event-card {
   min-height: 540px;
   isolation: isolate;
@@ -1070,13 +972,7 @@ textarea:focus {
   .hero-card,
   .event-card {
     grid-column: 1 / -1;
-  }
-
-  .side-stack {
-    grid-column: 1 / -1;
-    grid-template-columns: 0.9fr 1.1fr;
-  }
-}
+  }}
 
 @media (max-width: 680px) {
   .app-shell {
@@ -1089,8 +985,7 @@ textarea:focus {
   .form-grid,
   .stat-grid,
   .choice-grid,
-  .game-layout,
-  .side-stack {
+  .game-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1561,6 +1456,26 @@ textarea:focus {
   color: #b9c6df;
   font-size: 1.04rem;
   line-height: 1.65;
+}
+
+.board-family-strip {
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  gap: 0.3rem;
+  margin: -0.3rem 0 1.25rem;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.28);
+  padding: 0.62rem 0.72rem 0.68rem;
+}
+
+.board-family-strip > strong {
+  color: #f8fbff;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .calendar-grid {
@@ -2127,21 +2042,10 @@ textarea:focus {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.side-stack {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 @media (max-width: 940px) {
   .game-layout {
     grid-template-columns: 1fr;
-  }
-
-  .game-sidebar {
-    right: max(0.75rem, env(safe-area-inset-right));
-    left: max(0.75rem, env(safe-area-inset-left));
-    width: auto;
-  }
-}
+  }}
 
 @media (max-width: 760px) {
   .weekly-calendar {
@@ -2196,12 +2100,7 @@ textarea:focus {
 
   .option-button {
     padding: 0.35rem;
-  }
-
-  .side-stack {
-    grid-template-columns: 1fr;
-  }
-}
+  }}
 
 .weekly-summary-card {
   isolation: isolate;
@@ -3795,82 +3694,6 @@ textarea:focus {
   height: 3rem;
 }
 
-.game-sidebar .family-stage {
-  min-height: auto;
-  max-height: none;
-  overflow: visible;
-  padding: 0.72rem;
-}
-
-.game-sidebar .family-tree {
-  min-width: 0;
-  gap: 0.55rem;
-}
-
-.game-sidebar .family-tree-row {
-  min-width: 0;
-  flex-wrap: wrap;
-  gap: 0.46rem;
-  padding-bottom: 0.34rem;
-}
-
-.game-sidebar .family-tree-row::before,
-.game-sidebar .family-tree-row::after {
-  display: none;
-}
-
-.game-sidebar .family-tree-node {
-  min-width: 5.7rem;
-  max-width: 6.45rem;
-  flex: 1 1 5.7rem;
-  gap: 0.25rem;
-  padding: 0.42rem 0.34rem 0.45rem;
-  border-radius: 0.88rem;
-}
-
-.game-sidebar .family-portrait {
-  width: 3.65rem;
-  height: clamp(4.45rem, calc(var(--family-scale) * 3.05rem), 5.15rem);
-  border-radius: 1.55rem 1.55rem 0.72rem 0.72rem;
-}
-
-.game-sidebar .family-bust {
-  width: calc(var(--family-scale) * 2.35rem);
-  min-width: 2.35rem;
-  max-width: 3.15rem;
-  height: calc(var(--family-scale) * 3.72rem);
-  min-height: 3.72rem;
-  max-height: 4.75rem;
-  margin-bottom: -0.7rem;
-}
-
-.game-sidebar .family-sex-marker {
-  top: 0.36rem;
-  right: 0.36rem;
-  width: 1.05rem;
-  height: 1.05rem;
-  font-size: 0.58rem;
-}
-
-.game-sidebar .family-member-badge {
-  min-height: 1rem;
-  padding: 0.06rem 0.32rem;
-  font-size: 0.54rem;
-}
-
-.game-sidebar .family-tree-node strong,
-.game-sidebar .family-member strong {
-  max-width: 5.7rem;
-  font-size: 0.68rem;
-}
-
-.game-sidebar .family-tree-node small,
-.game-sidebar .family-member small {
-  max-width: 5.7rem;
-  font-size: 0.58rem;
-  line-height: 1.15;
-}
-
 @media (max-width: 720px) {
   .brand-lockup img {
     width: 2.25rem;
@@ -4144,13 +3967,7 @@ textarea:focus {
     max-width: none;
     min-width: 0;
     justify-content: center;
-  }
-
-  .game-sidebar {
-    width: calc(100vw - 1rem);
-    inset: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
-  }
-}
+  }}
 
 @media (max-width: 440px) {
   .app-shell {

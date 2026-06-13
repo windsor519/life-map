@@ -80,12 +80,17 @@ const familyPhotoCss = `
   --shirt: #fb7185;
 }
 
+.family-photo-member.family-female::before {
+  z-index: 4;
+}
+
 .family-photo-member.family-female .family-photo-hair {
-  top: calc(var(--person-size) * 0.1);
-  width: calc(var(--person-size) * 0.6);
-  height: calc(var(--person-size) * 0.57);
-  border-radius: calc(var(--person-size) * 0.3) calc(var(--person-size) * 0.3) calc(var(--person-size) * 0.23) calc(var(--person-size) * 0.23);
-  clip-path: polygon(10% 4%, 50% 0, 90% 6%, 100% 34%, 88% 100%, 13% 100%, 0 36%);
+  top: calc(var(--person-size) * 0.08);
+  z-index: 3;
+  width: calc(var(--person-size) * 0.68);
+  height: calc(var(--person-size) * 0.64);
+  border-radius: calc(var(--person-size) * 0.34) calc(var(--person-size) * 0.34) calc(var(--person-size) * 0.24) calc(var(--person-size) * 0.24);
+  clip-path: polygon(15% 4%, 50% 0, 85% 4%, 100% 32%, 88% 100%, 12% 100%, 0 32%);
 }
 
 .family-photo-member.family-male {
@@ -158,9 +163,14 @@ const normalizeCharacterSex = (value) => {
   return "unknown";
 };
 
+const getWholeAge = (age) => {
+  if (!Number.isFinite(age)) return null;
+  return Math.max(0, Math.floor(age));
+};
+
 const getCompactAgeLabel = (age) => {
-  if (!Number.isFinite(age)) return "?";
-  return age < 18 ? age.toFixed(1).replace(/\.0$/, "") : String(Math.floor(age));
+  const wholeAge = getWholeAge(age);
+  return wholeAge === null ? "?" : String(wholeAge);
 };
 
 const getPlayerMember = (currentAge, character) => {
@@ -174,7 +184,7 @@ const getPlayerMember = (currentAge, character) => {
     groupLabel: "You",
     sex,
     age,
-    ageLabel: Number.isFinite(age) ? `${Math.floor(age)}y` : "age ?",
+    ageLabel: getWholeAge(age) === null ? "age ?" : `${getWholeAge(age)}y`,
     isPlayer: true
   };
 };

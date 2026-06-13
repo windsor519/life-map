@@ -92,7 +92,7 @@ export const normalizeFamily = (family) => {
 
 const formatAge = (age) => {
   if (!Number.isFinite(age)) return "age ?";
-  return age < 18 ? `${age.toFixed(1).replace(/\.0$/, "")}y` : `${Math.floor(age)}y`;
+  return `${Math.max(0, Math.floor(age))}y`;
 };
 
 const getFamilyPersonCount = (names, ages, sexes, max) => Math.min(max, Math.max(names.length, ages.length, sexes.length));

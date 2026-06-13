@@ -1399,6 +1399,7 @@ export default function App() {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(STORAGE_KEY);
     }
+    setSettingsOpen(false);
     stopZenMusic();
     setSimulationState(createIdleSimulationState());
     setActiveStatKey(null);
@@ -1837,6 +1838,25 @@ export default function App() {
       nextDecision: currentIndex >= 0 && currentIndex < seasonDecisions.length - 1 ? seasonDecisions[currentIndex + 1] : null
     };
   }, [seasonDecisions]);
+
+  const getNextUndecidedDecision = useCallback((decisionKey, nextSelectedChoices = selectedChoices) => {
+    const currentIndex = seasonDecisions.findIndex((decision) => decision.key === decisionKey);
+
+    if (currentIndex < 0) {
+      return null;
+    }
+
+    const completedKeys = new Set([
+      ...Object.keys(nextSelectedChoices ?? {}),
+      ...(game.completedDecisions ?? [])
+    ]);
+    const orderedDecisions = [
+      ...seasonDecisions.slice(currentIndex + 1),
+      ...seasonDecisions.slice(0, currentIndex)
+    ];
+
+    return orderedDecisions.find((decision) => !completedKeys.has(decision.key)) ?? null;
+  }, [game.completedDecisions, seasonDecisions, selectedChoices]);
 
   const handleDecisionSwipeStart = (event) => {
     decisionSwipeStartXRef.current = event.touches[0]?.clientX ?? null;
@@ -2337,9 +2357,15 @@ export default function App() {
                         disabled={lockedLegacyChoice || isSimulationLocked}
                         key={choice.label}
                         onClick={() => {
+                          const nextSelectedChoices = {
+                            ...selectedChoices,
+                            [decision.key]: true
+                          };
+                          const nextUndecidedDecision = getNextUndecidedDecision(decision.key, nextSelectedChoices);
+
                           handleChoice(choice, decision, dayLabel);
-                          if (nextDecision) {
-                            openDecisionAtIndex(currentIndex + 1);
+                          if (nextUndecidedDecision) {
+                            setActiveDecisionContext({ decision: nextUndecidedDecision, dayLabel: nextUndecidedDecision.day.dayLabel });
                           } else {
                             closeDecisionModal();
                           }

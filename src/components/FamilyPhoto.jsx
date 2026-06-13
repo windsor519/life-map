@@ -194,14 +194,15 @@ const familyPhotoCss = `
 }
 
 .family-photo-member.family-child.family-female .family-photo-back-hair {
-  top: calc(var(--person-size) * 0.03);
-  width: calc(var(--person-size) * 0.82);
-  height: calc(var(--person-size) * 0.84);
-  border-radius:
-    calc(var(--person-size) * 0.42)
-    calc(var(--person-size) * 0.42)
-    calc(var(--person-size) * 0.26)
-    calc(var(--person-size) * 0.26);
+  top: calc(var(--person-size) * 0.26);
+  left: calc(var(--person-size) * 0.16);
+  z-index: 1;
+  width: calc(var(--person-size) * 0.18);
+  height: calc(var(--person-size) * 0.22);
+  border-radius: 999px;
+  box-shadow: calc(var(--person-size) * 0.5) 0 0 var(--hair);
+  clip-path: none;
+  transform: none;
 }
 
 .family-photo-member.family-child.family-female .family-photo-hair {

@@ -22,6 +22,7 @@ const familyPhotoCss = `
   width: var(--person-size);
   height: var(--person-size);
   place-items: center;
+  isolation: isolate;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 999px;
@@ -62,17 +63,26 @@ const familyPhotoCss = `
   transform: translateX(-50%);
 }
 
+.family-photo-back-hair,
 .family-photo-hair {
   position: absolute;
-  top: calc(var(--person-size) * 0.1);
   left: 50%;
+  background: var(--hair);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.family-photo-back-hair {
+  display: none;
+}
+
+.family-photo-hair {
+  top: calc(var(--person-size) * 0.1);
   z-index: 3;
   width: calc(var(--person-size) * 0.57);
   height: calc(var(--person-size) * 0.27);
   border-radius: 55% 55% 34% 34%;
-  background: var(--hair);
   clip-path: polygon(3% 48%, 15% 10%, 46% 0, 80% 8%, 100% 40%, 86% 100%, 18% 88%);
-  transform: translateX(-50%);
 }
 
 .family-photo-member.family-female {
@@ -80,19 +90,29 @@ const familyPhotoCss = `
   --shirt: #fb7185;
 }
 
-/* Fixed: Removed the ::before z-index update that was burying the hair underneath the face skin */
+.family-photo-member.family-female::before {
+  background:
+    radial-gradient(circle at 27% 58%, rgba(244, 114, 182, 0.44) 0 calc(var(--person-size) * 0.042), transparent calc(var(--person-size) * 0.057)),
+    radial-gradient(circle at 73% 58%, rgba(244, 114, 182, 0.44) 0 calc(var(--person-size) * 0.042), transparent calc(var(--person-size) * 0.057)),
+    linear-gradient(12deg, transparent 31%, #3f1f12 32% 35%, transparent 36%) 31% 45% / calc(var(--person-size) * 0.1) calc(var(--person-size) * 0.08) no-repeat,
+    linear-gradient(-12deg, transparent 31%, #3f1f12 32% 35%, transparent 36%) 69% 45% / calc(var(--person-size) * 0.1) calc(var(--person-size) * 0.08) no-repeat,
+    radial-gradient(circle at 35% 48%, #3f1f12 0 calc(var(--person-size) * 0.033), transparent calc(var(--person-size) * 0.053)),
+    radial-gradient(circle at 65% 48%, #3f1f12 0 calc(var(--person-size) * 0.033), transparent calc(var(--person-size) * 0.053)),
+    radial-gradient(ellipse at 50% 72%, rgba(127, 29, 29, 0.62) 0 calc(var(--person-size) * 0.047), transparent calc(var(--person-size) * 0.06)),
+    var(--skin);
+}
 
-.family-photo-member.family-female .family-photo-hair {
+.family-photo-member.family-female .family-photo-back-hair {
   top: calc(var(--person-size) * 0.04);
-  z-index: 4; /* Raised to render cleanly over top of the face layer */
-  width: calc(var(--person-size) * 0.78);
-  height: calc(var(--person-size) * 0.9);
-  background: var(--hair);
+  z-index: 1;
+  display: block;
+  width: calc(var(--person-size) * 0.8);
+  height: calc(var(--person-size) * 0.88);
   border-radius:
     calc(var(--person-size) * 0.42)
     calc(var(--person-size) * 0.42)
-    calc(var(--person-size) * 0.26)
-    calc(var(--person-size) * 0.26);
+    calc(var(--person-size) * 0.24)
+    calc(var(--person-size) * 0.24);
   clip-path: polygon(
     12% 7%,
     31% 0%,
@@ -108,6 +128,27 @@ const familyPhotoCss = `
     18% 100%,
     5% 84%,
     0% 31%
+  );
+}
+
+.family-photo-member.family-female .family-photo-hair {
+  top: calc(var(--person-size) * 0.08);
+  z-index: 3;
+  width: calc(var(--person-size) * 0.58);
+  height: calc(var(--person-size) * 0.27);
+  border-radius: 64% 64% 46% 46%;
+  clip-path: polygon(
+    0% 52%,
+    16% 12%,
+    38% 0%,
+    62% 0%,
+    84% 12%,
+    100% 52%,
+    82% 92%,
+    62% 62%,
+    50% 100%,
+    38% 62%,
+    18% 92%
   );
 }
 
@@ -271,6 +312,7 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
             aria-label={getMemberLabel(member)}
             title={getMemberLabel(member)}
           >
+            <span className="family-photo-back-hair" aria-hidden="true" />
             <span className="family-photo-hair" aria-hidden="true" />
             <span className="family-photo-age" aria-hidden="true">{getMemberAgeBadge(member)}</span>
           </span>

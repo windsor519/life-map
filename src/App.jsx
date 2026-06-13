@@ -1121,6 +1121,7 @@ export default function App() {
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
   const buttonFeedbackAudioRef = useRef(null);
+  const decisionSwipeStartXRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1817,6 +1818,47 @@ export default function App() {
 
   const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
   const closeStatModal = useCallback(() => setActiveStatKey(null), []);
+  const openDecisionAtIndex = useCallback((index) => {
+    const nextDecision = seasonDecisions[index];
+
+    if (!nextDecision) {
+      return;
+    }
+
+    setActiveDecisionContext({ decision: nextDecision, dayLabel: nextDecision.day.dayLabel });
+  }, [seasonDecisions]);
+
+  const getDecisionNavigation = useCallback((decisionKey) => {
+    const currentIndex = seasonDecisions.findIndex((decision) => decision.key === decisionKey);
+
+    return {
+      currentIndex,
+      previousDecision: currentIndex > 0 ? seasonDecisions[currentIndex - 1] : null,
+      nextDecision: currentIndex >= 0 && currentIndex < seasonDecisions.length - 1 ? seasonDecisions[currentIndex + 1] : null
+    };
+  }, [seasonDecisions]);
+
+  const handleDecisionSwipeStart = (event) => {
+    decisionSwipeStartXRef.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleDecisionSwipeEnd = (event, currentIndex) => {
+    const startX = decisionSwipeStartXRef.current;
+    decisionSwipeStartXRef.current = null;
+
+    if (startX === null || currentIndex < 0) {
+      return;
+    }
+
+    const endX = event.changedTouches[0]?.clientX ?? startX;
+    const deltaX = endX - startX;
+
+    if (Math.abs(deltaX) < 56) {
+      return;
+    }
+
+    openDecisionAtIndex(currentIndex + (deltaX < 0 ? 1 : -1));
+  };
 
   useEffect(() => {
     if ((!activeDecisionContext && !activeStatKey) || typeof window === "undefined") {
@@ -1828,11 +1870,20 @@ export default function App() {
         closeDecisionModal();
         closeStatModal();
       }
+
+      if (activeDecisionContext && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+        const { currentIndex } = getDecisionNavigation(activeDecisionContext.decision.key);
+
+        if (currentIndex >= 0) {
+          event.preventDefault();
+          openDecisionAtIndex(currentIndex + (event.key === "ArrowLeft" ? -1 : 1));
+        }
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeDecisionContext, activeStatKey, closeDecisionModal, closeStatModal]);
+  }, [activeDecisionContext, activeStatKey, closeDecisionModal, closeStatModal, getDecisionNavigation, openDecisionAtIndex]);
 
   const renderEffectPreview = (effects) => {
     const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
@@ -2209,6 +2260,7 @@ export default function App() {
         const selectedChoice = selectedChoices[decision.key];
         const lockedLegacyChoice = !selectedChoice && game.completedDecisions.includes(decision.key);
         const modalTitleId = `decision-modal-title-${decision.key}`;
+        const { currentIndex, previousDecision, nextDecision } = getDecisionNavigation(decision.key);
 
         return (
           <div
@@ -2224,6 +2276,8 @@ export default function App() {
               role="dialog"
               aria-modal="true"
               aria-labelledby={modalTitleId}
+              onTouchStart={handleDecisionSwipeStart}
+              onTouchEnd={(event) => handleDecisionSwipeEnd(event, currentIndex)}
             >
               <div className="decision-modal-header">
                 <div className="decision-title">
@@ -2233,14 +2287,36 @@ export default function App() {
                     <h2 id={modalTitleId}>{decision.title}</h2>
                   </span>
                 </div>
-                <button
-                  className="decision-modal-close"
-                  type="button"
-                  aria-label="Close decision details"
-                  onClick={closeDecisionModal}
-                >
-                  ×
-                </button>
+                <div className="decision-modal-actions">
+                  <button
+                    className="decision-modal-nav"
+                    type="button"
+                    aria-label={previousDecision ? `Show previous event: ${previousDecision.title}` : "No previous event"}
+                    disabled={!previousDecision}
+                    onClick={() => openDecisionAtIndex(currentIndex - 1)}
+                    title="Previous event"
+                  >
+                    ←
+                  </button>
+                  <button
+                    className="decision-modal-nav"
+                    type="button"
+                    aria-label={nextDecision ? `Show next event: ${nextDecision.title}` : "No next event"}
+                    disabled={!nextDecision}
+                    onClick={() => openDecisionAtIndex(currentIndex + 1)}
+                    title="Next event"
+                  >
+                    →
+                  </button>
+                  <button
+                    className="decision-modal-close"
+                    type="button"
+                    aria-label="Close decision details"
+                    onClick={closeDecisionModal}
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
 
               <div className="decision-details">

@@ -109,6 +109,28 @@ const familyPhotoCss = `
   --shirt: #94a3b8;
 }
 
+.family-photo-age {
+  position: absolute;
+  right: 50%;
+  bottom: -1px;
+  z-index: 5;
+  display: inline-grid;
+  min-width: calc(var(--person-size) * 0.34);
+  height: calc(var(--person-size) * 0.34);
+  padding: 0 calc(var(--person-size) * 0.04);
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.82);
+  box-shadow: 0 0.12rem 0.35rem rgba(2, 6, 23, 0.36);
+  color: #f8fafc;
+  font-size: calc(var(--person-size) * 0.17);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  transform: translateX(50%);
+}
+
 .family-photo-member.family-self {
   --shirt: #22d3ee;
   border-color: rgba(224, 242, 254, 0.88);
@@ -136,8 +158,14 @@ const normalizeCharacterSex = (value) => {
   return "unknown";
 };
 
+const getCompactAgeLabel = (age) => {
+  if (!Number.isFinite(age)) return "?";
+  return age < 18 ? age.toFixed(1).replace(/\.0$/, "") : String(Math.floor(age));
+};
+
 const getPlayerMember = (currentAge, character) => {
   const sex = normalizeCharacterSex(character?.sex);
+  const age = Number(currentAge);
 
   return {
     id: "player",
@@ -145,10 +173,13 @@ const getPlayerMember = (currentAge, character) => {
     role: "self",
     groupLabel: "You",
     sex,
-    ageLabel: Number.isFinite(Number(currentAge)) ? `${Math.floor(Number(currentAge))}y` : "age ?",
+    age,
+    ageLabel: Number.isFinite(age) ? `${Math.floor(age)}y` : "age ?",
     isPlayer: true
   };
 };
+
+const getMemberAgeBadge = (member) => getCompactAgeLabel(Number(member.age));
 
 const getMemberLabel = (member) => {
   const name = member.isPlayer ? "You" : member.name;
@@ -171,6 +202,7 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
           title={getMemberLabel(member)}
         >
           <span className="family-photo-hair" aria-hidden="true" />
+          <span className="family-photo-age" aria-hidden="true">{getMemberAgeBadge(member)}</span>
         </span>
       ))}
     </div>

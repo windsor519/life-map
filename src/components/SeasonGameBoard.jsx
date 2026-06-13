@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import FamilyPhoto from "./FamilyPhoto.jsx";
 
 const formatDelta = (value = 0) => `${value > 0 ? "+" : ""}${value}`;
 
@@ -18,7 +19,11 @@ export default function SeasonGameBoard({
   severityConfig,
   statConfig,
   totalSeasonDecisions,
-  year
+  year,
+  family,
+  currentAge,
+  currentMonth,
+  character
 }) {
   const seasonCarouselRef = useRef(null);
   const seasonPanelRefs = useRef([]);
@@ -153,6 +158,10 @@ export default function SeasonGameBoard({
         <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
       </div>
       <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)} {year}.</p>
+      <div className="board-family-strip" aria-label="Your family">
+        <strong>Your family</strong>
+        <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
+      </div>
       <div className="flow-panel">
         <div>
           <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>

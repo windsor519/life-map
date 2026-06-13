@@ -4,7 +4,6 @@ import unexpectedEventRecords from "./data/unexpected_events.json";
 import wisdomRecords from "./data/wisdom.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition, { SeasonBackground } from "./components/SeasonTransition.jsx";
-import FamilyPhoto from "./components/FamilyPhoto.jsx";
 import SeasonGameBoard from "./components/SeasonGameBoard.jsx";
 import Setting from "./setting.js";
 import { createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
@@ -1111,7 +1110,6 @@ export default function App() {
   const [seasonTransition, setSeasonTransition] = useState(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [familySidebarOpen, setFamilySidebarOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
 
@@ -1126,21 +1124,6 @@ export default function App() {
       window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
   }, [settings]);
-
-  useEffect(() => {
-    if (!familySidebarOpen || typeof window === "undefined") {
-      return undefined;
-    }
-
-    const closeOnEscape = (event) => {
-      if (event.key === "Escape") {
-        setFamilySidebarOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [familySidebarOpen]);
 
   useEffect(() => () => stopZenMusic(false), []);
 
@@ -1316,7 +1299,6 @@ export default function App() {
   const prepareNewGamePlus = () => {
     setActiveDecisionContext(null);
     setActiveStatKey(null);
-    setFamilySidebarOpen(false);
     setSimulationState(createIdleSimulationState());
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
@@ -1876,18 +1858,6 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-actions">
-          <button
-            className="secondary family-sidebar-toggle"
-            type="button"
-            aria-controls="family-sidebar"
-            aria-expanded={familySidebarOpen}
-            onClick={() => {
-              setFamilySidebarOpen(true);
-            }}
-          >
-            <span aria-hidden="true">👨‍👩‍👧‍👦</span>
-            Family View
-          </button>
           <button className="secondary music-toggle" aria-label={musicPlaying ? "Music playing" : "Music paused"} onClick={() => setSettingsOpen(true)}>
             <span aria-hidden="true">{musicPlaying ? "🎵" : "🔇"}</span>
             Settings
@@ -1962,45 +1932,12 @@ export default function App() {
           severityConfig={severityConfig}
           statConfig={displayStatConfig}
           totalSeasonDecisions={totalSeasonDecisions}
+          family={game.family}
+          currentAge={game.age}
+          currentMonth={game.month}
+          character={game.character}
         />
 
-        {familySidebarOpen ? (
-          <button
-            className="sidebar-backdrop"
-            type="button"
-            aria-label="Close sidebar"
-            onClick={() => {
-              setFamilySidebarOpen(false);
-            }}
-          />
-        ) : null}
-        <aside
-          className={`side-stack game-sidebar family-sidebar ${familySidebarOpen ? "open" : ""}`}
-          id="family-sidebar"
-          aria-label="Family and recap sidebar"
-          aria-hidden={!familySidebarOpen}
-        >
-          <div className="sidebar-header">
-            <div>
-              <p className="eyebrow">Family view</p>
-              <h2>Your household</h2>
-            </div>
-            <button className="secondary sidebar-close" type="button" onClick={() => setFamilySidebarOpen(false)}>Close</button>
-          </div>
-          <FamilyPhoto family={game.family} currentAge={game.age} currentMonth={game.month} character={game.character} />
-          {game.weeklySummary ? (
-            <section className="panel monthly-summary-card compact-summary-card" aria-live="polite">
-              <div className="section-heading summary-heading">
-                <div>
-                  <p className="eyebrow">Last recap</p>
-                  <h2>{game.weeklySummary.season}</h2>
-                </div>
-                <span>{game.weeklySummary.mood}</span>
-              </div>
-              <p>{game.weeklySummary.headline}</p>
-            </section>
-          ) : null}
-        </aside>
       </div>
 
       {currentSimulationStep && (simulationState.phase === "animating" || simulationState.phase === "unexpected") ? (

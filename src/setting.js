@@ -118,12 +118,22 @@ export default function Setting({
             }),
             customEventError ? h("small", { className: "form-error", role: "alert" }, customEventError) : null
           ) : null
+        ),
+        h(
+          "article",
+          { className: "settings-card restart-settings-card" },
+          h(
+            "div",
+            { className: "settings-card-heading" },
+            h("span", { className: "settings-icon", "aria-hidden": "true" }, "🔄"),
+            h("div", null, h("strong", null, "Restart setup"), h("small", null, "Return to family setup and clear this run."))
+          ),
+          h("button", { className: "secondary danger-action", type: "button", onClick: onResetGame }, "Restart Setup")
         )
       ),
       h(
         "div",
         { className: "settings-footer" },
-        h("button", { className: "secondary", type: "button", onClick: onResetGame }, "Restart Setup"),
         h("button", { type: "button", onClick: onClose }, "Done")
       )
     )

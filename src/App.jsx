@@ -1109,6 +1109,7 @@ export default function App() {
   const [simulationState, setSimulationState] = useState(createIdleSimulationState);
   const [seasonTransition, setSeasonTransition] = useState(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState(loadSavedSettings);
   const audioRef = useRef(null);
@@ -1141,6 +1142,10 @@ export default function App() {
     }
 
     window.clearInterval(audio.chimeTimer);
+    if (audio.resumeAudio) {
+      window.removeEventListener("pointerdown", audio.resumeAudio);
+      window.removeEventListener("keydown", audio.resumeAudio);
+    }
     audio.nodes.forEach((node) => {
       node.stop?.();
       node.disconnect();
@@ -1155,13 +1160,13 @@ export default function App() {
 
   const startZenMusic = (seasonId = activeSeason.id) => {
     if (typeof window === "undefined" || audioRef.current) {
-      return;
+      return false;
     }
 
     const AudioContext = window.AudioContext || window.webkitAudioContext;
 
     if (!AudioContext) {
-      return;
+      return false;
     }
 
     const config = getSeasonalAudioConfig(seasonId);
@@ -1212,16 +1217,29 @@ export default function App() {
     const chimeTimer = window.setInterval(playChime, config.chimeInterval);
     playChime();
 
-    audioRef.current = { chimeTimer, context, master, nodes, seasonId };
+    const resumeAudio = () => {
+      if (context.state === "suspended") {
+        context.resume();
+      }
+    };
+
+    resumeAudio();
+    window.addEventListener("pointerdown", resumeAudio, { once: true });
+    window.addEventListener("keydown", resumeAudio, { once: true });
+
+    audioRef.current = { chimeTimer, context, master, nodes, resumeAudio, seasonId };
     setMusicPlaying(true);
+    return true;
   };
 
   const toggleZenMusic = () => {
     if (musicPlaying) {
+      setMusicEnabled(false);
       stopZenMusic();
       return;
     }
 
+    setMusicEnabled(true);
     startZenMusic();
   };
 
@@ -1275,9 +1293,10 @@ export default function App() {
       weekStartStats: captureStats(newGame)
     };
 
+    setMusicEnabled(true);
     setSimulationState(createIdleSimulationState());
     setGame(initializedGame);
-    startZenMusic();
+    startZenMusic("spring");
   };
 
   const resetGame = () => {
@@ -1312,6 +1331,14 @@ export default function App() {
   const currentCalendarYear = game.year;
   const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
+
+  useEffect(() => {
+    if (!game.initialized || !musicEnabled || musicPlaying) {
+      return;
+    }
+
+    startZenMusic(activeSeason.id);
+  }, [activeSeason.id, game.initialized, musicEnabled, musicPlaying]);
 
   useEffect(() => {
     if (!musicPlaying || audioRef.current?.seasonId === activeSeason.id) {
@@ -1861,7 +1888,6 @@ export default function App() {
             <span aria-hidden="true">{musicPlaying ? "🎵" : "🔇"}</span>
             Settings
           </button>
-          <button className="secondary" onClick={resetGame}>Restart Setup</button>
         </div>
       </header>
 

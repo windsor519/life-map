@@ -3987,3 +3987,115 @@ textarea:focus {
     min-width: 470px;
   }
 }
+
+.stat-detail-modal {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.stat-detail-modal .stat-detail-decisions {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.2rem;
+  scrollbar-color: color-mix(in srgb, var(--stat-accent, #93c5fd) 48%, rgba(255, 255, 255, 0.18)) rgba(255, 255, 255, 0.08);
+}
+
+.season-transition-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.season-begin-button {
+  justify-self: end;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background:
+    linear-gradient(135deg, rgba(34, 197, 94, 0.96), rgba(14, 165, 233, 0.94)),
+    rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 46px rgba(14, 165, 233, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+}
+
+.season-begin-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  filter: grayscale(0.2);
+  box-shadow: none;
+}
+
+.season-panel.future {
+  position: relative;
+  border-style: dashed;
+  border-color: rgba(191, 219, 254, 0.34);
+  background:
+    repeating-linear-gradient(135deg, rgba(148, 163, 184, 0.08) 0 0.7rem, transparent 0.7rem 1.4rem),
+    radial-gradient(circle at 100% 0, var(--season-glow), transparent 10rem),
+    rgba(9, 12, 30, 0.3);
+}
+
+.season-panel.future::after {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  border: 1px solid rgba(191, 219, 254, 0.24);
+  border-radius: 999px;
+  content: "Future";
+  color: #dbeafe;
+  background: rgba(15, 23, 42, 0.72);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.3rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.future-season-preview {
+  position: relative;
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  background:
+    radial-gradient(circle at 0 0, rgba(147, 197, 253, 0.18), transparent 9rem),
+    rgba(15, 23, 42, 0.5);
+  padding-left: 3.5rem;
+}
+
+.future-season-preview .future-season-lock {
+  position: absolute;
+  top: 0.72rem;
+  left: 0.8rem;
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: rgba(147, 197, 253, 0.14);
+}
+
+.future-season-preview small {
+  color: #bfdbfe;
+  line-height: 1.45;
+}
+
+.restart-settings-card {
+  border-color: rgba(251, 113, 133, 0.24);
+  background:
+    radial-gradient(circle at 100% 0, rgba(251, 113, 133, 0.16), transparent 10rem),
+    rgba(255, 255, 255, 0.08);
+}
+
+.danger-action {
+  width: fit-content;
+  border-color: rgba(251, 113, 133, 0.32);
+  color: #ffe4e6;
+}
+
+@media (max-width: 640px) {
+  .season-transition-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .season-begin-button {
+    justify-self: stretch;
+    white-space: normal;
+  }
+}

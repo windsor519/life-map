@@ -273,8 +273,12 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, wis
             <p>{wisdom.summary}</p>
           </section>
         ) : null}
-        <p className="season-transition-next-copy">Start the next chapter when you are ready.</p>
-        <button className="secondary" type="button" onClick={onComplete}>{animationDone ? "Begin new season" : "Skip to new season"}</button>
+        <div className="season-transition-actions">
+          <p className="season-transition-next-copy">Start the next chapter when you are ready.</p>
+          <button className="season-begin-button" type="button" onClick={onComplete} disabled={!animationDone}>
+            {animationDone ? "Begin new season" : "Preparing new season…"}
+          </button>
+        </div>
       </div>
     </div>
   );

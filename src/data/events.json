@@ -1,16 +1,3419 @@
 {
   "baseEvents": [
     {
-      "id": "daughter-recital",
-      "tags": ["young-family", "general"],
-      "title": "Daughter's Recital",
-      "description": "Your daughter has a recital tonight, but a client also wants a late call.",
-      "wisdom": "Kids remember who showed up. They will not remember the Q3 pipeline review. Your client will get over it. Your daughter will not forget.",
-      "choices": [
-        {"label": "Attend the recital", "memory": "You showed up for your daughter's recital.", "effects": {"wallet": -1, "wellbeing": 5, "children": 12}},
-        {"label": "Work overtime", "memory": "You took the overtime call and missed the recital.", "effects": {"wallet": 3, "wellbeing": -7, "children": -8}},
-        {"label": "Split the evening", "memory": "You caught part of the recital before returning to work.", "effects": {"wallet": 1, "wellbeing": -4, "children": 5}}
+      "id": "spring-school-garden-day",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "general"
       ],
-      "seasons": ["spring", "fall"]
+      "title": "Spring School Garden Day",
+      "description": "Your child’s class is planting the school garden after weeks of rain, but your boss asks you to join a last-minute strategy call.",
+      "wisdom": "Spring is about showing up for small beginnings. Seeds, kids, and trust all grow better when someone is there.",
+      "choices": [
+        {
+          "label": "Go to garden day",
+          "memory": "You helped your child plant flowers at school.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Take the strategy call",
+          "memory": "You skipped the garden day for work.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Arrive late with snacks",
+          "memory": "You missed the planting but showed up with snacks afterward.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
     },
+    {
+      "id": "first-soccer-practice",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "sports"
+      ],
+      "title": "First Soccer Practice",
+      "description": "The grass is still damp from spring rain and your child is nervous about their first soccer practice, but you have errands piling up.",
+      "wisdom": "Confidence often grows on muddy fields while a parent watches from the sideline.",
+      "choices": [
+        {
+          "label": "Stay for practice",
+          "memory": "You watched your child’s first soccer practice from the sideline.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Drop off and run errands",
+          "memory": "You dropped your child off and rushed through errands.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Watch the first half",
+          "memory": "You stayed until your child settled in, then handled errands.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 5
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "easter-egg-hunt",
+      "tags": [
+        "young-family",
+        "spring",
+        "holiday",
+        "community"
+      ],
+      "title": "Easter Egg Hunt",
+      "description": "The community Easter egg hunt starts early, but a contractor offers a discount if you meet them at the house that morning.",
+      "wisdom": "Seasonal magic is fragile. A plastic egg can hold a memory bigger than the prize inside.",
+      "choices": [
+        {
+          "label": "Go egg hunting",
+          "memory": "You spent the morning at the Easter egg hunt.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 2,
+            "children": 4,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Meet the contractor",
+          "memory": "You skipped the egg hunt to secure a home repair discount.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Do a backyard hunt later",
+          "memory": "You missed the community event but made a small hunt at home.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "neighborhood-garage-sale",
+      "tags": [
+        "young-family",
+        "spring",
+        "finance",
+        "community"
+      ],
+      "title": "Neighborhood Garage Sale",
+      "description": "The neighborhood garage sale is this weekend, and your kids want to run a toy table while you could use the time to rest.",
+      "wisdom": "Letting kids sell old toys teaches money, patience, and letting go.",
+      "choices": [
+        {
+          "label": "Run the toy table",
+          "memory": "You helped your kids run a garage sale table.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Skip it and rest",
+          "memory": "You skipped the garage sale and took a quiet morning.",
+          "effects": {
+            "wellbeing": 3,
+            "children": -1
+          }
+        },
+        {
+          "label": "Set up for two hours",
+          "memory": "You helped briefly, then packed up before everyone got cranky.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "rainy-field-trip-chaperone",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "general"
+      ],
+      "title": "Rainy Field Trip Chaperone",
+      "description": "A rainy zoo field trip needs one more parent chaperone, but your calendar is already crowded.",
+      "wisdom": "A wet jacket dries quickly. A child remembering you volunteered lasts longer.",
+      "choices": [
+        {
+          "label": "Chaperone the trip",
+          "memory": "You spent a rainy day chaperoning the school field trip.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Say you cannot go",
+          "memory": "You declined the field trip because your schedule was packed.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Help for half the day",
+          "memory": "You joined the morning portion before returning to responsibilities.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "school-spring-concert",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "music"
+      ],
+      "title": "School Spring Concert",
+      "description": "Your child’s spring concert lands on the same evening as a networking dinner that could help your career.",
+      "wisdom": "Children scan the crowd before they sing. Be the face they find.",
+      "choices": [
+        {
+          "label": "Attend the concert",
+          "memory": "You went to the spring concert and cheered.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Go networking",
+          "memory": "You chose the networking dinner over the concert.",
+          "effects": {
+            "wallet": 3,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Attend concert then arrive late",
+          "memory": "You saw the performance and made a late appearance at dinner.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "backyard-cleanup-weekend",
+      "tags": [
+        "young-family",
+        "spring",
+        "home"
+      ],
+      "title": "Backyard Cleanup Weekend",
+      "description": "The snow has finally melted, revealing branches, leaves, and broken toys across the yard. Your family wants to tackle it together.",
+      "wisdom": "A yard cleanup can be a chore or a ritual, depending on whether everyone feels included.",
+      "choices": [
+        {
+          "label": "Clean together",
+          "memory": "You turned backyard cleanup into a family project.",
+          "effects": {
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Hire help",
+          "memory": "You paid someone to clean the yard quickly.",
+          "effects": {
+            "wallet": -3,
+            "wellbeing": 3
+          }
+        },
+        {
+          "label": "Do the dangerous parts yourself",
+          "memory": "You handled the heavy cleanup and let the kids help lightly.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "mothers-day-brunch",
+      "tags": [
+        "young-family",
+        "spring",
+        "holiday",
+        "relationship"
+      ],
+      "title": "Mother's Day Brunch",
+      "description": "Mother’s Day brunch reservations are expensive, and you are tempted to keep it simple after a tight month.",
+      "wisdom": "Appreciation does not need luxury, but it does need intention.",
+      "choices": [
+        {
+          "label": "Plan a thoughtful brunch",
+          "memory": "You made Mother’s Day feel special with a planned brunch.",
+          "effects": {
+            "wallet": -4,
+            "wellbeing": 2,
+            "children": 1,
+            "marriage": 4
+          }
+        },
+        {
+          "label": "Do nothing extra",
+          "memory": "You treated Mother’s Day like a normal Sunday.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": -2,
+            "marriage": -3
+          }
+        },
+        {
+          "label": "Cook at home with the kids",
+          "memory": "You made a homemade Mother’s Day meal together.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 3,
+            "children": 2,
+            "marriage": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "tree-planting-day",
+      "tags": [
+        "young-family",
+        "spring",
+        "community",
+        "home"
+      ],
+      "title": "Tree Planting Day",
+      "description": "The city is giving out saplings for spring planting, but your weekend is already full.",
+      "wisdom": "Planting a tree is optimism with a shovel.",
+      "choices": [
+        {
+          "label": "Plant the tree",
+          "memory": "You planted a young tree with your family.",
+          "effects": {
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Skip the giveaway",
+          "memory": "You skipped tree planting to preserve your weekend.",
+          "effects": {
+            "children": -1
+          }
+        },
+        {
+          "label": "Pick it up and plant later",
+          "memory": "You grabbed a sapling and planted it the next day.",
+          "effects": {
+            "wellbeing": 2,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "allergy-season-meltdown",
+      "tags": [
+        "young-family",
+        "spring",
+        "health"
+      ],
+      "title": "Allergy Season Meltdown",
+      "description": "Pollen is everywhere, your child is miserable, and you have an important afternoon planned.",
+      "wisdom": "Sometimes good parenting looks like changing plans when a small body has had enough.",
+      "choices": [
+        {
+          "label": "Cancel and care for them",
+          "memory": "You cancelled plans and helped your child through allergy misery.",
+          "effects": {
+            "wallet": -1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Push through the plans",
+          "memory": "You pushed ahead despite your child’s allergies.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": -3,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Shorten the outing",
+          "memory": "You adjusted the day so your child could rest sooner.",
+          "effects": {
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "first-bike-ride-of-the-year",
+      "tags": [
+        "young-family",
+        "spring",
+        "health",
+        "general"
+      ],
+      "title": "First Bike Ride of the Year",
+      "description": "The sidewalks are finally dry enough for the first family bike ride, but your inbox has been ignored all weekend.",
+      "wisdom": "Spring gives families a fresh start. Take the ride before the calendar fills again.",
+      "choices": [
+        {
+          "label": "Go biking",
+          "memory": "You took the first spring bike ride with your family.",
+          "effects": {
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Catch up on email",
+          "memory": "You stayed home and cleared your inbox.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Ride around the block",
+          "memory": "You squeezed in a short bike ride before working.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "tax-deadline-weekend",
+      "tags": [
+        "young-family",
+        "spring",
+        "finance"
+      ],
+      "title": "Tax Deadline Weekend",
+      "description": "Tax deadline weekend arrives with missing receipts and beautiful weather outside.",
+      "wisdom": "Money stress is real, but panic gets smaller when the family knows what is happening.",
+      "choices": [
+        {
+          "label": "Finish taxes carefully",
+          "memory": "You spent the weekend finishing taxes properly.",
+          "effects": {
+            "wallet": 4,
+            "wellbeing": -2,
+            "children": -1,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Ignore it for family time",
+          "memory": "You ignored taxes and enjoyed the weekend outside.",
+          "effects": {
+            "wallet": -5,
+            "wellbeing": 2,
+            "children": 2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Do taxes in blocks",
+          "memory": "You handled taxes in focused blocks and protected some family time.",
+          "effects": {
+            "wallet": 3,
+            "wellbeing": 1,
+            "children": 2,
+            "marriage": 1
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "spring-flood-in-basement",
+      "tags": [
+        "young-family",
+        "spring",
+        "home",
+        "emergency"
+      ],
+      "title": "Spring Flood in Basement",
+      "description": "Heavy spring rain sends water into the basement just as your family planned a movie night.",
+      "wisdom": "A calm response to a home emergency teaches children more than a perfect night ever could.",
+      "choices": [
+        {
+          "label": "Handle it calmly together",
+          "memory": "You calmly dealt with the basement flooding and included the family where safe.",
+          "effects": {
+            "wallet": -4,
+            "wellbeing": -1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Panic and snap at everyone",
+          "memory": "You got overwhelmed and snapped during the basement flood.",
+          "effects": {
+            "wallet": -3,
+            "wellbeing": -1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Call help and salvage dessert",
+          "memory": "You called for help and saved part of the evening with dessert.",
+          "effects": {
+            "wallet": -5,
+            "wellbeing": -4,
+            "children": -2,
+            "marriage": -1
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "community-cleanup-event",
+      "tags": [
+        "young-family",
+        "spring",
+        "community"
+      ],
+      "title": "Community Cleanup Event",
+      "description": "The park cleanup is this Saturday morning, and your child wants to wear gloves and help pick up litter.",
+      "wisdom": "Children protect places they feel responsible for.",
+      "choices": [
+        {
+          "label": "Join the cleanup",
+          "memory": "You volunteered at the community cleanup with your child.",
+          "effects": {
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Skip it for chores",
+          "memory": "You skipped the cleanup to handle chores at home.",
+          "effects": {
+            "wallet": 1,
+            "children": -1
+          }
+        },
+        {
+          "label": "Drop by briefly",
+          "memory": "You helped for an hour and thanked the organizers.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "science-fair-presentation",
+      "tags": [
+        "young-family",
+        "spring",
+        "school"
+      ],
+      "title": "Science Fair Presentation",
+      "description": "Your child has rehearsed their spring science fair presentation, but a client issue erupts right before school pickup.",
+      "wisdom": "To a child, one attentive listener can feel like a standing ovation.",
+      "choices": [
+        {
+          "label": "Attend the science fair",
+          "memory": "You watched your child present at the science fair.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Handle the client issue",
+          "memory": "You missed the science fair for a client emergency.",
+          "effects": {
+            "wallet": 3,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Send backup and arrive late",
+          "memory": "You sent another adult first and arrived before cleanup.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "family-hiking-day",
+      "tags": [
+        "young-family",
+        "spring",
+        "health",
+        "general"
+      ],
+      "title": "Family Hiking Day",
+      "description": "The trails have reopened after winter, and your family wants a muddy spring hike while you feel behind at home.",
+      "wisdom": "Mud washes out. The feeling of exploring together sticks.",
+      "choices": [
+        {
+          "label": "Go hiking",
+          "memory": "You took a muddy spring hike with your family.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Stay home to catch up",
+          "memory": "You stayed home and handled chores instead.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Choose a short trail",
+          "memory": "You picked a shorter trail and still got outside.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "spring-break-staycation",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "finance"
+      ],
+      "title": "Spring Break Staycation",
+      "description": "Spring break arrives without enough budget for a trip, and the kids are disappointed.",
+      "wisdom": "A good break is not measured in miles. It is measured in attention.",
+      "choices": [
+        {
+          "label": "Plan themed home days",
+          "memory": "You created a spring break staycation with themed days.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Let everyone drift on screens",
+          "memory": "Spring break slipped into unplanned screen time.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Do one special outing",
+          "memory": "You planned one affordable outing and kept the rest simple.",
+          "effects": {
+            "wallet": -3,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "school-track-meet",
+      "tags": [
+        "young-family",
+        "spring",
+        "school",
+        "sports"
+      ],
+      "title": "School Track Meet",
+      "description": "A chilly spring track meet runs during your workday, and your child says their race will only last a minute.",
+      "wisdom": "Sometimes the shortest race carries the longest memory.",
+      "choices": [
+        {
+          "label": "Watch the race",
+          "memory": "You showed up for your child’s track meet.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Stay at work",
+          "memory": "You missed the race because it was during work.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Watch one event and leave",
+          "memory": "You caught the race, hugged your child, and returned to work.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 5
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "farmers-market-opening-day",
+      "tags": [
+        "young-family",
+        "spring",
+        "community",
+        "food"
+      ],
+      "title": "Farmer's Market Opening Day",
+      "description": "The first farmer’s market of spring opens downtown, but groceries would be cheaper at the big store.",
+      "wisdom": "Food tastes different when children meet the people who grew it.",
+      "choices": [
+        {
+          "label": "Visit the market",
+          "memory": "You took the family to opening day at the farmer’s market.",
+          "effects": {
+            "wallet": -3,
+            "wellbeing": 1,
+            "children": 2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Choose the cheaper store",
+          "memory": "You skipped the market and bought cheaper groceries.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Buy one market treat",
+          "memory": "You visited briefly and bought one seasonal treat.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "rainy-saturday-board-game-marathon",
+      "tags": [
+        "young-family",
+        "spring",
+        "home",
+        "general"
+      ],
+      "title": "Rainy Saturday Board Game Marathon",
+      "description": "A steady spring rain cancels outdoor plans, and everyone is getting restless inside.",
+      "wisdom": "A rainy day can become a memory if nobody treats it like a failure.",
+      "choices": [
+        {
+          "label": "Start a board game marathon",
+          "memory": "You turned the rainy Saturday into a family board game marathon.",
+          "effects": {
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Let everyone disappear to screens",
+          "memory": "You let the rainy day dissolve into separate screen time.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Mix chores and games",
+          "memory": "You alternated quick chores with family games.",
+          "effects": {
+            "wallet": 1,
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "spring"
+      ]
+    },
+    {
+      "id": "backyard-storm-night",
+      "tags": [
+        "young-family",
+        "summer",
+        "home"
+      ],
+      "title": "Backyard Storm Night",
+      "description": "A hot summer thunderstorm knocks out the power during family movie night, while your phone keeps buzzing with work messages.",
+      "wisdom": "Not every interruption is a problem. Sometimes the power going out is the only way the family turns back on.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "heat-wave-weekend",
+      "tags": [
+        "young-family",
+        "summer",
+        "health"
+      ],
+      "title": "Heat Wave Weekend",
+      "description": "A heat warning ruins your outdoor plans, and everyone is cranky in the sticky house.",
+      "wisdom": "Heat makes patience evaporate. Protect the mood before protecting the plan.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -1,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -3,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "summer-camp-drop-off",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Summer Camp Drop-Off",
+      "description": "Your child is nervous at summer camp drop-off, and you are already late for your first meeting.",
+      "wisdom": "A brave goodbye takes longer than a quick one, but it lands softer.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "family-cottage-trip",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Family Cottage Trip",
+      "description": "A rare cottage invitation appears, but leaving means ignoring a pile of unfinished work.",
+      "wisdom": "Lakes do not care about your inbox. Kids remember who jumped in.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "beach-day-vs-overtime",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Beach Day vs Overtime",
+      "description": "The forecast is perfect for the beach, but overtime pay is available today only.",
+      "wisdom": "Sunburn fades. So does overtime. Choose what your family is short on.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "neighborhood-bbq",
+      "tags": [
+        "young-family",
+        "summer",
+        "community"
+      ],
+      "title": "Neighborhood BBQ",
+      "description": "The neighbors host a summer BBQ, and your family wants to go even though you feel socially drained.",
+      "wisdom": "Community is built one paper plate at a time.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "fireworks-celebration",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Fireworks Celebration",
+      "description": "Fireworks start after bedtime, and your child begs to stay up just this once.",
+      "wisdom": "Some late nights are worth the tired morning.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "kids-lemonade-stand",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Kids Lemonade Stand",
+      "description": "Your kids want to run a lemonade stand in the summer heat, but setup will be messy and slow.",
+      "wisdom": "Small businesses start with sticky counters and big pride.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "long-weekend-road-trip",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Long Weekend Road Trip",
+      "description": "A long weekend road trip promises memories but threatens your budget.",
+      "wisdom": "The best trips are planned with both joy and the gas tank in mind.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "pool-opening-day",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Pool Opening Day",
+      "description": "The local pool opens today, and your child has been talking about it all week.",
+      "wisdom": "A first splash can reset an entire season.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "ice-cream-run-after-dinner",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Ice Cream Run After Dinner",
+      "description": "Everyone is tired after dinner, but the kids ask for a sunset ice cream run.",
+      "wisdom": "Sometimes the cheapest luxury is saying yes after dinner.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "family-camping-weekend",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Family Camping Weekend",
+      "description": "A camping weekend is booked, but rain is creeping into the forecast.",
+      "wisdom": "Perfect weather is not required for a real adventure.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "summer-power-outage",
+      "tags": [
+        "young-family",
+        "summer",
+        "home"
+      ],
+      "title": "Summer Power Outage",
+      "description": "A summer outage shuts off fans, fridge, and Wi-Fi during the hottest part of the day.",
+      "wisdom": "Comfort matters, but calm leadership matters more.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -2,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -4,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": -1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "community-fair",
+      "tags": [
+        "young-family",
+        "summer",
+        "community"
+      ],
+      "title": "Community Fair",
+      "description": "The summer fair is loud, expensive, and exactly what your kids want to do.",
+      "wisdom": "Fairs are overpriced, overstimulating, and occasionally unforgettable.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "outdoor-movie-night",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Outdoor Movie Night",
+      "description": "An outdoor movie plays in the park, but mosquitoes and work emails are both circling.",
+      "wisdom": "A blanket on grass can beat another night on the couch.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "water-balloon-battle",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Water Balloon Battle",
+      "description": "Your kids want a backyard water balloon battle, and you know cleanup will be annoying.",
+      "wisdom": "Joy often leaves little pieces of balloon in the grass.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "summer-vacation-planning",
+      "tags": [
+        "young-family",
+        "summer",
+        "finance"
+      ],
+      "title": "Summer Vacation Planning",
+      "description": "Your family needs to plan summer vacation, but every option feels too expensive.",
+      "wisdom": "A realistic plan beats a fantasy that stresses everyone out.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "kids-first-fishing-trip",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Kids' First Fishing Trip",
+      "description": "An early fishing trip means waking up before sunrise on your day off.",
+      "wisdom": "Patience is easier to teach beside still water.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "backyard-bonfire-night",
+      "tags": [
+        "young-family",
+        "summer",
+        "general"
+      ],
+      "title": "Backyard Bonfire Night",
+      "description": "A cool summer night is perfect for a backyard bonfire, but you are tempted to keep working late.",
+      "wisdom": "Stories come out when the fire gets low.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "end-of-summer-carnival",
+      "tags": [
+        "young-family",
+        "summer",
+        "community"
+      ],
+      "title": "End-of-Summer Carnival",
+      "description": "The end-of-summer carnival arrives right before school routines begin again.",
+      "wisdom": "A season deserves a closing ceremony.",
+      "choices": [
+        {
+          "label": "Choose the family moment",
+          "memory": "You protected the summer family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Prioritize obligations",
+          "memory": "You prioritized obligations over the summer plan.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Compromise carefully",
+          "memory": "You found a summer compromise that kept the day partly intact.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "summer"
+      ]
+    },
+    {
+      "id": "pumpkin-patch-saturday",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Pumpkin Patch Saturday",
+      "description": "The first crisp fall weekend is perfect for the pumpkin patch, but you could also catch up on overdue paperwork.",
+      "wisdom": "There are only so many tiny hands reaching for pumpkins. Paperwork will still be there Monday.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "back-to-school-shopping",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "Back-to-School Shopping",
+      "description": "Back-to-school shopping costs more than expected, and your child wants the backpack everyone else has.",
+      "wisdom": "A backpack can be about belonging, not just storage.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -2
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "parent-teacher-conference",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "Parent-Teacher Conference",
+      "description": "A parent-teacher conference lands during your busiest work week.",
+      "wisdom": "Children notice when adults compare notes on how to help them grow.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "apple-picking-weekend",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Apple Picking Weekend",
+      "description": "The orchard is at peak season, but your house is behind on chores.",
+      "wisdom": "Apples bruise less than memories do.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "thanksgiving-dinner-prep",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Thanksgiving Dinner Prep",
+      "description": "Thanksgiving dinner prep is chaotic, and everyone has opinions about the menu.",
+      "wisdom": "Tradition works best when it feeds people instead of exhausting them.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "school-fundraiser-drive",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "School Fundraiser Drive",
+      "description": "Your child’s school fundraiser starts, and they desperately want to hit their goal.",
+      "wisdom": "Fundraising teaches effort, but it should not teach pressure.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "halloween-costume-crisis",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Halloween Costume Crisis",
+      "description": "The Halloween costume plan falls apart two days before trick-or-treating.",
+      "wisdom": "Improvisation is part of the costume.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "first-frost-morning",
+      "tags": [
+        "young-family",
+        "fall",
+        "home"
+      ],
+      "title": "First Frost Morning",
+      "description": "The first frost hits before you put away the yard toys and garden supplies.",
+      "wisdom": "Fall gives warnings before winter gives consequences.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "leaf-raking-marathon",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Leaf Raking Marathon",
+      "description": "Leaves cover the yard, and your kids want to jump in the piles before bagging them.",
+      "wisdom": "A leaf pile is only useful after someone jumps in it.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "harvest-festival",
+      "tags": [
+        "young-family",
+        "fall",
+        "community"
+      ],
+      "title": "Harvest Festival",
+      "description": "The harvest festival is crowded, but your child wants to enter the pie-eating contest.",
+      "wisdom": "Sometimes belonging is loud, sticky, and held in a church basement.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "school-picture-day",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "School Picture Day",
+      "description": "School picture day arrives with bedhead, missing forms, and a stain on the good shirt.",
+      "wisdom": "A crooked smile is still part of the record.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "hockey-season-begins",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Hockey Season Begins",
+      "description": "Early hockey practice begins before sunrise, and the whole family schedule shifts.",
+      "wisdom": "Some commitments ask for more than money. They ask for mornings.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "fall-family-photos",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Fall Family Photos",
+      "description": "Golden leaves are perfect for family photos, but nobody is in the mood to cooperate.",
+      "wisdom": "The best family photos usually happen between complaints.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "corn-maze-adventure",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Corn Maze Adventure",
+      "description": "The corn maze is open for one more weekend, and your child wants to go before it closes.",
+      "wisdom": "Getting lost together is different from being lost alone.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "school-book-fair",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "School Book Fair",
+      "description": "The school book fair arrives, and your child has a wish list bigger than your budget.",
+      "wisdom": "A love of reading can fit inside a limit.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "flu-shot-appointment",
+      "tags": [
+        "young-family",
+        "fall",
+        "health"
+      ],
+      "title": "Flu Shot Appointment",
+      "description": "Flu shot day turns into tears and bargaining in the clinic parking lot.",
+      "wisdom": "Health routines become easier when courage is noticed.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -3,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "thanksgiving-travel-debate",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Thanksgiving Travel Debate",
+      "description": "Thanksgiving travel would please relatives but exhaust your family.",
+      "wisdom": "A holiday should not require everyone to arrive already resentful.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "school-bake-sale",
+      "tags": [
+        "young-family",
+        "fall",
+        "school"
+      ],
+      "title": "School Bake Sale",
+      "description": "The school bake sale needs contributions, and you forgot until the night before.",
+      "wisdom": "Community sometimes smells like boxed brownies at midnight.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 3
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "rainy-football-game",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Rainy Football Game",
+      "description": "A cold rainy football game is scheduled, and your child wants the family there anyway.",
+      "wisdom": "Support counts double when the bleachers are wet.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "last-warm-weekend",
+      "tags": [
+        "young-family",
+        "fall",
+        "general"
+      ],
+      "title": "Last Warm Weekend",
+      "description": "One last warm fall weekend appears before the cold settles in.",
+      "wisdom": "When the season offers a final gift, take it.",
+      "choices": [
+        {
+          "label": "Choose the seasonal family plan",
+          "memory": "You leaned into the fall family moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 2
+          }
+        },
+        {
+          "label": "Choose productivity",
+          "memory": "You skipped the fall moment to stay productive.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Make a smaller version work",
+          "memory": "You made a smaller fall plan work for everyone.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "fall"
+      ]
+    },
+    {
+      "id": "first-snow-day",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "First Snow Day",
+      "description": "School is closed after the first real snowfall, and your child begs you to build a snow fort before the snow turns icy.",
+      "wisdom": "Fresh snow does not reschedule. Childhood rarely does either.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "christmas-concert",
+      "tags": [
+        "young-family",
+        "winter",
+        "school"
+      ],
+      "title": "Christmas Concert",
+      "description": "The school Christmas concert is packed, inconvenient, and deeply important to your child.",
+      "wisdom": "Holiday songs sound different when your child is searching the crowd.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "holiday-shopping-rush",
+      "tags": [
+        "young-family",
+        "winter",
+        "finance"
+      ],
+      "title": "Holiday Shopping Rush",
+      "description": "Holiday shopping is behind schedule, and the budget is already strained.",
+      "wisdom": "Generosity without a plan can become January regret.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -3,
+            "wellbeing": -1,
+            "children": 2,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -2,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wallet": -1,
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "snow-fort-competition",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Snow Fort Competition",
+      "description": "The neighborhood kids start a snow fort competition, and your child wants your help.",
+      "wisdom": "Snow forts melt. The alliance lasts longer.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "ice-storm-power-outage",
+      "tags": [
+        "young-family",
+        "winter",
+        "home"
+      ],
+      "title": "Ice Storm Power Outage",
+      "description": "An ice storm knocks out power and turns the house cold by dinner.",
+      "wisdom": "In winter, warmth is both a temperature and a tone.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -2,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -4,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": -1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "new-years-eve-invitation",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "New Year's Eve Invitation",
+      "description": "Friends invite you out for New Year’s Eve, but your child wants a countdown at home.",
+      "wisdom": "A year can end loudly or lovingly. Choose the room that needs you.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 4,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "family-skating-night",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Family Skating Night",
+      "description": "The outdoor rink finally opens, but you are tired and it is freezing.",
+      "wisdom": "Some nights are cold until everyone starts laughing.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "winter-cabin-fever",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Winter Cabin Fever",
+      "description": "Everyone has been inside too long, and the house feels smaller by the hour.",
+      "wisdom": "Cabin fever is a signal, not a character flaw.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "sick-kid-home-from-school",
+      "tags": [
+        "young-family",
+        "winter",
+        "school"
+      ],
+      "title": "Sick Kid Home From School",
+      "description": "A winter virus keeps your child home from school during a critical workday.",
+      "wisdom": "Sick days are inconvenient because care is inconvenient.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 3,
+            "wellbeing": -3,
+            "children": -3
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": -1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "holiday-bonus-decision",
+      "tags": [
+        "young-family",
+        "winter",
+        "finance"
+      ],
+      "title": "Holiday Bonus Decision",
+      "description": "A holiday bonus arrives, and you must choose between debt, gifts, and one family treat.",
+      "wisdom": "Extra money reveals priorities quickly.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 4,
+            "wellbeing": 1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "christmas-morning-assembly",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Christmas Morning Assembly",
+      "description": "Christmas morning joy stalls when every toy needs batteries, tools, or assembly.",
+      "wisdom": "The magic often comes with tiny screws.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 4,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "snowblower-breakdown",
+      "tags": [
+        "young-family",
+        "winter",
+        "home"
+      ],
+      "title": "Snowblower Breakdown",
+      "description": "The snowblower breaks during a heavy snowfall, and the driveway is buried.",
+      "wisdom": "Winter tests tools, backs, and tempers.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -1,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -3,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "winter-road-trip",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Winter Road Trip",
+      "description": "A winter road trip is planned, but the forecast looks messy.",
+      "wisdom": "No memory is worth ignoring bad roads.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "valentines-school-party",
+      "tags": [
+        "young-family",
+        "winter",
+        "school"
+      ],
+      "title": "Valentine's School Party",
+      "description": "Your child needs Valentine cards for the class party by tomorrow morning.",
+      "wisdom": "Small rituals feel huge when everyone else is participating.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 1,
+            "children": 5
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -3
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "frozen-pipe-emergency",
+      "tags": [
+        "young-family",
+        "winter",
+        "home"
+      ],
+      "title": "Frozen Pipe Emergency",
+      "description": "A pipe freezes overnight, and the morning routine collapses.",
+      "wisdom": "Home emergencies are easier when blame stays out of the room.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -2,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -4,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": -1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "winter-festival-weekend",
+      "tags": [
+        "young-family",
+        "winter",
+        "community"
+      ],
+      "title": "Winter Festival Weekend",
+      "description": "The winter festival has skating, lights, and long lines in the cold.",
+      "wisdom": "Wonder sometimes requires mittens and patience.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 3
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "blizzard-grocery-run",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Blizzard Grocery Run",
+      "description": "A blizzard is coming, and groceries are low, but stores are already chaotic.",
+      "wisdom": "Preparedness is love with a shopping list.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": -1,
+            "children": 3,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -3,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "holiday-travel-delays",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Holiday Travel Delays",
+      "description": "Holiday travel delays strand your family in an airport or station for hours.",
+      "wisdom": "Children learn how to handle disappointment by watching adults handle delays.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 4,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -1,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "cozy-family-movie-marathon",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "Cozy Family Movie Marathon",
+      "description": "A bitter cold day makes staying in the obvious choice, but chores are waiting.",
+      "wisdom": "Rest can be a family activity, not just avoidance.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 3,
+            "children": 5,
+            "marriage": 1
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "wellbeing": -1,
+            "children": -2,
+            "marriage": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 3
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    },
+    {
+      "id": "first-day-above-freezing",
+      "tags": [
+        "young-family",
+        "winter",
+        "general"
+      ],
+      "title": "First Day Above Freezing",
+      "description": "The first mild winter day arrives, and everyone wants to get outside before it drops again.",
+      "wisdom": "A thaw is a reminder to breathe while you can.",
+      "choices": [
+        {
+          "label": "Show up warmly",
+          "memory": "You chose presence during the winter moment.",
+          "effects": {
+            "wallet": -2,
+            "wellbeing": 2,
+            "children": 2
+          }
+        },
+        {
+          "label": "Push through responsibilities",
+          "memory": "You pushed through responsibilities and missed the moment.",
+          "effects": {
+            "wallet": 2,
+            "children": -1
+          }
+        },
+        {
+          "label": "Protect a smaller moment",
+          "memory": "You protected a smaller winter memory.",
+          "effects": {
+            "wellbeing": 1,
+            "children": 2
+          }
+        }
+      ],
+      "seasons": [
+        "winter"
+      ]
+    }
+  ]
 }

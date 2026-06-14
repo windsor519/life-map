@@ -3948,18 +3948,18 @@ textarea:focus {
   margin-top: auto;
 }
 
-.season-score-history {
+.season-memory-history {
   display: grid;
   gap: 0.55rem;
-  border: 1px solid rgba(125, 211, 252, 0.18);
+  border: 1px solid rgba(251, 191, 36, 0.2);
   border-radius: 1rem;
   background:
-    radial-gradient(circle at 0 0, rgba(125, 211, 252, 0.12), transparent 10rem),
+    radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.12), transparent 10rem),
     rgba(15, 23, 42, 0.42);
   padding: 0.75rem;
 }
 
-.season-score-history > strong {
+.season-memory-history > strong {
   color: #fff;
   font-size: 0.78rem;
   font-weight: 600;
@@ -3967,31 +3967,51 @@ textarea:focus {
   text-transform: uppercase;
 }
 
-.season-score-history > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+.season-memory-history > div {
+  display: grid;
+  gap: 0.45rem;
 }
 
-.season-score-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.28rem;
-  border: 1px solid color-mix(in srgb, var(--stat-accent, #93c5fd) 26%, transparent);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.075);
-  padding: 0.34rem 0.5rem;
+.season-memory-item {
+  display: grid;
+  gap: 0.16rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.56rem 0.62rem;
 }
 
-.season-score-pill > span {
-  font-size: 0.95rem;
+.season-memory-item > span {
+  color: #fde68a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
+.season-memory-item > em {
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 0.74rem;
+  font-style: normal;
+}
 
-.season-score-pill strong {
+.season-memory-item > strong {
   color: #fff;
-  font-size: 0.95rem;
-  line-height: 1;
+  font-size: 0.9rem;
+}
+
+.season-memory-item > small {
+  color: rgba(226, 232, 240, 0.68);
+}
+
+.season-memory-item.memory-regret,
+.season-memory-item.memory-soft_regret {
+  border-color: rgba(248, 113, 113, 0.18);
+}
+
+.season-memory-item.memory-regret > span,
+.season-memory-item.memory-soft_regret > span {
+  color: #fca5a5;
 }
 
 

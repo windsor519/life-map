@@ -89,7 +89,8 @@ const getSeasonHistorySnapshot = (game, seasonId = getSeasonForMonth(game.month)
     eventTitle: selection.eventTitle,
     label: selection.label,
     source: selection.source ?? selection.choiceSource ?? "Selected",
-    effects: sanitizeEffects(selection.effects)
+    effects: sanitizeEffects(selection.effects),
+    memoryMoments: Array.isArray(selection.memoryMoments) ? selection.memoryMoments : []
   }));
 };
 const updateSeasonHistory = (game) => {
@@ -367,6 +368,65 @@ const sanitizeEffects = (effects) => {
 
   return sanitizedEffects;
 };
+
+const memoryTierConfig = [
+  { min: 9, type: "defining_memory", label: "Defining memory" },
+  { min: 7, type: "core_memory", label: "Core memory" },
+  { min: 5, type: "fond", label: "Fond memory" }
+];
+
+const getChoiceChildrenValue = (choice) => sanitizeEffects(choice?.originalEffects ?? choice?.effects).children ?? 0;
+const getMemoryTier = (childrenValue) => memoryTierConfig.find((tier) => childrenValue >= tier.min) ?? null;
+const createMemoryReason = (label) => label ? label.replace(/^./, (char) => char.toLowerCase()) : "showed up";
+const createChoiceMemoryMoments = (decision, selectedChoice, source = "Selected") => {
+  const selectedChildrenValue = getChoiceChildrenValue(selectedChoice);
+  const moments = [];
+  const selectedTier = getMemoryTier(selectedChildrenValue);
+
+  if (selectedTier) {
+    moments.push({
+      id: `${decision.key}-${selectedChoice.label}-fond`,
+      memory: selectedTier.type,
+      label: selectedTier.label,
+      source: decision.title,
+      choice: selectedChoice.label,
+      reason: createMemoryReason(selectedChoice.memory ?? selectedChoice.label),
+      childrenValue: selectedChildrenValue,
+      choiceSource: source
+    });
+  }
+
+  (decision.choices ?? []).forEach((availableChoice) => {
+    if (availableChoice.label === selectedChoice.label) {
+      return;
+    }
+
+    const missedChildrenValue = getChoiceChildrenValue(availableChoice);
+    const missedTier = getMemoryTier(missedChildrenValue);
+    const regretStrength = missedChildrenValue - selectedChildrenValue;
+
+    if (!missedTier || regretStrength <= 0) {
+      return;
+    }
+
+    moments.push({
+      id: `${decision.key}-${availableChoice.label}-regret`,
+      memory: regretStrength <= 2 ? "soft_regret" : "regret",
+      label: regretStrength <= 2 ? "Soft regret" : "Potential regret",
+      source: decision.title,
+      missed: availableChoice.label,
+      reason: "missed a high-childhood moment",
+      childrenValue: missedChildrenValue,
+      chosenChildrenValue: selectedChildrenValue,
+      severity: regretStrength,
+      missedTier: missedTier.type,
+      choiceSource: source
+    });
+  });
+
+  return moments;
+};
+
 const normalizeCustomEvents = (input) => {
   if (!input.trim()) {
     return [];
@@ -1557,7 +1617,8 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
-          source: "Selected"
+          source: "Selected",
+          memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Selected")
         }
       };
       const completedDecisions = Object.keys(selectedChoices);
@@ -1646,7 +1707,8 @@ export default function App() {
             ...selectedChoice,
             dayName: selectedChoice.dayName ?? day.dayLabel,
             eventTitle: selectedChoice.eventTitle ?? decision.title,
-            source: "Selected"
+            source: "Selected",
+            memoryMoments: selectedChoice.memoryMoments ?? createChoiceMemoryMoments(decision, selectedChoice, "Selected")
           };
           steps.push({
             key: `${decision.key}-selected`,
@@ -1671,7 +1733,8 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
-          source: "Auto"
+          source: "Auto",
+          memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Auto")
         };
         steps.push({
           key: `${decision.key}-random`,
@@ -2117,11 +2180,9 @@ export default function App() {
           seasonConfig={seasonConfig}
           seasonDecisions={seasonDecisions}
           seasonHistory={seasonHistory}
-          seasonScores={game.seasonScores}
           selectedChoices={selectedChoices}
           year={game.year}
           severityConfig={severityConfig}
-          statConfig={displayStatConfig}
           totalSeasonDecisions={totalSeasonDecisions}
           family={game.family}
           currentAge={game.age}

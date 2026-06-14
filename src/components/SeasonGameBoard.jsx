@@ -12,10 +12,8 @@ export default function SeasonGameBoard({
   seasonConfig,
   seasonDecisions,
   seasonHistory,
-  seasonScores,
   selectedChoices,
   severityConfig,
-  statConfig,
   totalSeasonDecisions,
   year,
   family,
@@ -57,7 +55,6 @@ export default function SeasonGameBoard({
   const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0);
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
-  const statEntries = Object.entries(statConfig ?? {});
 
   const scrollToSeasonCard = useCallback((index, behavior = "smooth") => {
     const carousel = seasonCarouselRef.current;
@@ -202,7 +199,6 @@ export default function SeasonGameBoard({
             const seasonMonthNames = getSeasonMonthNames(season);
             const cardDecisions = isActive ? seasonDecisions : [];
             const previousSelections = getPreviousSelections({ historyKey, offset, season });
-            const seasonScore = seasonScores?.[historyKey];
             const futureSeasonDistance = Math.abs(offset);
 
             return (
@@ -260,23 +256,29 @@ export default function SeasonGameBoard({
                   </div>
                 ) : (
                   <div className="season-past-stack">
-                    {isPast && seasonScore ? (
-                      <div className="season-score-history" aria-label={`${season.label} ${seasonYear} ending stat scores`}>
-                        <strong>Ending scores</strong>
-                        <div>
-                          {statEntries.map(([key, config]) => {
-                            const score = seasonScore.stats?.[key] ?? 0;
+                    {isPast ? (() => {
+                      const memoryMoments = previousSelections.flatMap((selection) =>
+                        (selection.memoryMoments ?? []).map((moment) => ({ ...moment, selection }))
+                      );
 
-                            return (
-                              <span className="season-score-pill" key={key} style={{ "--stat-accent": config.accent }} title={`${config.label}: ${score}`}>
-                                <span aria-hidden="true">{config.icon}</span>
-                                <strong>{score}</strong>
-                              </span>
-                            );
-                          })}
+                      return memoryMoments.length > 0 ? (
+                        <div className="season-memory-history" aria-label={`${season.label} ${seasonYear} fond memories and regrets`}>
+                          <strong>Fond memories & regrets</strong>
+                          <div>
+                            {memoryMoments.slice(0, 5).map((moment) => (
+                              <article className={`season-memory-item memory-${moment.memory}`} key={`${moment.selection.id}-${moment.id}`}>
+                                <span>{moment.label}</span>
+                                <em>{moment.source}</em>
+                                <strong>{moment.choice ?? `Missed: ${moment.missed}`}</strong>
+                                <small>{moment.memory === "fond" || moment.memory === "core_memory" || moment.memory === "defining_memory"
+                                  ? `Children +${moment.childrenValue} · ${moment.reason}`
+                                  : `Regret ${moment.severity} · ${moment.reason}`}</small>
+                              </article>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : null}
+                      ) : null;
+                    })() : null}
                     {previousSelections.length > 0 ? (
                       <div className="season-history" aria-label={`${season.label} ${seasonYear} selected choices`}>
                         <strong>{seasonYear} decisions</strong>

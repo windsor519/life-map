@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import events from "./data/events.js";
+import actions from "./data/actions.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
 import wisdomRecords from "./data/wisdom.json";
 import StartScreen from "./components/StartScreen.jsx";
@@ -76,7 +76,6 @@ const seasonConfig = [
 const getMonthLength = (month, year) => new Date(year, month, 0).getDate();
 const getSeasonForMonth = (month) => seasonConfig.find((season) => season.months.includes(month)) ?? seasonConfig[0];
 const getSeasonIndexForMonth = (month) => seasonConfig.findIndex((season) => season.months.includes(month));
-const getSeasonMonthNames = (season) => season.months.map((month) => monthNames[month - 1]).join(" · ");
 const createSeasonHistoryKey = (year, seasonId) => `${year}-${seasonId}`;
 
 const createEmptySeasonHistory = () => Object.fromEntries(seasonConfig.map((season) => [season.id, []]));
@@ -192,7 +191,7 @@ const statConfig = {
   marriage: { label: "Spousal relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / partner" },
   children: { label: "Children bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Kids / parenting" },
   wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" },
-  memory: { label: "Memory", icon: "🧠", max: 100, tone: "good", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.34)", signal: "Remembered moments" }
+  memory: { label: "Memory", icon: "🧠", tone: "good", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.34)", signal: "Remembered moments" }
 };
 
 const summaryStatKeys = Object.keys(statConfig);
@@ -481,14 +480,10 @@ const memoryTierConfig = [
 const getChoiceChildrenValue = (choice) => sanitizeEffects(choice?.originalEffects ?? choice?.effects).children ?? 0;
 const getChoiceMemoryScore = (decision, selectedChoice) => {
   const moments = createChoiceMemoryMoments(decision, selectedChoice);
-  return clamp(
-    moments.reduce((score, moment) => {
-      if (["fond", "core_memory", "defining_memory"].includes(moment.memory)) return score + Math.min(8, Math.max(3, moment.childrenValue ?? 0));
-      return score - Math.min(6, Math.max(2, moment.severity ?? 0));
-    }, 0),
-    -10,
-    10
-  );
+  return moments.reduce((score, moment) => {
+    if (["fond", "core_memory", "defining_memory"].includes(moment.memory)) return score + Math.max(3, moment.childrenValue ?? 0);
+    return score - Math.max(2, moment.severity ?? 0);
+  }, 0);
 };
 const getMemoryTier = (childrenValue) => memoryTierConfig.find((tier) => childrenValue >= tier.min) ?? null;
 const createMemoryReason = (label) => label ? label.replace(/^./, (char) => char.toLowerCase()) : "showed up";
@@ -686,13 +681,13 @@ const seededRandom = (...values) => {
 
   return ((hash >>> 0) % 10000) / 10000;
 };
-const getRandomEventId = (excludeId, eventList = events) => {
-  if (eventList.length === 0) {
+const getRandomEventId = (excludeId, actionList = actions) => {
+  if (actionList.length === 0) {
     return null;
   }
 
-  const availableEvents = eventList.filter((event) => event.id !== excludeId);
-  const pool = availableEvents.length > 0 ? availableEvents : eventList;
+  const availableEvents = actionList.filter((action) => action.id !== excludeId);
+  const pool = availableEvents.length > 0 ? availableEvents : actionList;
   return pool[Math.floor(Math.random() * pool.length)]?.id ?? null;
 };
 
@@ -809,9 +804,9 @@ const getAgePriorityTags = (age) => {
   return ["general"];
 };
 
-const getAgeRelevantEvents = (age, eventList = events, gameState = null, month = gameState?.month) => {
+const getAgeRelevantActions = (age, actionList = actions, gameState = null, month = gameState?.month) => {
   const priorityTags = getAgePriorityTags(age);
-  const scheduledEvents = eventList.filter((event) =>
+  const scheduledEvents = actionList.filter((event) =>
     !event.surprise && isEventEligible(event, gameState) && (!month || isEventSeasonEligible(event, month))
   );
   const relevantEvents = scheduledEvents.filter((event) => {
@@ -834,8 +829,8 @@ const getEventRelevanceScore = (event, age) => {
   return score;
 };
 
-const chooseAgeRelevantEvent = (eventSeed, month, year, index, eventPool, age) => {
-  const weighted = eventPool.map((event) => ({ event, weight: getEventRelevanceScore(event, age) }));
+const chooseAgeRelevantAction = (eventSeed, month, year, index, actionPool, age) => {
+  const weighted = actionPool.map((event) => ({ event, weight: getEventRelevanceScore(event, age) }));
   const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
   const choiceRoll = seededRandom(eventSeed, month, year, index, "event-weight") * totalWeight;
   let running = 0;
@@ -843,7 +838,7 @@ const chooseAgeRelevantEvent = (eventSeed, month, year, index, eventPool, age) =
   return weighted.find(({ weight }) => {
     running += weight;
     return choiceRoll < running;
-  })?.event ?? eventPool[0];
+  })?.event ?? actionPool[0];
 };
 
 const getSeverity = (event) => event.severity ?? "minor";
@@ -969,8 +964,8 @@ const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => 
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
 
-const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameState = null) => {
-  const eventPool = getAgeRelevantEvents(age, eventList, gameState, month);
+const getMonthSchedule = (month, year, eventSeed, age, actionList = actions, gameState = null) => {
+  const eventPool = getAgeRelevantActions(age, actionList, gameState, month);
   const daysInMonth = getMonthLength(month, year);
 
   return Array.from({ length: daysInMonth }, (_, index) => {
@@ -978,7 +973,7 @@ const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameS
     const dayLabel = `${monthNames[month - 1]} ${index + 1}`;
     const hasEvent = eventPool.length > 0 && seededRandom(eventSeed, month, year, index, "has-event") < RANDOM_EVENT_CHANCE;
     const decisions = hasEvent
-      ? [getDecoratedEvent(chooseAgeRelevantEvent(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
+      ? [getDecoratedEvent(chooseAgeRelevantAction(eventSeed, month, year, index, eventPool, age), eventSeed, month, index, 0)]
       : [];
 
     return {
@@ -1016,9 +1011,9 @@ const chooseUniqueSeasonEvents = (pool, count, eventSeed, season, year, category
   return chosen;
 };
 
-const getSeasonEventPool = (season, age, eventList, gameState, category) => {
+const getSeasonActionPool = (season, age, actionList, gameState, category) => {
   const priorityTags = getAgePriorityTags(age);
-  const eligibleEvents = eventList.filter((event) => !event.surprise && isEventEligible(event, gameState));
+  const eligibleEvents = actionList.filter((event) => !event.surprise && isEventEligible(event, gameState));
   const pool = eligibleEvents.filter((event) => {
     const hasSeason = Array.isArray(event.seasons) && event.seasons.includes(season.id);
     const tags = event.tags ?? ["general"];
@@ -1050,9 +1045,9 @@ const getSeasonDecisionDays = (season, year, eventSeed, decisions) => {
   return seasonDays;
 };
 
-const getSeasonSchedule = (season, year, eventSeed, age, eventList = events, gameState = null) => {
-  const agePool = getSeasonEventPool(season, age, eventList, gameState, "age");
-  const seasonPool = getSeasonEventPool(season, age, eventList, gameState, "season");
+const getSeasonSchedule = (season, year, eventSeed, age, actionList = actions, gameState = null) => {
+  const agePool = getSeasonActionPool(season, age, actionList, gameState, "age");
+  const seasonPool = getSeasonActionPool(season, age, actionList, gameState, "season");
   const ageDecisions = chooseUniqueSeasonEvents(agePool, getSeasonCategoryDecisionCount(eventSeed, season, year, "age"), eventSeed, season, year, "age", age);
   const seasonDecisions = chooseUniqueSeasonEvents(seasonPool.filter((event) => !ageDecisions.some((ageEvent) => ageEvent.id === event.id)), getSeasonCategoryDecisionCount(eventSeed, season, year, "season"), eventSeed, season, year, "season", age);
 
@@ -1306,7 +1301,7 @@ const createDefaultGame = () => ({
   seasonHistory: createEmptySeasonHistory(),
   seasonScores: {},
   memories: [],
-  currentEventId: getRandomEventId(undefined, events),
+  currentEventId: getRandomEventId(undefined, actions),
   eventSeed: createEventSeed(),
   weekStartStats: null,
   weeklySummary: null,
@@ -1327,7 +1322,7 @@ const normalizeGame = (game) => ({
   marriage: clamp(Number(game?.marriage ?? 40)),
   children: clamp(Number(game?.children ?? 0)),
   wallet: clamp(Number(game?.wallet ?? 60)),
-  memory: clamp(Number(game?.memory ?? 50)),
+  memory: Number.isFinite(Number(game?.memory)) ? Number(game.memory) : 50,
   month: clamp(Number(game?.month ?? 1), 1, 12),
   year: Number.isFinite(Number(game?.year)) ? Number(game.year) : new Date().getFullYear(),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
@@ -1653,7 +1648,7 @@ export default function App() {
       memories: ["You started a new life chapter.", getFamilySummary(family)].filter(Boolean),
       family,
       customEvents,
-      currentEventId: getRandomEventId(undefined, [...events, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
+      currentEventId: getRandomEventId(undefined, [...actions, ...customEvents].filter((eventItem) => isEventEligible(eventItem, { ...baseStats, age, month: 1, family }))),
       eventSeed: createEventSeed(),
       weeklySummary: null,
       gameOver: false,
@@ -1705,7 +1700,7 @@ export default function App() {
   };
 
   const currentCalendarYear = game.year;
-  const playableEvents = useMemo(() => [...events, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
+  const playableActions = useMemo(() => [...actions, ...(settings.aiMadeEvents && Array.isArray(game.customEvents) ? game.customEvents : [])], [game.customEvents, settings.aiMadeEvents]);
   const activeSeason = getSeasonForMonth(game.month);
 
   useEffect(() => {
@@ -1726,8 +1721,8 @@ export default function App() {
   }, [activeSeason.id, musicPlaying]);
 
   const seasonSchedule = useMemo(
-    () => getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game),
-    [activeSeason, game, currentCalendarYear, playableEvents]
+    () => getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableActions, game),
+    [activeSeason, game, currentCalendarYear, playableActions]
   );
   const seasonDecisions = useMemo(
     () => seasonSchedule.flatMap((day) => day.decisions.map((decision, decisionIndex) => ({ ...decision, day, decisionIndex }))),
@@ -1826,7 +1821,7 @@ export default function App() {
 
     return {
       ...next,
-      ...Object.fromEntries(summaryStatKeys.map((key) => [key, clamp(next[key])]))
+      ...Object.fromEntries(summaryStatKeys.map((key) => [key, key === "memory" ? next[key] : clamp(next[key])]))
     };
   };
 
@@ -1873,7 +1868,7 @@ export default function App() {
         ...nextState,
         completedDecisions,
         selectedChoices,
-        currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
+        currentEventId: getRandomEventId(prevGame.currentEventId, playableActions),
         memories: [...prevGame.memories, `${timestamp}: ${memoryAction}`].slice(-8)
       };
 
@@ -1898,7 +1893,7 @@ export default function App() {
       seasonScores: updateSeasonScores(game),
       completedDecisions: [],
       selectedChoices: {},
-      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
+      currentEventId: getRandomEventId(game.currentEventId, playableActions),
       memories: [...game.memories, `${getSeasonForMonth(game.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
     };
     setActiveDecisionContext(null);
@@ -1918,7 +1913,7 @@ export default function App() {
         seasonScores,
         completedDecisions: [],
         selectedChoices: {},
-        currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
+        currentEventId: getRandomEventId(prevGame.currentEventId, playableActions),
         memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8),
         legacy: {
           ...normalizeLegacy(prevGame.legacy),
@@ -1938,7 +1933,7 @@ export default function App() {
     setActiveDecisionContext(null);
     setActiveStatKey(null);
 
-    const schedule = getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableEvents, game);
+    const schedule = getSeasonSchedule(activeSeason, currentCalendarYear, game.eventSeed, game.age, playableActions, game);
     let nextState = game;
     const steps = [];
     const resolvedSeasonChoices = {};
@@ -2082,7 +2077,7 @@ export default function App() {
       seasonScores: updateSeasonScores(game, nextState),
       completedDecisions: [],
       selectedChoices: {},
-      currentEventId: getRandomEventId(game.currentEventId, playableEvents),
+      currentEventId: getRandomEventId(game.currentEventId, playableActions),
       memories: [...game.memories, ...simulatedMemories].slice(-8),
       legacy: {
         ...normalizeLegacy(game.legacy),
@@ -2451,7 +2446,6 @@ export default function App() {
           activeSeason={activeSeason}
           completedDecisions={game.completedDecisions}
           completedThisSeason={completedThisSeason}
-          getSeasonMonthNames={getSeasonMonthNames}
           isSimulationLocked={isSimulationLocked}
           onOpenDecision={setActiveDecisionContext}
           pendingThisSeason={pendingThisSeason}
@@ -2482,7 +2476,7 @@ export default function App() {
               <div className="decision-title">
                 <span className="mini-icon" aria-hidden="true">{currentSimulationStep.visual?.icon ?? "🎲"}</span>
                 <span>
-                  <small>{simulationState.phase === "unexpected" ? "Unexpected event" : `Simulated day · ${currentSimulationStep.dayLabel}`}</small>
+                  <small>{simulationState.phase === "unexpected" ? "Random event" : `Planned action · ${currentSimulationStep.dayLabel}`}</small>
                   <h2 id="simulation-modal-title">{currentSimulationStep.eventTitle}</h2>
                 </span>
               </div>
@@ -2656,20 +2650,20 @@ export default function App() {
                   <button
                     className="decision-modal-nav"
                     type="button"
-                    aria-label={previousDecision ? `Show previous event: ${previousDecision.title}` : "No previous event"}
+                    aria-label={previousDecision ? `Show previous action: ${previousDecision.title}` : "No previous action"}
                     disabled={!previousDecision}
                     onClick={() => openDecisionAtIndex(currentIndex - 1)}
-                    title="Previous event"
+                    title="Previous action"
                   >
                     ←
                   </button>
                   <button
                     className="decision-modal-nav"
                     type="button"
-                    aria-label={nextDecision ? `Show next event: ${nextDecision.title}` : "No next event"}
+                    aria-label={nextDecision ? `Show next action: ${nextDecision.title}` : "No next action"}
                     disabled={!nextDecision}
                     onClick={() => openDecisionAtIndex(currentIndex + 1)}
-                    title="Next event"
+                    title="Next action"
                   >
                     →
                   </button>

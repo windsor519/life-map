@@ -5,7 +5,6 @@ export default function SeasonGameBoard({
   activeSeason,
   completedDecisions,
   completedThisSeason,
-  getSeasonMonthNames,
   isSimulationLocked,
   onOpenDecision,
   pendingThisSeason,
@@ -46,7 +45,6 @@ export default function SeasonGameBoard({
     seasonHistory[historyKey] ?? (!hasYearHistory && offset < 0 ? seasonHistory[season.id] ?? [] : []);
   const allPastSeasonTimeline = Array.from({ length: 20 }, (_, index) => getTimelineItem(index - 20))
     .filter((item) => getPreviousSelections(item).length > 0);
-  const pastSeasonTimeline = allPastSeasonTimeline.slice(-1);
   const memoryMoments = allPastSeasonTimeline.flatMap((item) =>
     getPreviousSelections(item).flatMap((selection) =>
       (selection.memoryMoments ?? []).map((moment) => ({
@@ -57,15 +55,10 @@ export default function SeasonGameBoard({
       }))
     )
   );
-  const futureSeasonTimeline = Array.from({ length: 1 }, (_, index) => getTimelineItem(index + 1));
-  const seasonTimeline = [
-    ...pastSeasonTimeline,
-    getTimelineItem(0),
-    ...futureSeasonTimeline
-  ];
+  const seasonTimeline = [getTimelineItem(0)];
   const fondMemoryCount = memoryMoments.filter((moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory)).length;
   const regretMemoryCount = memoryMoments.filter((moment) => ["regret", "soft_regret"].includes(moment.memory)).length;
-  const memoryHighScore = fondMemoryCount - regretMemoryCount;
+  const memoryHighScore = memoryMoments.reduce((score, moment) => score + (["fond", "core_memory", "defining_memory"].includes(moment.memory) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0)), 0);
   const memoryCardOffset = 1;
   const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0) + memoryCardOffset;
   const totalTimelineCards = seasonTimeline.length + memoryCardOffset;
@@ -166,17 +159,17 @@ export default function SeasonGameBoard({
           <p className="eyebrow">This season</p>
           <h2>Plan {activeSeason.label} {year}</h2>
         </div>
-        <span>{pendingThisSeason} decisions left · seasonal emergency chance</span>
+        <span>{pendingThisSeason} actions left · random events can appear at end of turn</span>
       </div>
-      <p className="calendar-intro">Trade the calendar grid for a seasonal rhythm. Pick the choices that matter this year, then let the simulation resolve the rest across {getSeasonMonthNames(activeSeason)} {year}.</p>
+      <p className="calendar-intro">Actions are planned events placed on your calendar. Pick the choices that matter this season, then simulate; random Events can show up unexpectedly at the end of the turn.</p>
       <div className="board-family-strip" aria-label="Your family">
         <strong>Your family</strong>
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
       </div>
       <div className="flow-panel">
         <div>
-          <strong>{pendingThisSeason === 0 ? "Season plan ready" : "Season planning: choose what matters"}</strong>
-          <span>{completedThisSeason}/{totalSeasonDecisions} decisions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before advancing." : "Unselected seasonal moments will auto-resolve when you simulate."}</span>
+          <strong>{pendingThisSeason === 0 ? "Action plan ready" : "Action planning: choose what matters"}</strong>
+          <span>{completedThisSeason}/{totalSeasonDecisions} actions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before simulating." : "Unselected actions will auto-resolve when you simulate."}</span>
         </div>
       </div>
       <div className="season-board-frame">
@@ -217,16 +210,16 @@ export default function SeasonGameBoard({
             <div className="season-panel-score" aria-label={`Memory score ${memoryHighScore}`}>
               <span>Memory score</span>
               <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
-              <small>{fondMemoryCount} fond − {regretMemoryCount} regrets</small>
+              <small>No cap: +children value for fond memories, −regret gap for regrets</small>
             </div>
             <div className="season-panel-header">
               <span className="season-icon" aria-hidden="true">🧠</span>
               <div>
-                <p className="eyebrow">Accumulated past</p>
+                <p className="eyebrow">Unbounded score</p>
                 <h3>Memory</h3>
               </div>
             </div>
-            <p>Fond memories and regrets from previous seasons are gathered here. This score is for high-scoring: win by collecting more fond memories than regrets.</p>
+            <p>Memory has no minimum or maximum. Fond, core, and defining memories add their children-bond value; regrets subtract the missed-memory gap, so many fond memories can push the score very high and many regrets can drive it negative.</p>
             <div className="season-memory-history" aria-label="Accumulated fond memories and regrets">
               <strong>Fond memories & regrets</strong>
               <div>
@@ -245,18 +238,13 @@ export default function SeasonGameBoard({
               </div>
             </div>
           </article>
-          {seasonTimeline.map(({ season, offset, year: seasonYear, historyKey }, timelineIndex) => {
+          {seasonTimeline.map(({ season, offset, year: seasonYear }, timelineIndex) => {
             const cardIndex = timelineIndex + memoryCardOffset;
-            const isActive = offset === 0;
-            const isPast = offset < 0;
-            const isFuture = offset > 0;
-            const cardDecisions = isActive ? seasonDecisions : [];
-            const previousSelections = getPreviousSelections({ historyKey, offset, season });
-            const futureSeasonDistance = Math.abs(offset);
+            const cardDecisions = seasonDecisions;
 
             return (
               <article
-                className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${isPast ? "past" : ""} ${isFuture ? "future" : ""} ${cardIndex === viewedSeasonIndex ? "in-view" : ""}`}
+                className={`season-panel season-panel-${season.id} active ${cardIndex === viewedSeasonIndex ? "in-view" : ""}`}
                 key={`${seasonYear}-${season.id}-${offset}`}
                 ref={(panel) => {
                   seasonPanelRefs.current[cardIndex] = panel;
@@ -265,14 +253,13 @@ export default function SeasonGameBoard({
                 <div className="season-panel-header">
                   <span className="season-icon" aria-hidden="true">{season.icon}</span>
                   <div>
-                    <p className="eyebrow">{offset === 0 ? "Selected season" : isPast ? "Past season" : "Future season"}</p>
+                    <p className="eyebrow">Current action plan</p>
                     <h3>{season.label}</h3>
                   </div>
                 </div>
                 <p>{season.description}</p>
-                {isActive ? (
-                  <div className="season-decisions">
-                    {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
+                <div className="season-decisions">
+                  {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
                       const selectedChoice = selectedChoices[decision.key];
                       const lockedLegacyChoice = !selectedChoice && completedDecisions.includes(decision.key);
                       const completed = Boolean(selectedChoice) || lockedLegacyChoice;
@@ -289,7 +276,7 @@ export default function SeasonGameBoard({
                             <span className="decision-title">
                               <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
                               <span>
-                                <small>{decision.visual.label} · {decision.day.dayLabel}</small>
+                                <small>Action · {decision.day.dayLabel}</small>
                                 <h3>{decision.title}</h3>
                               </span>
                             </span>
@@ -304,43 +291,8 @@ export default function SeasonGameBoard({
                           </button>
                         </section>
                       );
-                    }) : <p className="season-empty">This season is unusually quiet. Simulate to discover whether life stays that way.</p>}
-                  </div>
-                ) : (
-                  <div className="season-past-stack">
-                    {previousSelections.length > 0 ? (
-                      <div className="season-history" aria-label={`${season.label} ${seasonYear} selected choices`}>
-                        <strong>{seasonYear} decisions</strong>
-                        {previousSelections.slice(0, 4).map((selection) => {
-                          const source = selection.source ?? "Selected";
-
-                          return (
-                            <div className="season-history-item" key={selection.id}>
-                              <span>
-                                {selection.dayName}
-                                <small className={`season-history-source source-${source.toLowerCase()}`}>{source}</small>
-                              </span>
-                              <em>{selection.eventTitle}</em>
-                              <strong>{selection.label}</strong>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : isFuture ? (
-                      <div className="season-preview future-season-preview" aria-label={`${season.label} ${seasonYear} is a future season`}>
-                        <span className="future-season-lock" aria-hidden="true">🔒</span>
-                        <strong>Future season — not playable yet</strong>
-                        <span>{futureSeasonDistance} season{futureSeasonDistance === 1 ? "" : "s"} ahead</span>
-                        <small>Finish the current season to unlock this plan. Decisions will appear when this season becomes current.</small>
-                      </div>
-                    ) : (
-                      <div className="season-preview">
-                        <strong>{season.months.length} month arc</strong>
-                        <span>{`No selections saved for ${seasonYear}`}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  }) : <p className="season-empty">This season has no planned actions. Simulate to discover whether random events appear at the end of the turn.</p>}
+                </div>
               </article>
             );
           })}

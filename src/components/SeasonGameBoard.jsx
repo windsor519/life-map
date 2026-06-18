@@ -106,30 +106,29 @@ export default function SeasonGameBoard({
   const isPositiveMemory = (moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory);
   const getMemoryMomentScore = (moment) => isPositiveMemory(moment) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0);
   const memoryHighScore = memoryMoments.reduce((score, moment) => score + getMemoryMomentScore(moment), 0);
-  const memoryGraphSeasons = availableSeasons.map((season) => {
-    const seasonMoments = memoryMoments.filter((moment) => moment.seasonLabel === season.label);
-    const scoredMoments = seasonMoments.map((moment) => ({
-      ...moment,
-      score: getMemoryMomentScore(moment),
-      isPositive: isPositiveMemory(moment)
-    }));
-    const score = scoredMoments.reduce((total, moment) => total + moment.score, 0);
+  const memoryGraphMoments = memoryMoments.reduce((moments, moment, index) => {
+    const score = getMemoryMomentScore(moment);
+    const cumulativeScore = (moments.at(-1)?.cumulativeScore ?? 0) + score;
 
-    return {
-      ...season,
-      score,
-      count: scoredMoments.length,
-      fondCount: scoredMoments.filter((moment) => moment.isPositive).length,
-      regretCount: scoredMoments.filter((moment) => !moment.isPositive).length,
-      moments: scoredMoments
-    };
-  });
-  const memoryGraphPeak = Math.max(1, ...memoryGraphSeasons.map((season) => Math.abs(season.score)));
-  const memoryLinePoints = memoryGraphSeasons.map((season, index) => {
-    const x = memoryGraphSeasons.length <= 1 ? 50 : 10 + (index / (memoryGraphSeasons.length - 1)) * 80;
-    const y = 50 - (season.score / memoryGraphPeak) * 34;
+    return [
+      ...moments,
+      {
+        ...moment,
+        id: `${moment.selection?.id ?? "memory"}-${moment.year}-${index}`,
+        score,
+        cumulativeScore,
+        isPositive: isPositiveMemory(moment),
+        sequenceNumber: index + 1
+      }
+    ];
+  }, []);
 
-    return { ...season, x, y: Math.max(12, Math.min(88, y)) };
+  const memoryGraphPeak = Math.max(1, ...memoryGraphMoments.map((moment) => Math.abs(moment.cumulativeScore)));
+  const memoryLinePoints = memoryGraphMoments.map((moment, index) => {
+    const x = memoryGraphMoments.length <= 1 ? 50 : 4 + (index / (memoryGraphMoments.length - 1)) * 92;
+    const y = 50 - (moment.cumulativeScore / memoryGraphPeak) * 34;
+
+    return { ...moment, x, y: Math.max(10, Math.min(90, y)) };
   });
   const memoryLinePath = memoryLinePoints.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
   const memoryGraphColumnCount = Math.max(1, memoryLinePoints.length);
@@ -137,8 +136,8 @@ export default function SeasonGameBoard({
   const totalTimelineCards = seasonTimeline.length;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
-  const [activeMemorySeasonId, setActiveMemorySeasonId] = useState(null);
-  const activeMemorySeason = useMemo(() => memoryGraphSeasons.find((season) => season.id === activeMemorySeasonId) ?? null, [activeMemorySeasonId, memoryGraphSeasons]);
+  const [activeMemoryPointId, setActiveMemoryPointId] = useState(null);
+  const activeMemoryPoint = useMemo(() => memoryLinePoints.find((point) => point.id === activeMemoryPointId) ?? null, [activeMemoryPointId, memoryLinePoints]);
 
   const scrollToSeasonCard = useCallback((index, behavior = "smooth") => {
     const carousel = seasonCarouselRef.current;
@@ -245,7 +244,7 @@ export default function SeasonGameBoard({
         <div className="memory-graph-header">
           <div>
             <strong>Memory graph</strong>
-            <span>Each season is connected as a line, with fond memories rising and regrets dipping.</span>
+            <span>Every memory is plotted in order, with fond memories rising and regrets dipping.</span>
           </div>
           <div className="memory-graph-score">
             <span>Total memory</span>
@@ -265,42 +264,38 @@ export default function SeasonGameBoard({
             ) : (
               <p className="memory-graph-empty">No seasons configured yet. Memories will appear here once seasons are available.</p>
             )}
-            {memoryLinePoints.map((season) => (
+            {memoryLinePoints.map((point) => (
               <button
+                aria-label={`Memory ${point.sequenceNumber}: ${point.seasonLabel} ${point.year}, score ${point.score >= 0 ? `+${point.score}` : point.score}`}
                 className="memory-graph-season"
-                key={`memory-graph-${season.id}`}
-                onClick={() => setActiveMemorySeasonId(season.id)}
-                style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
+                key={`memory-graph-${point.id}`}
+                onClick={() => setActiveMemoryPointId(point.id)}
+                style={{ "--point-x": `${point.x}%`, "--point-y": `${point.y}%` }}
+                title={`${point.year} · ${point.seasonLabel} · ${point.score >= 0 ? `+${point.score}` : point.score}`}
                 type="button"
               >
-                <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
-                <strong>{season.icon} {season.label}</strong>
-                <span>{season.count} memories</span>
-                <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
+                <span className={`memory-graph-point ${point.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
+                <strong>{point.sequenceNumber}</strong>
+                <span>{point.seasonLabel}</span>
+                <small>{point.score >= 0 ? `+${point.score}` : point.score} · total {point.cumulativeScore >= 0 ? `+${point.cumulativeScore}` : point.cumulativeScore}</small>
               </button>
             ))}
           </div>
         </div>
-        {activeMemorySeason ? (
+        {activeMemoryPoint ? (
           <div className="memory-detail-panel" aria-live="polite">
             <div className="memory-detail-heading">
-              <strong>{activeMemorySeason.icon} {activeMemorySeason.label} memories</strong>
-              <button type="button" className="memory-detail-close" onClick={() => setActiveMemorySeasonId(null)} aria-label="Close memory details">×</button>
+              <strong>Memory {activeMemoryPoint.sequenceNumber} · {activeMemoryPoint.seasonLabel} {activeMemoryPoint.year}</strong>
+              <button type="button" className="memory-detail-close" onClick={() => setActiveMemoryPointId(null)} aria-label="Close memory details">×</button>
             </div>
-            {activeMemorySeason.moments.length > 0 ? (
-              <div className="memory-detail-list">
-                {activeMemorySeason.moments.map((moment, index) => (
-                  <article className={`memory-detail-item ${moment.score < 0 ? "negative" : "positive"}`} key={`${activeMemorySeason.id}-${moment.selection?.id ?? index}`}>
-                    <span>{moment.year} · {moment.selection?.dayName ?? "Season"}</span>
-                    <strong>{moment.selection?.eventTitle ?? "Memory"}</strong>
-                    <p>{moment.text ?? moment.selection?.memory ?? moment.selection?.label ?? "This choice changed the family story."}</p>
-                    <em>{moment.score >= 0 ? `+${moment.score}` : moment.score}</em>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="memory-detail-empty">No saved memory moments for this season yet. Simulated or selected choices will explain future dips and gains here.</p>
-            )}
+            <div className="memory-detail-list">
+              <article className={`memory-detail-item ${activeMemoryPoint.score < 0 ? "negative" : "positive"}`}>
+                <span>{activeMemoryPoint.year} · {activeMemoryPoint.selection?.dayName ?? "Season"}</span>
+                <strong>{activeMemoryPoint.selection?.eventTitle ?? "Memory"}</strong>
+                <p>{activeMemoryPoint.text ?? activeMemoryPoint.selection?.memory ?? activeMemoryPoint.selection?.label ?? "This choice changed the family story."}</p>
+                <em>{activeMemoryPoint.score >= 0 ? `+${activeMemoryPoint.score}` : activeMemoryPoint.score} · total {activeMemoryPoint.cumulativeScore >= 0 ? `+${activeMemoryPoint.cumulativeScore}` : activeMemoryPoint.cumulativeScore}</em>
+              </article>
+            </div>
           </div>
         ) : null}
       </div>

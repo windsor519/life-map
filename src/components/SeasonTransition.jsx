@@ -216,13 +216,13 @@ export default function SeasonTransition({ previousSeasonId, targetSeasonId, wis
     let startedAt;
     let particles = [];
     let flora = [];
-    const duration = 3600;
+    const duration = 1200;
     const sourcePalette = previousSeasonId ? previousAnimation.palette : winterPalette;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      particles = Array.from({ length: 120 }, () => createParticle(canvas.width, canvas.height));
+      particles = Array.from({ length: 72 }, () => createParticle(canvas.width, canvas.height));
       flora = createFlora(animation, canvas.width, canvas.height);
     };
 

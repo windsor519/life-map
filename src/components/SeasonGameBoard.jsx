@@ -77,6 +77,13 @@ export default function SeasonGameBoard({
     };
   });
   const memoryGraphPeak = Math.max(1, ...memoryGraphSeasons.map((season) => Math.abs(season.score)));
+  const memoryLinePoints = memoryGraphSeasons.map((season, index) => {
+    const x = memoryGraphSeasons.length <= 1 ? 50 : 10 + (index / (memoryGraphSeasons.length - 1)) * 80;
+    const y = 50 - (season.score / memoryGraphPeak) * 34;
+
+    return { ...season, x, y: Math.max(12, Math.min(88, y)) };
+  });
+  const memoryLinePath = memoryLinePoints.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
   const activeTimelineIndex = 0;
   const totalTimelineCards = seasonTimeline.length;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
@@ -187,7 +194,7 @@ export default function SeasonGameBoard({
         <div className="memory-graph-header">
           <div>
             <strong>Memory graph</strong>
-            <span>Each season now plots fond memories above the line and regrets below it.</span>
+            <span>Each season is connected as a line, with fond memories rising and regrets dipping.</span>
           </div>
           <div className="memory-graph-score">
             <span>Total memory</span>
@@ -196,23 +203,18 @@ export default function SeasonGameBoard({
         </div>
         <div className="memory-graph" role="img" aria-label={`Total memory score ${memoryHighScore}`}>
           <span className="memory-graph-axis" aria-hidden="true" />
-          {memoryGraphSeasons.map((season) => {
-            const magnitude = Math.max(8, Math.round((Math.abs(season.score) / memoryGraphPeak) * 74));
-
-            return (
-              <article className="memory-graph-season" key={`memory-graph-${season.id}`}>
-                <div className="memory-graph-bar-track">
-                  <span
-                    className={`memory-graph-bar ${season.score < 0 ? "negative" : "positive"}`}
-                    style={{ height: `${season.count > 0 ? magnitude : 6}%` }}
-                  />
-                </div>
-                <strong>{season.icon} {season.label}</strong>
-                <span>{season.count} memories</span>
-                <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
-              </article>
-            );
-          })}
+          <svg className="memory-graph-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path className="memory-graph-line-glow" d={memoryLinePath} />
+            <path className="memory-graph-line-path" d={memoryLinePath} />
+          </svg>
+          {memoryLinePoints.map((season) => (
+            <article className="memory-graph-season" key={`memory-graph-${season.id}`} style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}>
+              <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
+              <strong>{season.icon} {season.label}</strong>
+              <span>{season.count} memories</span>
+              <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
+            </article>
+          ))}
         </div>
       </div>
       <div className="flow-panel">

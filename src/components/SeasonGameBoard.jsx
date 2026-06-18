@@ -259,6 +259,12 @@ export default function SeasonGameBoard({
           <span>{completedThisSeason}/{totalSeasonDecisions} actions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before simulating." : "Unselected actions will auto-resolve when you simulate."}</span>
         </div>
       </div>
+      <div className="cute-board-decor" aria-hidden="true">
+        <span>🌈</span>
+        <span>🐝</span>
+        <span>🧁</span>
+        <span>🌻</span>
+      </div>
       <div className="season-board-frame">
         <div
           className="season-carousel"
@@ -292,6 +298,7 @@ export default function SeasonGameBoard({
                   </div>
                 </div>
                 <p>{season.description}</p>
+                <div className="board-path-ribbon" aria-hidden="true"><span>🐾</span><span>✨</span><span>💌</span><span>🌼</span></div>
                 <div className="season-decisions season-decisions-by-month">
                     <section className="season-month-group" key={`${season.id}-${monthGroup.month}`}>
                       <div className="season-month-heading">

@@ -3482,42 +3482,6 @@
       ]
     },
     {
-      "category": "Major family event",
-      "icon": "\ud83d\udedf",
-      "accent": "rose",
-      "title": "Family Emergency",
-      "severity": "major",
-      "description": "A relative needs immediate help during a difficult moment.",
-      "minor": [
-        "Show up fast",
-        {
-          "children": 8,
-          "marriage": 5,
-          "stress": 8,
-          "money": -2
-        },
-        "You showed up for a family emergency."
-      ],
-      "balanced": [
-        "Coordinate help",
-        {
-          "children": 5,
-          "marriage": 3,
-          "stress": 4
-        },
-        "You coordinated support for the family emergency."
-      ],
-      "risky": [
-        "Stay out of it",
-        {
-          "children": -8,
-          "marriage": -4,
-          "stress": 3
-        },
-        "You stayed out of a family emergency."
-      ]
-    },
-    {
       "category": "Major career event",
       "icon": "\ud83d\udeaa",
       "accent": "violet",

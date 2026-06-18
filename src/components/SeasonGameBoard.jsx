@@ -210,7 +210,6 @@ export default function SeasonGameBoard({
             <div className="season-panel-score" aria-label={`Memory score ${memoryHighScore}`}>
               <span>Memory score</span>
               <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
-              <small>No cap: +children value for fond memories, −regret gap for regrets</small>
             </div>
             <div className="season-panel-header">
               <span className="season-icon" aria-hidden="true">🧠</span>

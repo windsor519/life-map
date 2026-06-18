@@ -12,6 +12,66 @@ import walletEvents from "./events/wallet.js";
 import wellbeingEvents from "./events/wellbeing.js";
 
 const effectKeys = new Set(["wellbeing", "marriage", "children", "wallet", "reputation", "memory"]);
+const youngChildAgeGroup = { minAge: 0, maxAge: 12 };
+const teenAgeGroup = { minAge: 13, maxAge: 19 };
+const adultChildAgeGroup = { minAge: 20, maxAge: 40 };
+const anyChildAgeGroup = { minAge: 0, maxAge: 40 };
+
+const lowQualityActionIds = new Set([
+  "beach-day-vs-overtime",
+  "neighborhood-bbq",
+  "fireworks-celebration",
+  "kids-lemonade-stand",
+  "long-weekend-road-trip",
+  "ice-cream-run-after-dinner",
+  "water-balloon-battle",
+  "summer-vacation-planning",
+  "first-frost-morning",
+  "leaf-raking-marathon"
+]);
+
+const ageGateById = {
+  "first-soccer-practice": [youngChildAgeGroup],
+  "easter-egg-hunt": [youngChildAgeGroup],
+  "rainy-field-trip-chaperone": [youngChildAgeGroup],
+  "school-spring-concert": [youngChildAgeGroup],
+  "allergy-season-meltdown": [youngChildAgeGroup],
+  "science-fair-presentation": [youngChildAgeGroup],
+  "school-track-meet": [youngChildAgeGroup],
+  "summer-camp-drop-off": [youngChildAgeGroup],
+  "pool-opening-day": [youngChildAgeGroup],
+  "family-camping-weekend": [youngChildAgeGroup],
+  "outdoor-movie-night": [youngChildAgeGroup],
+  "kids-first-fishing-trip": [youngChildAgeGroup],
+  "end-of-summer-carnival": [youngChildAgeGroup],
+  "back-to-school-shopping": [youngChildAgeGroup, teenAgeGroup],
+  "parent-teacher-conference": [youngChildAgeGroup, teenAgeGroup],
+  "school-fundraiser-drive": [youngChildAgeGroup, teenAgeGroup],
+  "teenager-caught-lying": [teenAgeGroup],
+  "detention-call": [teenAgeGroup],
+  "scholarship-deadline": [teenAgeGroup, adultChildAgeGroup],
+  "college-scholarship": [teenAgeGroup, adultChildAgeGroup],
+  "child-first-job": [teenAgeGroup],
+  "empty-nest-planning": [adultChildAgeGroup]
+};
+
+const childTaggedEventIds = new Set([
+  "spring-school-garden-day",
+  "tree-planting-day",
+  "first-bike-ride-of-the-year",
+  "backyard-cleanup-weekend",
+  "community-cleanup-event",
+  "family-hiking-day",
+  "spring-break-staycation",
+  "farmers-market-opening-day",
+  "rainy-saturday-board-game-marathon",
+  "family-cottage-trip",
+  "community-fair",
+  "backyard-bonfire-night",
+  "pumpkin-patch-saturday",
+  "apple-picking-weekend",
+  "harvest-festival"
+]);
 
 const choiceFixes = {
   "first-soccer-practice": {
@@ -85,6 +145,12 @@ const sanitizeEffects = (effects = {}) => Object.fromEntries(
     .map(([key, value]) => [key, Math.round(Number(value))])
 );
 
+const getFamilyAgeGroups = (event) => {
+  if (ageGateById[event.id]) return ageGateById[event.id];
+  if (childTaggedEventIds.has(event.id)) return [anyChildAgeGroup];
+  return event.familyAgeGroups ?? event.familyAgeGroup;
+};
+
 const normalizeGenericChoice = (event, choice) => {
   const title = tidyTitleFragment(event.title);
 
@@ -111,7 +177,7 @@ const normalizeGenericChoice = (event, choice) => {
   if (choice.label === "Compromise carefully") {
     return {
       ...choice,
-      label: `Find a smaller version`,
+      label: "Find a smaller version",
       memory: choice.memory === "You found a summer compromise that kept the day partly intact."
         ? `You found a smaller version of ${title} that still let the day feel intentional.`
         : choice.memory
@@ -121,12 +187,18 @@ const normalizeGenericChoice = (event, choice) => {
   return choice;
 };
 
+const getEffectPattern = (event) => event.choices
+  .map((choice) => Object.entries(choice.effects ?? {}).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => `${key}:${value}`).join(","))
+  .join("|");
+
 const cleanAction = (event) => {
   const fixes = choiceFixes[event.id] ?? {};
   const choices = Array.isArray(event.choices) ? event.choices : [];
+  const familyAgeGroups = getFamilyAgeGroups(event);
 
   return {
     ...event,
+    ...(familyAgeGroups ? { familyAgeGroups } : {}),
     choices: choices
       .map((choice) => {
         const normalizedChoice = normalizeGenericChoice(event, choice);
@@ -142,29 +214,22 @@ const cleanAction = (event) => {
   };
 };
 
-const generatedActions = Array.from({ length: 279 }, (_, index) => {
-  const blueprint = generatedActionBlueprints[index % generatedActionBlueprints.length];
-  const cycle = Math.floor(index / generatedActionBlueprints.length) + 1;
-  const severity = blueprint.severity ?? (index % 11 === 0 ? "moderate" : "minor");
-  const titleSuffix = cycle > 1 ? ` ${cycle}` : "";
-
-  return {
-    id: `expanded-${index + 1}-${blueprint.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`,
-    title: `${blueprint.title}${titleSuffix}`,
-    severity,
-    category: blueprint.category,
-    icon: blueprint.icon,
-    accent: blueprint.accent,
-    description: blueprint.description,
-    wisdom: blueprint.wisdom ?? "Everyday actions are practice for the life you are building. Choose the response that is kind to both today and next season.",
-    tags: blueprint.tags ?? ["general"],
-    choices: [
-      { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },
-      { label: blueprint.balanced[0], effects: blueprint.balanced[1], memory: blueprint.balanced[2] },
-      { label: blueprint.risky[0], effects: blueprint.risky[1], memory: blueprint.risky[2] }
-    ]
-  };
-});
+const generatedActions = generatedActionBlueprints.map((blueprint, index) => ({
+  id: `expanded-${index + 1}-${blueprint.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`,
+  title: blueprint.title,
+  severity: blueprint.severity ?? (index % 11 === 0 ? "moderate" : "minor"),
+  category: blueprint.category,
+  icon: blueprint.icon,
+  accent: blueprint.accent,
+  description: blueprint.description,
+  wisdom: blueprint.wisdom ?? "Everyday actions are practice for the life you are building. Choose the response that is kind to both today and next season.",
+  tags: blueprint.tags ?? ["general"],
+  choices: [
+    { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },
+    { label: blueprint.balanced[0], effects: blueprint.balanced[1], memory: blueprint.balanced[2] },
+    { label: blueprint.risky[0], effects: blueprint.risky[1], memory: blueprint.risky[2] }
+  ]
+}));
 
 const refactoredActions = [
   ...careerEvents,
@@ -179,8 +244,21 @@ const refactoredActions = [
   ...wellbeingEvents
 ];
 
+const seenEffectPatterns = new Set();
 const actions = [...baseActions, ...familyAgeEvents, ...refactoredActions, ...generatedActions]
   .map(cleanAction)
-  .filter((event) => event.id && event.title && event.description && event.choices.length > 0);
+  .filter((event) => event.id && event.title && event.description && event.choices.length > 0)
+  .filter((event) => !lowQualityActionIds.has(event.id))
+  .filter((event) => {
+    const pattern = getEffectPattern(event);
+    const isTemplateSeasonal = event.tags?.includes("summer") || event.tags?.includes("fall") || event.tags?.includes("winter");
+
+    if (!isTemplateSeasonal || !seenEffectPatterns.has(pattern)) {
+      seenEffectPatterns.add(pattern);
+      return true;
+    }
+
+    return false;
+  });
 
 export default actions;

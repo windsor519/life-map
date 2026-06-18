@@ -55,7 +55,12 @@ export default function SeasonGameBoard({
       }))
     )
   );
-  const seasonTimeline = [getTimelineItem(0)];
+  const seasonTimeline = activeSeason.months.map((month, monthIndex) => ({
+    ...getTimelineItem(0),
+    month,
+    monthIndex,
+    monthName: new Date(year, month - 1, 1).toLocaleString("en", { month: "long" })
+  }));
   const isPositiveMemory = (moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory);
   const getMemoryMomentScore = (moment) => isPositiveMemory(moment) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0);
   const memoryHighScore = memoryMoments.reduce((score, moment) => score + getMemoryMomentScore(moment), 0);
@@ -245,18 +250,18 @@ export default function SeasonGameBoard({
           onTouchEnd={handleSeasonSwipeEnd}
           ref={seasonCarouselRef}
         >
-          {seasonTimeline.map(({ season, offset, year: seasonYear }, timelineIndex) => {
+          {seasonTimeline.map(({ season, offset, year: seasonYear, month, monthName, monthIndex }, timelineIndex) => {
             const cardIndex = timelineIndex;
-            const monthlyDecisionGroups = season.months.map((month) => ({
+            const monthGroup = {
               month,
-              monthName: new Date(seasonYear, month - 1, 1).toLocaleString("en", { month: "long" }),
+              monthName,
               decisions: seasonDecisions.filter((decision) => decision.day.month === month)
-            }));
+            };
 
             return (
               <article
                 className={`season-panel season-panel-${season.id} active ${cardIndex === viewedSeasonIndex ? "in-view" : ""}`}
-                key={`${seasonYear}-${season.id}-${offset}`}
+                key={`${seasonYear}-${season.id}-${offset}-${month}`}
                 ref={(panel) => {
                   seasonPanelRefs.current[cardIndex] = panel;
                 }}
@@ -264,13 +269,12 @@ export default function SeasonGameBoard({
                 <div className="season-panel-header">
                   <span className="season-icon" aria-hidden="true">{season.icon}</span>
                   <div>
-                    <p className="eyebrow">Current action plan</p>
-                    <h3>{season.label}</h3>
+                    <p className="eyebrow">Month {monthIndex + 1} of 3 · {season.label} {seasonYear}</p>
+                    <h3>{monthName}</h3>
                   </div>
                 </div>
                 <p>{season.description}</p>
                 <div className="season-decisions season-decisions-by-month">
-                  {monthlyDecisionGroups.map((monthGroup) => (
                     <section className="season-month-group" key={`${season.id}-${monthGroup.month}`}>
                       <div className="season-month-heading">
                         <strong>{monthGroup.monthName}</strong>
@@ -310,7 +314,6 @@ export default function SeasonGameBoard({
                         );
                       }) : <p className="season-empty">No planned actions this month.</p>}
                     </section>
-                  ))}
                 </div>
               </article>
             );

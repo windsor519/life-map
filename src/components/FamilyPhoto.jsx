@@ -8,9 +8,12 @@ const familyPhotoCss = `
   position: relative;
   width: 100%;
   min-width: 0;
-  height: 6.9rem;
+  height: 8.2rem;
   margin-top: 0.55rem;
-  padding: 1.55rem 1rem 1.9rem;
+  padding: 1.8rem 1rem 2.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.34), rgba(15, 23, 42, 0.14));
 }
 
 .family-photo-strip::before {
@@ -18,9 +21,10 @@ const familyPhotoCss = `
   right: 1rem;
   bottom: 1.25rem;
   left: 1rem;
-  height: 0.24rem;
+  height: 0.34rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.76), rgba(168, 85, 247, 0.76), rgba(251, 191, 36, 0.76));
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.86), rgba(168, 85, 247, 0.86), rgba(251, 191, 36, 0.86));
+  box-shadow: 0 0 26px rgba(34, 211, 238, 0.18);
   content: "";
 }
 
@@ -30,7 +34,7 @@ const familyPhotoCss = `
   bottom: 0.15rem;
   left: 1rem;
   color: rgba(219, 234, 254, 0.72);
-  content: "Age timeline";
+  content: "Family age timeline";
   text-align: center;
   font-size: 0.66rem;
   font-weight: 800;
@@ -43,7 +47,7 @@ const familyPhotoCss = `
   --skin: #f5c7a9;
   --hair: #111827;
   --shirt: #38bdf8;
-  --person-size: clamp(38px, 4.6vw, 56px);
+  --person-size: clamp(42px, 4.9vw, 62px);
   --person-half: calc(var(--person-size) / 2);
   position: absolute;
   bottom: calc(1.05rem + var(--timeline-lane, 0px));
@@ -55,12 +59,12 @@ const familyPhotoCss = `
   place-items: center;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.62);
   border-radius: 999px;
   background:
     radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.34), transparent calc(var(--person-size) * 0.4)),
     linear-gradient(180deg, rgba(224, 242, 254, 0.54), rgba(30, 41, 59, 0.28));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0.35rem 0.9rem rgba(2, 6, 23, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0.5rem 1.2rem rgba(2, 6, 23, 0.3), 0 0 0 4px rgba(15, 23, 42, 0.28);
   transform: translateX(-50%);
 }
 
@@ -194,7 +198,7 @@ const familyPhotoCss = `
 .family-photo-member.family-child {
   --skin: #f8d7bd;
   --shirt: #facc15;
-  --person-size: clamp(34px, 4vw, 48px);
+  --person-size: clamp(36px, 4.2vw, 52px);
 }
 
 .family-photo-member.family-child::before {

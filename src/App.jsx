@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import actions from "./data/actions.js";
 import unexpectedEventRecords from "./data/unexpected_events.json";
+import refactoredUnexpectedEvents from "./data/events/unexpected.js";
 import wisdomRecords from "./data/wisdom.json";
 import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition, { SeasonBackground } from "./components/SeasonTransition.jsx";
@@ -44,6 +45,8 @@ const createIdleSimulationState = () => ({
   steps: [],
   currentIndex: 0,
   unexpectedEvent: null,
+  unexpectedEvents: [],
+  currentUnexpectedIndex: 0,
   summary: null
 });
 const severityConfig = {
@@ -863,8 +866,9 @@ const RANDOM_EVENT_CHANCE = 0.12;
 const MIN_SEASON_CATEGORY_DECISIONS = 1;
 const MAX_SEASON_CATEGORY_DECISIONS = 3;
 const MAX_SEASON_DECISIONS = MAX_SEASON_CATEGORY_DECISIONS * 2;
-const UNEXPECTED_EVENT_CHANCE = 0.25;
-const surpriseEvents = unexpectedEventRecords.map((event) => ({
+const MIN_UNEXPECTED_EVENTS_PER_TURN = 2;
+const MAX_UNEXPECTED_EVENTS_PER_TURN = 3;
+const surpriseEvents = [...unexpectedEventRecords, ...refactoredUnexpectedEvents].map((event) => ({
   ...event,
   effects: sanitizeEffects(event.effects),
   severity: getSeverity(event),
@@ -940,21 +944,27 @@ const createEarlyFinishStep = (member) => ({
   wisdom: "Grief changes the route, but memory keeps someone present after their marker leaves the map."
 });
 
-const getUnexpectedEventForMonth = (eventSeed, month, year, gameState, settings = createDefaultSettings()) => {
+const getUnexpectedEventsForSeason = (eventSeed, season, year, gameState, settings = createDefaultSettings()) => {
   const surpriseEventPool = settings.morbid ? [...surpriseEvents, ...morbidUnexpectedEvents] : surpriseEvents;
-  const eligibleSurpriseEvents = surpriseEventPool.filter((event) => isEventEligible(event, gameState));
+  const eligibleSurpriseEvents = surpriseEventPool.filter((event) => {
+    const eventSeasons = Array.isArray(event.seasons) ? event.seasons : [];
+    return (eventSeasons.length === 0 || eventSeasons.includes(season.id)) && isEventEligible(event, gameState);
+  });
 
   if (eligibleSurpriseEvents.length === 0) {
-    return null;
+    return [];
   }
 
-  const triggerRoll = seededRandom(eventSeed, month, year, "unexpected-event");
-  if (triggerRoll >= UNEXPECTED_EVENT_CHANCE) {
-    return null;
+  const eventCount = MIN_UNEXPECTED_EVENTS_PER_TURN + Math.floor(seededRandom(eventSeed, season.id, year, "unexpected-event-count") * (MAX_UNEXPECTED_EVENTS_PER_TURN - MIN_UNEXPECTED_EVENTS_PER_TURN + 1));
+  const remaining = [...eligibleSurpriseEvents];
+  const picked = [];
+
+  while (remaining.length > 0 && picked.length < eventCount) {
+    const eventIndex = Math.floor(seededRandom(eventSeed, season.id, year, picked.length, "unexpected-event-choice") * remaining.length);
+    picked.push(remaining.splice(Math.min(eventIndex, remaining.length - 1), 1)[0]);
   }
 
-  const eventIndex = Math.floor(seededRandom(eventSeed, month, year, "unexpected-event-choice") * eligibleSurpriseEvents.length);
-  return eligibleSurpriseEvents[Math.min(eventIndex, eligibleSurpriseEvents.length - 1)];
+  return picked;
 };
 const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => ({
   ...event,
@@ -2004,10 +2014,10 @@ export default function App() {
     });
 
     const earlyFinishMember = getEarlyFinishFamilyMember(game.eventSeed, activeSeason, currentCalendarYear, nextState, settings);
-    let unexpectedStep = null;
+    const unexpectedSteps = [];
 
     if (earlyFinishMember) {
-      unexpectedStep = createEarlyFinishStep(earlyFinishMember);
+      const unexpectedStep = createEarlyFinishStep(earlyFinishMember);
       nextState = applyEffects({
         ...nextState,
         family: removeFamilyMember(nextState.family, earlyFinishMember.id)
@@ -2020,15 +2030,17 @@ export default function App() {
         memory: unexpectedStep.description,
         source: "Morbid"
       };
+      unexpectedSteps.push(unexpectedStep);
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${earlyFinishMember.name} finished the race early and left the family timeline.`);
     }
 
-    const unexpectedEvent = unexpectedStep ? null : getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState, settings);
-
-    if (unexpectedEvent) {
+    getUnexpectedEventsForSeason(game.eventSeed, activeSeason, currentCalendarYear, nextState, settings)
+      .slice(0, Math.max(0, MAX_UNEXPECTED_EVENTS_PER_TURN - unexpectedSteps.length))
+      .forEach((unexpectedEvent) => {
       const modifiedEffects = resolveChoiceEffects(nextState, unexpectedEvent.effects, game.legacy?.difficulty ?? 1);
+      const unexpectedKey = `unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`;
       nextState = applyEffects(nextState, modifiedEffects);
-      resolvedSeasonChoices[`unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`] = {
+      resolvedSeasonChoices[unexpectedKey] = {
         dayName: "Surprise",
         eventTitle: unexpectedEvent.title,
         label: "Life happens",
@@ -2036,8 +2048,8 @@ export default function App() {
         memory: unexpectedEvent.memory,
         source: "Unexpected"
       };
-      unexpectedStep = {
-        key: `unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`,
+      unexpectedSteps.push({
+        key: unexpectedKey,
         dayLabel: "Surprise",
         eventTitle: unexpectedEvent.title,
         choiceLabel: "Life happens",
@@ -2047,11 +2059,11 @@ export default function App() {
         severity: unexpectedEvent.severity,
         description: unexpectedEvent.description,
         wisdom: getEventWisdom(unexpectedEvent)
-      };
+      });
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${unexpectedEvent.memory}`);
-    }
+    });
 
-    if (steps.length === 0 && !unexpectedStep) {
+    if (steps.length === 0 && unexpectedSteps.length === 0) {
       steps.push({
         key: `quiet-${game.eventSeed}-${activeSeason.id}`,
         dayLabel: `${activeSeason.label} wrap-up`,
@@ -2095,7 +2107,9 @@ export default function App() {
       phase: steps.length > 0 ? "animating" : "unexpected",
       steps,
       currentIndex: 0,
-      unexpectedEvent: unexpectedStep,
+      unexpectedEvent: unexpectedSteps[0] ?? null,
+      unexpectedEvents: unexpectedSteps,
+      currentUnexpectedIndex: 0,
       summary: { finalGame, monthlySummary }
     });
   };
@@ -2115,7 +2129,7 @@ export default function App() {
         return;
       }
 
-      if (simulationState.unexpectedEvent) {
+      if ((simulationState.unexpectedEvents ?? []).length > 0) {
         setSimulationState((prevSimulationState) => ({
           ...prevSimulationState,
           phase: "unexpected"
@@ -2133,10 +2147,23 @@ export default function App() {
   }, [simulationState]);
 
   const handleUnexpectedOkay = () => {
-    setSimulationState((prevSimulationState) => ({
-      ...prevSimulationState,
-      phase: "summary"
-    }));
+    setSimulationState((prevSimulationState) => {
+      const unexpectedEvents = prevSimulationState.unexpectedEvents ?? [];
+      const nextUnexpectedIndex = (prevSimulationState.currentUnexpectedIndex ?? 0) + 1;
+
+      if (nextUnexpectedIndex < unexpectedEvents.length) {
+        return {
+          ...prevSimulationState,
+          unexpectedEvent: unexpectedEvents[nextUnexpectedIndex],
+          currentUnexpectedIndex: nextUnexpectedIndex
+        };
+      }
+
+      return {
+        ...prevSimulationState,
+        phase: "summary"
+      };
+    });
   };
 
   const closeSummaryModal = () => {
@@ -2279,7 +2306,7 @@ export default function App() {
   };
 
   const currentSimulationStep = simulationState.phase === "unexpected"
-    ? simulationState.unexpectedEvent
+    ? (simulationState.unexpectedEvents ?? [])[simulationState.currentUnexpectedIndex ?? 0] ?? simulationState.unexpectedEvent
     : simulationState.steps[simulationState.currentIndex];
   const activeMonthlySummary = simulationState.phase === "summary"
     ? simulationState.summary?.monthlySummary ?? simulationState.summary?.finalGame?.weeklySummary
@@ -2425,7 +2452,7 @@ export default function App() {
                   <div className={`meter ${config.tone}`} aria-hidden="true">
                     <span style={{ width: percentage }} />
                   </div>
-                  <span className="stat-open-cue" aria-hidden="true">Details ↗</span>
+                  <span className="stat-open-cue" aria-hidden="true">↗</span>
                 </button>
               );
             })}
@@ -2500,7 +2527,7 @@ export default function App() {
               {Object.keys(currentSimulationStep.effects ?? {}).length > 0 ? renderSimulationEffects(currentSimulationStep.effects) : <p>No stat changes this season.</p>}
             </div>
             {simulationState.phase === "unexpected" ? (
-              <button className="next-turn-button" type="button" onClick={handleUnexpectedOkay}>Okay</button>
+              <button className="next-turn-button" type="button" onClick={handleUnexpectedOkay}>Okay ({(simulationState.currentUnexpectedIndex ?? 0) + 1}/{(simulationState.unexpectedEvents ?? []).length || 1})</button>
             ) : (
               <div className="simulation-progress" aria-label="Simulation progress">
                 <span>Step {simulationState.currentIndex + 1} of {simulationState.steps.length}</span>

@@ -1,4 +1,4 @@
-import { baseEvents, generatedEventBlueprints } from "./events.json";
+import { baseActions, generatedActionBlueprints } from "./action.json";
 import familyAgeEvents from "./family_age_events.json";
 import careerEvents from "./events/career.js";
 import communityEvents from "./events/community.js";
@@ -8,13 +8,12 @@ import homeEvents from "./events/home.js";
 import parentingEvents from "./events/parenting.js";
 import schoolEvents from "./events/school.js";
 import seasonalEvents from "./events/seasonal.js";
-import unexpectedEvents from "./events/unexpected.js";
 import walletEvents from "./events/wallet.js";
 import wellbeingEvents from "./events/wellbeing.js";
 
-const generatedEvents = Array.from({ length: 279 }, (_, index) => {
-  const blueprint = generatedEventBlueprints[index % generatedEventBlueprints.length];
-  const cycle = Math.floor(index / generatedEventBlueprints.length) + 1;
+const generatedActions = Array.from({ length: 279 }, (_, index) => {
+  const blueprint = generatedActionBlueprints[index % generatedActionBlueprints.length];
+  const cycle = Math.floor(index / generatedActionBlueprints.length) + 1;
   const severity = blueprint.severity ?? (index % 11 === 0 ? "moderate" : "minor");
   const titleSuffix = cycle > 1 ? ` ${cycle}` : "";
 
@@ -26,7 +25,7 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
     icon: blueprint.icon,
     accent: blueprint.accent,
     description: blueprint.description,
-    wisdom: blueprint.wisdom ?? "Everyday events are practice for the life you are building. Choose the response that is kind to both today and next season.",
+    wisdom: blueprint.wisdom ?? "Everyday actions are practice for the life you are building. Choose the response that is kind to both today and next season.",
     tags: blueprint.tags ?? ["general"],
     choices: [
       { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },
@@ -36,7 +35,7 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
   };
 });
 
-const refactoredEvents = [
+const refactoredActions = [
   ...careerEvents,
   ...communityEvents,
   ...errandsEvents,
@@ -45,11 +44,10 @@ const refactoredEvents = [
   ...parentingEvents,
   ...schoolEvents,
   ...seasonalEvents,
-  ...unexpectedEvents,
   ...walletEvents,
   ...wellbeingEvents
 ];
 
-const events = [...baseEvents, ...familyAgeEvents, ...refactoredEvents, ...generatedEvents];
+const actions = [...baseActions, ...familyAgeEvents, ...refactoredActions, ...generatedActions];
 
-export default events;
+export default actions;

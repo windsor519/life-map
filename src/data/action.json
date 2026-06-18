@@ -1,5 +1,5 @@
 {
-  "baseEvents": [
+  "baseActions": [
     {
       "id": "spring-school-garden-day",
       "tags": [
@@ -9,7 +9,7 @@
         "general"
       ],
       "title": "Spring School Garden Day",
-      "description": "Your child’s class is planting the school garden after weeks of rain, but your boss asks you to join a last-minute strategy call.",
+      "description": "Your child\u2019s class is planting the school garden after weeks of rain, but your boss asks you to join a last-minute strategy call.",
       "wisdom": "Spring is about showing up for small beginnings. Seeds, kids, and trust all grow better when someone is there.",
       "choices": [
         {
@@ -58,7 +58,7 @@
       "choices": [
         {
           "label": "Stay for practice",
-          "memory": "You watched your child’s first soccer practice from the sideline.",
+          "memory": "You watched your child\u2019s first soccer practice from the sideline.",
           "effects": {
             "wellbeing": 1,
             "children": 5
@@ -228,7 +228,7 @@
         "music"
       ],
       "title": "School Spring Concert",
-      "description": "Your child’s spring concert lands on the same evening as a networking dinner that could help your career.",
+      "description": "Your child\u2019s spring concert lands on the same evening as a networking dinner that could help your career.",
       "wisdom": "Children scan the crowd before they sing. Be the face they find.",
       "choices": [
         {
@@ -312,12 +312,12 @@
         "relationship"
       ],
       "title": "Mother's Day Brunch",
-      "description": "Mother’s Day brunch reservations are expensive, and you are tempted to keep it simple after a tight month.",
+      "description": "Mother\u2019s Day brunch reservations are expensive, and you are tempted to keep it simple after a tight month.",
       "wisdom": "Appreciation does not need luxury, but it does need intention.",
       "choices": [
         {
           "label": "Plan a thoughtful brunch",
-          "memory": "You made Mother’s Day feel special with a planned brunch.",
+          "memory": "You made Mother\u2019s Day feel special with a planned brunch.",
           "effects": {
             "wallet": -4,
             "wellbeing": 2,
@@ -327,7 +327,7 @@
         },
         {
           "label": "Do nothing extra",
-          "memory": "You treated Mother’s Day like a normal Sunday.",
+          "memory": "You treated Mother\u2019s Day like a normal Sunday.",
           "effects": {
             "wallet": 1,
             "wellbeing": -2,
@@ -336,7 +336,7 @@
         },
         {
           "label": "Cook at home with the kids",
-          "memory": "You made a homemade Mother’s Day meal together.",
+          "memory": "You made a homemade Mother\u2019s Day meal together.",
           "effects": {
             "wallet": -1,
             "wellbeing": 3,
@@ -410,7 +410,7 @@
         },
         {
           "label": "Push through the plans",
-          "memory": "You pushed ahead despite your child’s allergies.",
+          "memory": "You pushed ahead despite your child\u2019s allergies.",
           "effects": {
             "wallet": 1,
             "wellbeing": -3,
@@ -752,7 +752,7 @@
       "choices": [
         {
           "label": "Watch the race",
-          "memory": "You showed up for your child’s track meet.",
+          "memory": "You showed up for your child\u2019s track meet.",
           "effects": {
             "wallet": -1,
             "wellbeing": 1,
@@ -791,12 +791,12 @@
         "food"
       ],
       "title": "Farmer's Market Opening Day",
-      "description": "The first farmer’s market of spring opens downtown, but groceries would be cheaper at the big store.",
+      "description": "The first farmer\u2019s market of spring opens downtown, but groceries would be cheaper at the big store.",
       "wisdom": "Food tastes different when children meet the people who grew it.",
       "choices": [
         {
           "label": "Visit the market",
-          "memory": "You took the family to opening day at the farmer’s market.",
+          "memory": "You took the family to opening day at the farmer\u2019s market.",
           "effects": {
             "wallet": -3,
             "wellbeing": 1,
@@ -1938,7 +1938,7 @@
         "school"
       ],
       "title": "School Fundraiser Drive",
-      "description": "Your child’s school fundraiser starts, and they desperately want to hit their goal.",
+      "description": "Your child\u2019s school fundraiser starts, and they desperately want to hit their goal.",
       "wisdom": "Fundraising teaches effort, but it should not teach pressure.",
       "choices": [
         {
@@ -2780,7 +2780,7 @@
         "general"
       ],
       "title": "New Year's Eve Invitation",
-      "description": "Friends invite you out for New Year’s Eve, but your child wants a countdown at home.",
+      "description": "Friends invite you out for New Year\u2019s Eve, but your child wants a countdown at home.",
       "wisdom": "A year can end loudly or lovingly. Choose the room that needs you.",
       "choices": [
         {
@@ -3416,49 +3416,138 @@
       ]
     }
   ],
-  "generatedEventBlueprints": [
+  "generatedActionBlueprints": [
     {
       "category": "Recovery",
-      "icon": "🌙",
+      "icon": "\ud83c\udf19",
       "accent": "indigo",
       "title": "Early Bedtime",
       "description": "A quiet evening could become actual rest if you protect it.",
-      "minor": ["Sleep early", {"health": 6, "stress": -5}, "You protected an early bedtime."],
-      "balanced": ["One calm hour", {"health": 3, "stress": -2}, "You made room for one calm hour."],
-      "risky": ["Scroll late", {"health": -4, "stress": 4}, "You scrolled late into the night."]
+      "minor": [
+        "Sleep early",
+        {
+          "health": 6,
+          "stress": -5
+        },
+        "You protected an early bedtime."
+      ],
+      "balanced": [
+        "One calm hour",
+        {
+          "health": 3,
+          "stress": -2
+        },
+        "You made room for one calm hour."
+      ],
+      "risky": [
+        "Scroll late",
+        {
+          "health": -4,
+          "stress": 4
+        },
+        "You scrolled late into the night."
+      ]
     },
     {
       "category": "Major life event",
-      "icon": "🏥",
+      "icon": "\ud83c\udfe5",
       "accent": "rose",
       "title": "Urgent Care Choice",
       "severity": "major",
-      "description": "Something is wrong. You cannot tell how wrong. This is the problem with bodies — they are deliberately vague about urgency.",
-      "minor": ["Go to urgent care", {"money": -3, "health": 9, "stress": 4}, "You got timely care for a concerning symptom."],
-      "balanced": ["Call nurse line", {"health": 4, "stress": 1}, "You used a nurse line to decide next steps."],
-      "risky": ["Wait it out", {"health": -8, "stress": 6}, "You waited too long on a concerning symptom."]
+      "description": "Something is wrong. You cannot tell how wrong. This is the problem with bodies \u2014 they are deliberately vague about urgency.",
+      "minor": [
+        "Go to urgent care",
+        {
+          "money": -3,
+          "health": 9,
+          "stress": 4
+        },
+        "You got timely care for a concerning symptom."
+      ],
+      "balanced": [
+        "Call nurse line",
+        {
+          "health": 4,
+          "stress": 1
+        },
+        "You used a nurse line to decide next steps."
+      ],
+      "risky": [
+        "Wait it out",
+        {
+          "health": -8,
+          "stress": 6
+        },
+        "You waited too long on a concerning symptom."
+      ]
     },
     {
       "category": "Major family event",
-      "icon": "🛟",
+      "icon": "\ud83d\udedf",
       "accent": "rose",
       "title": "Family Emergency",
       "severity": "major",
       "description": "A relative needs immediate help during a difficult moment.",
-      "minor": ["Show up fast", {"children": 8, "marriage": 5, "stress": 8, "money": -2}, "You showed up for a family emergency."],
-      "balanced": ["Coordinate help", {"children": 5, "marriage": 3, "stress": 4}, "You coordinated support for the family emergency."],
-      "risky": ["Stay out of it", {"children": -8, "marriage": -4, "stress": 3}, "You stayed out of a family emergency."]
+      "minor": [
+        "Show up fast",
+        {
+          "children": 8,
+          "marriage": 5,
+          "stress": 8,
+          "money": -2
+        },
+        "You showed up for a family emergency."
+      ],
+      "balanced": [
+        "Coordinate help",
+        {
+          "children": 5,
+          "marriage": 3,
+          "stress": 4
+        },
+        "You coordinated support for the family emergency."
+      ],
+      "risky": [
+        "Stay out of it",
+        {
+          "children": -8,
+          "marriage": -4,
+          "stress": 3
+        },
+        "You stayed out of a family emergency."
+      ]
     },
     {
       "category": "Major career event",
-      "icon": "🚪",
+      "icon": "\ud83d\udeaa",
       "accent": "violet",
       "title": "Job Interview",
       "severity": "major",
       "description": "A strong job lead appears, but preparing will crowd the week.",
-      "minor": ["Prepare deeply", {"money": 8, "stress": 8, "health": -2}, "You prepared hard for a job interview."],
-      "balanced": ["Prep essentials", {"money": 4, "stress": 4}, "You covered the essentials before the interview."],
-      "risky": ["Wing it", {"stress": -2}, "You winged an important interview."]
+      "minor": [
+        "Prepare deeply",
+        {
+          "money": 8,
+          "stress": 8,
+          "health": -2
+        },
+        "You prepared hard for a job interview."
+      ],
+      "balanced": [
+        "Prep essentials",
+        {
+          "money": 4,
+          "stress": 4
+        },
+        "You covered the essentials before the interview."
+      ],
+      "risky": [
+        "Wing it",
+        {
+          "stress": -2
+        },
+        "You winged an important interview."
+      ]
     }
   ]
 }

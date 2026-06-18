@@ -19,7 +19,13 @@ export default function SeasonGameBoard({
   family,
   currentAge,
   currentMonth,
-  character
+  character,
+  skillTreeBranches,
+  legacy,
+  onAllocateSkillPoint,
+  getSkillNodeRank,
+  isSkillNodeUnlocked,
+  getSkillTreeSpentPoints
 }) {
   const seasonCarouselRef = useRef(null);
   const seasonPanelRefs = useRef([]);
@@ -44,15 +50,21 @@ export default function SeasonGameBoard({
   };
   const getPreviousSelections = ({ historyKey, offset, season }) =>
     seasonHistory[historyKey] ?? (!hasYearHistory && offset < 0 ? seasonHistory[season.id] ?? [] : []);
-  const pastSeasonTimeline = Array.from({ length: 7 }, (_, index) => getTimelineItem(index - 7))
+  const allPastSeasonTimeline = Array.from({ length: 20 }, (_, index) => getTimelineItem(index - 20))
     .filter((item) => getPreviousSelections(item).length > 0);
+  const pastSeasonTimeline = allPastSeasonTimeline.slice(-1);
+  const memorySelections = allPastSeasonTimeline
+    .slice(0, -1)
+    .flatMap((item) => getPreviousSelections(item).map((selection) => ({ ...selection, seasonLabel: item.season.label, year: item.year })));
   const futureSeasonTimeline = Array.from({ length: 3 }, (_, index) => getTimelineItem(index + 1));
   const seasonTimeline = [
     ...pastSeasonTimeline,
     getTimelineItem(0),
     ...futureSeasonTimeline
   ];
-  const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0);
+  const memoryCardOffset = memorySelections.length > 0 ? 1 : 0;
+  const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0) + memoryCardOffset;
+  const totalTimelineCards = seasonTimeline.length + memoryCardOffset;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
 
@@ -78,11 +90,11 @@ export default function SeasonGameBoard({
   }, []);
 
   const goToSeasonCard = useCallback((index, behavior = "smooth") => {
-    const nextIndex = Math.max(0, Math.min(index, seasonTimeline.length - 1));
+    const nextIndex = Math.max(0, Math.min(index, totalTimelineCards - 1));
     viewedSeasonIndexRef.current = nextIndex;
     setViewedSeasonIndex(nextIndex);
     scrollToSeasonCard(nextIndex, behavior);
-  }, [scrollToSeasonCard, seasonTimeline.length]);
+  }, [scrollToSeasonCard, totalTimelineCards]);
 
   useLayoutEffect(() => {
     goToSeasonCard(activeTimelineIndex, "auto");
@@ -163,6 +175,48 @@ export default function SeasonGameBoard({
           <span>{completedThisSeason}/{totalSeasonDecisions} decisions selected. {pendingThisSeason === 0 ? "Review or change any highlighted choice before advancing." : "Unselected seasonal moments will auto-resolve when you simulate."}</span>
         </div>
       </div>
+      <section className="skill-tree-panel" aria-label="Season skill tree">
+        <div className="skill-tree-heading">
+          <div>
+            <p className="eyebrow">Season mastery</p>
+            <h3>Skill tree</h3>
+          </div>
+          <span><strong>{legacy?.skillPoints ?? 0}</strong> points available · {getSkillTreeSpentPoints?.(legacy?.skills) ?? 0} spent</span>
+        </div>
+        <p className="skill-tree-intro">Earn at least 1 point per season, with bonus points for overcoming difficult or unexpected events. Each branch is 5 levels deep; invest early nodes to unlock late-game strategy.</p>
+        <div className="skill-tree-grid">
+          {(skillTreeBranches ?? []).map((branch) => (
+            <article className={`skill-branch branch-${branch.id}`} key={branch.id}>
+              <div className="skill-branch-title">
+                <span aria-hidden="true">{branch.icon}</span>
+                <strong>{branch.label}</strong>
+              </div>
+              <div className="skill-node-ladder">
+                {branch.nodes.map((node) => {
+                  const rank = getSkillNodeRank?.(legacy?.skills, node.id) ?? 0;
+                  const unlocked = isSkillNodeUnlocked?.(legacy?.skills, node) ?? true;
+                  const canBuy = (legacy?.skillPoints ?? 0) > 0 && rank === 0 && unlocked;
+
+                  return (
+                    <button
+                      className={`skill-node level-${node.level} ${rank > 0 ? "learned" : ""} ${!unlocked ? "locked" : ""}`}
+                      disabled={!canBuy}
+                      key={node.id}
+                      onClick={() => onAllocateSkillPoint?.(node)}
+                      title={unlocked ? node.description : "Unlock the previous node first"}
+                      type="button"
+                    >
+                      <span>Lv {node.level}</span>
+                      <strong>{node.label}</strong>
+                      <small>{rank > 0 ? node.bonus : node.description}</small>
+                    </button>
+                  );
+                })}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
       <div className="season-board-frame">
         <div className="season-board-nav" aria-label="Season board navigation">
           <button
@@ -178,7 +232,7 @@ export default function SeasonGameBoard({
             className="season-board-arrow season-board-arrow-next"
             type="button"
             aria-label="Show next season card"
-            disabled={viewedSeasonIndex === seasonTimeline.length - 1}
+            disabled={viewedSeasonIndex === totalTimelineCards - 1}
             onClick={() => goToSeasonCard(viewedSeasonIndex + 1)}
           >
             →
@@ -192,7 +246,35 @@ export default function SeasonGameBoard({
           onTouchEnd={handleSeasonSwipeEnd}
           ref={seasonCarouselRef}
         >
+          {memorySelections.length > 0 ? (
+            <article
+              className={`season-panel season-panel-memory past ${viewedSeasonIndex === 0 ? "in-view" : ""}`}
+              ref={(panel) => {
+                seasonPanelRefs.current[0] = panel;
+              }}
+            >
+              <div className="season-panel-header">
+                <span className="season-icon" aria-hidden="true">🧠</span>
+                <div>
+                  <p className="eyebrow">Accumulated past</p>
+                  <h3>Memory</h3>
+                </div>
+              </div>
+              <p>Older seasons are compressed here so the board stays token-efficient while the story still remembers what mattered.</p>
+              <div className="season-history" aria-label="Older accumulated memories">
+                <strong>{memorySelections.length} older decisions archived</strong>
+                {memorySelections.slice(-5).reverse().map((selection) => (
+                  <div className="season-history-item" key={`memory-${selection.id}`}>
+                    <span>{selection.seasonLabel} {selection.year}</span>
+                    <em>{selection.eventTitle}</em>
+                    <strong>{selection.label}</strong>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ) : null}
           {seasonTimeline.map(({ season, offset, year: seasonYear, historyKey }, timelineIndex) => {
+            const cardIndex = timelineIndex + memoryCardOffset;
             const isActive = offset === 0;
             const isPast = offset < 0;
             const isFuture = offset > 0;
@@ -203,10 +285,10 @@ export default function SeasonGameBoard({
 
             return (
               <article
-                className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${isPast ? "past" : ""} ${isFuture ? "future" : ""} ${timelineIndex === viewedSeasonIndex ? "in-view" : ""}`}
+                className={`season-panel season-panel-${season.id} ${isActive ? "active" : ""} ${isPast ? "past" : ""} ${isFuture ? "future" : ""} ${cardIndex === viewedSeasonIndex ? "in-view" : ""}`}
                 key={`${seasonYear}-${season.id}-${offset}`}
                 ref={(panel) => {
-                  seasonPanelRefs.current[timelineIndex] = panel;
+                  seasonPanelRefs.current[cardIndex] = panel;
                 }}
               >
                 <div className="season-panel-header">

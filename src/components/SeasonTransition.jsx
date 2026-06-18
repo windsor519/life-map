@@ -171,7 +171,7 @@ export function SeasonBackground({ seasonId }) {
 
     const render = (timestamp) => {
       startedAt ??= timestamp;
-      const calmProgress = clampProgress((timestamp - startedAt - 10000) / 6000);
+      const calmProgress = clampProgress((timestamp - startedAt - 2000) / 6000);
       const easedCalm = 1 - Math.pow(1 - calmProgress, 3);
       const motionScale = 1 - easedCalm * 0.72;
       const particleAlphaScale = 1 - easedCalm * 0.46;

@@ -329,6 +329,75 @@ const getSeasonalFamilyWisdom = (gameState, previousGame = null, targetMonth = g
   };
 };
 
+
+const skillTreeBranches = [
+  {
+    id: "resilience",
+    label: "Resilience",
+    icon: "🛡️",
+    stat: "wellbeing",
+    nodes: [
+      { id: "steady-breath", level: 1, label: "Steady Breath", description: "Minor setbacks hurt less.", bonus: "-1 wellbeing loss" },
+      { id: "storm-journal", level: 2, label: "Storm Journal", requires: "steady-breath", description: "Moderate stress becomes a lesson.", bonus: "-2 wellbeing loss" },
+      { id: "boundaries", level: 3, label: "Sacred Boundaries", requires: "storm-journal", description: "Protect hard-won recovery time.", bonus: "+1 wellbeing gains" },
+      { id: "crisis-ritual", level: 4, label: "Crisis Ritual", requires: "boundaries", description: "Major events trigger calmer defaults.", bonus: "Season shocks softened" },
+      { id: "unbreakable", level: 5, label: "Unbreakable", requires: "crisis-ritual", description: "Convert survival into long-term strength.", bonus: "Deep wellbeing mastery" }
+    ]
+  },
+  {
+    id: "connection",
+    label: "Connection",
+    icon: "💞",
+    stat: "marriage",
+    nodes: [
+      { id: "small-bids", level: 1, label: "Small Bids", description: "Notice tiny repair chances.", bonus: "+1 relationship gains" },
+      { id: "repair-loop", level: 2, label: "Repair Loop", requires: "small-bids", description: "Arguments close with less damage.", bonus: "-1 marriage loss" },
+      { id: "shared-map", level: 3, label: "Shared Map", requires: "repair-loop", description: "Plan tradeoffs together.", bonus: "+2 relationship gains" },
+      { id: "safe-harbor", level: 4, label: "Safe Harbor", requires: "shared-map", description: "Difficult seasons bond instead of split.", bonus: "Major losses softened" },
+      { id: "old-friends", level: 5, label: "Old Friends", requires: "safe-harbor", description: "Partnership becomes a strategic resource.", bonus: "Deep connection mastery" }
+    ]
+  },
+  {
+    id: "legacy",
+    label: "Legacy",
+    icon: "🌱",
+    stat: "children",
+    nodes: [
+      { id: "bedtime-anchor", level: 1, label: "Bedtime Anchor", description: "Rituals make small choices matter.", bonus: "+1 family gains" },
+      { id: "patient-coach", level: 2, label: "Patient Coach", requires: "bedtime-anchor", description: "Correction lands with more warmth.", bonus: "-1 children loss" },
+      { id: "memory-maker", level: 3, label: "Memory Maker", requires: "patient-coach", description: "Good moments become stronger memories.", bonus: "+2 family gains" },
+      { id: "family-council", level: 4, label: "Family Council", requires: "memory-maker", description: "Big changes become shared stories.", bonus: "Hard events teach resilience" },
+      { id: "generational-wisdom", level: 5, label: "Generational Wisdom", requires: "family-council", description: "The household carries lessons forward.", bonus: "Deep legacy mastery" }
+    ]
+  },
+  {
+    id: "stewardship",
+    label: "Stewardship",
+    icon: "👛",
+    stat: "wallet",
+    nodes: [
+      { id: "receipt-scrying", level: 1, label: "Receipt Scrying", description: "Spot leaks before they flood.", bonus: "-1 wallet loss" },
+      { id: "buffer-cache", level: 2, label: "Buffer Cache", requires: "receipt-scrying", description: "Emergencies consume less slack.", bonus: "-2 wallet loss" },
+      { id: "boring-money", level: 3, label: "Boring Money", requires: "buffer-cache", description: "Stable plans compound quietly.", bonus: "+1 wallet gains" },
+      { id: "option-value", level: 4, label: "Option Value", requires: "boring-money", description: "Cash buys time when life spikes.", bonus: "Major costs softened" },
+      { id: "abundance-engine", level: 5, label: "Abundance Engine", requires: "option-value", description: "Resources reinforce every other branch.", bonus: "Deep stewardship mastery" }
+    ]
+  }
+];
+
+const skillTreeNodes = skillTreeBranches.flatMap((branch) => branch.nodes.map((node) => ({ ...node, branchId: branch.id, stat: branch.stat })));
+const skillTreeNodeIds = skillTreeNodes.map((node) => node.id);
+const createEmptySkillTreeAllocations = () => Object.fromEntries(skillTreeNodeIds.map((id) => [id, 0]));
+const getSkillNodeRank = (skills, nodeId) => Number(skills?.[nodeId] ?? 0);
+const isSkillNodeUnlocked = (skills, node) => !node.requires || getSkillNodeRank(skills, node.requires) > 0;
+const getSkillTreeSpentPoints = (skills) => skillTreeNodeIds.reduce((total, id) => total + getSkillNodeRank(skills, id), 0);
+const getSkillBranchRank = (skills, branchId) => skillTreeBranches.find((branch) => branch.id === branchId)?.nodes.reduce((total, node) => total + getSkillNodeRank(skills, node.id), 0) ?? 0;
+const getSeasonPointAward = (choices = {}) => {
+  const records = Object.values(choices ?? {});
+  const difficultEvents = records.filter((selection) => selection.source === "Unexpected" || Object.values(sanitizeEffects(selection.effects)).some((value) => value <= -8)).length;
+  return 1 + Math.min(3, difficultEvents);
+};
+
 const legacySkillConfig = {
   grit: { label: "Grit", icon: "🛡️", description: "Turns past burnout into calmer future weeks." },
   wellness: { label: "Wellness", icon: "🌿", description: "Carries forward healthier habits after a bad ending." },
@@ -343,7 +412,8 @@ const createDefaultLegacy = () => ({
   runs: 0,
   difficulty: 1,
   carryRate: 0.25,
-  skills: createEmptySkills(),
+  skills: { ...createEmptySkills(), ...createEmptySkillTreeAllocations() },
+  skillPoints: 0,
   carriedStats: createEmptyStats(),
   lastRun: null
 });
@@ -475,6 +545,9 @@ const normalizeLegacy = (legacy) => {
   Object.keys(skills).forEach((key) => {
     skills[key] = clamp(toFiniteNumber(legacy?.skills?.[key]), 0, 99);
   });
+  skillTreeNodeIds.forEach((key) => {
+    skills[key] = clamp(toFiniteNumber(legacy?.skills?.[key]), 0, 1);
+  });
 
   summaryStatKeys.forEach((key) => {
     if (key === "wellbeing" && legacy?.carriedStats?.wellbeing === undefined) {
@@ -490,6 +563,7 @@ const normalizeLegacy = (legacy) => {
     difficulty: Math.max(1, toFiniteNumber(legacy?.difficulty, getDifficultyMultiplier(runs))),
     carryRate: Math.max(0.08, Math.min(0.25, toFiniteNumber(legacy?.carryRate, getCarryRate(runs)))),
     skills,
+    skillPoints: Math.max(0, Math.round(toFiniteNumber(legacy?.skillPoints))),
     carriedStats,
     lastRun: legacy?.lastRun && typeof legacy.lastRun === "object" ? legacy.lastRun : null
   };
@@ -1041,9 +1115,13 @@ const buildNextLegacy = (legacy, finalGame) => {
     difficulty: getDifficultyMultiplier(runs),
     carryRate,
     carriedStats,
-    skills: Object.fromEntries(
-      Object.keys(legacySkillConfig).map((key) => [key, Math.min(99, (currentLegacy.skills?.[key] ?? 0) + earnedSkills[key])])
-    ),
+    skillPoints: currentLegacy.skillPoints + 3,
+    skills: {
+      ...currentLegacy.skills,
+      ...Object.fromEntries(
+        Object.keys(legacySkillConfig).map((key) => [key, Math.min(99, (currentLegacy.skills?.[key] ?? 0) + earnedSkills[key])])
+      )
+    },
     lastRun: {
       age: finalGame.age,
       week: finalGame.week,
@@ -1547,9 +1625,30 @@ export default function App() {
     };
   };
 
+  const applySkillTreeModifiers = (baseState, effects) => {
+    const skills = normalizeLegacy(baseState.legacy).skills;
+    const nextEffects = { ...effects };
+
+    skillTreeBranches.forEach((branch) => {
+      const rank = getSkillBranchRank(skills, branch.id);
+      const key = branch.stat;
+      const value = nextEffects[key] ?? 0;
+
+      if (value < 0) {
+        nextEffects[key] = Math.min(0, value + Math.min(4, Math.floor((rank + 1) / 2)));
+      }
+
+      if (value > 0 && rank >= 3) {
+        nextEffects[key] = value + (rank >= 5 ? 2 : 1);
+      }
+    });
+
+    return nextEffects;
+  };
+
   const applyTalentModifiers = (baseState, effects) => {
     const talentId = baseState.character?.talent?.id;
-    const nextEffects = { ...effects };
+    const nextEffects = applySkillTreeModifiers(baseState, effects);
 
     if (talentId === "stress-armor" && nextEffects.wellbeing < 0) {
       nextEffects.wellbeing = Math.ceil(nextEffects.wellbeing * 0.75);
@@ -1675,7 +1774,11 @@ export default function App() {
         completedDecisions: [],
         selectedChoices: {},
         currentEventId: getRandomEventId(prevGame.currentEventId, playableEvents),
-        memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8)
+        memories: [...prevGame.memories, `${getSeasonForMonth(prevGame.month).label} wrapped up. Your selected decisions are now part of your story.`].slice(-8),
+        legacy: {
+          ...normalizeLegacy(prevGame.legacy),
+          skillPoints: normalizeLegacy(prevGame.legacy).skillPoints + getSeasonPointAward(prevGame.selectedChoices)
+        }
       };
 
       return nextGame;
@@ -1809,7 +1912,11 @@ export default function App() {
       completedDecisions: [],
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableEvents),
-      memories: [...game.memories, ...simulatedMemories].slice(-8)
+      memories: [...game.memories, ...simulatedMemories].slice(-8),
+      legacy: {
+        ...normalizeLegacy(game.legacy),
+        skillPoints: normalizeLegacy(game.legacy).skillPoints + getSeasonPointAward(resolvedSeasonChoices)
+      }
     };
     const monthlySummary = createSeasonalSummary({ previousGame: game, nextState });
     const finalGame = finishRunIfNeeded({
@@ -1878,6 +1985,28 @@ export default function App() {
       });
     }
     setSimulationState(createIdleSimulationState());
+  };
+
+  const handleAllocateSkillPoint = (node) => {
+    setGame((prevGame) => {
+      const legacy = normalizeLegacy(prevGame.legacy);
+
+      if (legacy.skillPoints <= 0 || getSkillNodeRank(legacy.skills, node.id) > 0 || !isSkillNodeUnlocked(legacy.skills, node)) {
+        return prevGame;
+      }
+
+      return {
+        ...prevGame,
+        legacy: {
+          ...legacy,
+          skillPoints: legacy.skillPoints - 1,
+          skills: {
+            ...legacy.skills,
+            [node.id]: 1
+          }
+        }
+      };
+    });
   };
 
   const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
@@ -2188,6 +2317,12 @@ export default function App() {
           currentAge={game.age}
           currentMonth={game.month}
           character={game.character}
+          skillTreeBranches={skillTreeBranches}
+          legacy={legacy}
+          onAllocateSkillPoint={handleAllocateSkillPoint}
+          getSkillNodeRank={getSkillNodeRank}
+          isSkillNodeUnlocked={isSkillNodeUnlocked}
+          getSkillTreeSpentPoints={getSkillTreeSpentPoints}
         />
 
       </div>

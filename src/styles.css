@@ -1124,7 +1124,7 @@ textarea:focus {
 .season-panel {
   position: relative;
   display: grid;
-  flex: 0 0 clamp(340px, 78vw, 560px);
+  flex: 0 0 clamp(280px, 30vw, 420px);
   gap: 0.8rem;
   min-height: 360px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1135,6 +1135,7 @@ textarea:focus {
   padding: 1rem;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
   scroll-snap-align: center;
+  max-width: calc(100vw - 3rem);
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
@@ -1483,8 +1484,8 @@ textarea:focus {
 
 .board-family-strip {
   display: grid;
-  width: min(100%, 58rem);
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
   gap: 0.3rem;
   margin: -0.3rem 0 1.25rem;
   border: 1px solid rgba(125, 211, 252, 0.22);
@@ -4125,7 +4126,7 @@ textarea:focus {
   }
 
   .season-panel {
-    flex-basis: min(86vw, 380px);
+    flex-basis: min(78vw, 340px);
     min-height: 420px;
     padding: 0.85rem;
   }
@@ -4498,7 +4499,7 @@ textarea:focus {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem;
-  min-height: 12rem;
+  min-height: 13rem;
   overflow: hidden;
   border-radius: 1rem;
   background:
@@ -4511,43 +4512,69 @@ textarea:focus {
   position: absolute;
   right: 0.8rem;
   left: 0.8rem;
-  top: 42%;
+  top: 50%;
   height: 2px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.22);
 }
 
+.memory-graph-line {
+  position: absolute;
+  inset: 0.8rem;
+  z-index: 1;
+  width: calc(100% - 1.6rem);
+  height: calc(100% - 1.6rem);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.memory-graph-line-glow,
+.memory-graph-line-path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.memory-graph-line-glow {
+  stroke: rgba(167, 139, 250, 0.28);
+  stroke-width: 10;
+  filter: blur(7px);
+}
+
+.memory-graph-line-path {
+  stroke: #93c5fd;
+  stroke-width: 3.5;
+}
+
 .memory-graph-season {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
-  grid-template-rows: minmax(5.5rem, 1fr) auto auto auto;
+  grid-template-rows: 1fr auto auto auto;
   gap: 0.25rem;
   min-width: 0;
+  min-height: 11rem;
+  padding-top: 8rem;
   text-align: center;
 }
 
-.memory-graph-bar-track {
-  position: relative;
-  display: flex;
-  min-height: 6.25rem;
-  align-items: flex-end;
-  justify-content: center;
+.memory-graph-point {
+  position: absolute;
+  left: var(--point-x);
+  top: var(--point-y);
+  width: 0.82rem;
+  height: 0.82rem;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #c4b5fd, #60a5fa);
+  box-shadow: 0 0 22px rgba(96, 165, 250, 0.42);
+  transform: translate(-50%, -50%);
 }
 
-.memory-graph-bar {
-  width: min(46%, 3.5rem);
-  min-height: 0.32rem;
-  border-radius: 999px 999px 0 0;
-  background: linear-gradient(180deg, #c4b5fd, #60a5fa);
-  box-shadow: 0 0 24px rgba(167, 139, 250, 0.34);
-}
-
-.memory-graph-bar.negative {
-  align-self: flex-start;
-  border-radius: 0 0 999px 999px;
-  background: linear-gradient(180deg, #fb7185, #f97316);
-  box-shadow: 0 0 24px rgba(251, 113, 133, 0.28);
+.memory-graph-point.negative {
+  background: linear-gradient(135deg, #fb7185, #f97316);
+  box-shadow: 0 0 22px rgba(251, 113, 133, 0.34);
 }
 
 .memory-graph-season strong {

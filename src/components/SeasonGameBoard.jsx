@@ -252,32 +252,34 @@ export default function SeasonGameBoard({
             <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
           </div>
         </div>
-        <div className="memory-graph" role="img" aria-label={`Total memory score ${memoryHighScore}`} style={{ "--memory-season-count": memoryGraphColumnCount }}>
-          {memoryLinePoints.length > 0 ? (
-            <>
-              <span className="memory-graph-axis" aria-hidden="true" />
-              <svg className="memory-graph-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                <path className="memory-graph-line-glow" d={memoryLinePath} />
-                <path className="memory-graph-line-path" d={memoryLinePath} />
-              </svg>
-            </>
-          ) : (
-            <p className="memory-graph-empty">No seasons configured yet. Memories will appear here once seasons are available.</p>
-          )}
-          {memoryLinePoints.map((season) => (
-            <button
-              className="memory-graph-season"
-              key={`memory-graph-${season.id}`}
-              onClick={() => setActiveMemorySeasonId(season.id)}
-              style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
-              type="button"
-            >
-              <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
-              <strong>{season.icon} {season.label}</strong>
-              <span>{season.count} memories</span>
-              <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
-            </button>
-          ))}
+        <div className="memory-graph-viewport" role="img" aria-label={`Total memory score ${memoryHighScore}`}>
+          <div className="memory-graph" style={{ "--memory-season-count": memoryGraphColumnCount }}>
+            {memoryLinePoints.length > 0 ? (
+              <>
+                <span className="memory-graph-axis" aria-hidden="true" />
+                <svg className="memory-graph-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                  <path className="memory-graph-line-glow" d={memoryLinePath} />
+                  <path className="memory-graph-line-path" d={memoryLinePath} />
+                </svg>
+              </>
+            ) : (
+              <p className="memory-graph-empty">No seasons configured yet. Memories will appear here once seasons are available.</p>
+            )}
+            {memoryLinePoints.map((season) => (
+              <button
+                className="memory-graph-season"
+                key={`memory-graph-${season.id}`}
+                onClick={() => setActiveMemorySeasonId(season.id)}
+                style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
+                type="button"
+              >
+                <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
+                <strong>{season.icon} {season.label}</strong>
+                <span>{season.count} memories</span>
+                <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
+              </button>
+            ))}
+          </div>
         </div>
         {activeMemorySeason ? (
           <div className="memory-detail-panel" aria-live="polite">

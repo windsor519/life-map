@@ -168,6 +168,45 @@ export const getFamilyMembers = (family, currentAge, currentMonth) => {
   );
 };
 
+const setGroupFieldValues = (family, field, indexToRemove) => {
+  const names = splitFamilyNames(family[field.groupKey]);
+  const ages = splitFamilyNames(family[field.ageKey]);
+  const sexes = splitFamilyNames(family[field.sexKey]);
+  const personCount = getFamilyPersonCount(names, ages, sexes, field.max);
+  const keepIndexes = Array.from({ length: personCount }, (_, index) => index).filter((index) => index !== indexToRemove);
+
+  return {
+    [field.groupKey]: keepIndexes.map((index) => names[index]).filter(Boolean).join("\n"),
+    [field.ageKey]: keepIndexes.map((index) => ages[index]).filter(Boolean).join("\n"),
+    [field.sexKey]: keepIndexes.map((index) => sexes[index]).filter(Boolean).join("\n")
+  };
+};
+
+export const removeFamilyMember = (family, memberId) => {
+  const normalizedFamily = normalizeFamily(family);
+  const [groupKey, rawIndex] = String(memberId ?? "").split("-");
+  const field = familyFields[groupKey];
+  const indexToRemove = Number(rawIndex);
+
+  if (!field || !Number.isInteger(indexToRemove) || indexToRemove < 0) {
+    return normalizedFamily;
+  }
+
+  if (groupKey === "spouse") {
+    return {
+      ...normalizedFamily,
+      spouse: "",
+      spouseAge: "",
+      spouseSex: ""
+    };
+  }
+
+  return {
+    ...normalizedFamily,
+    ...setGroupFieldValues(normalizedFamily, { ...field, groupKey }, indexToRemove)
+  };
+};
+
 export const calculateFamilyHeight = (role, age, sex = "unknown") => {
   const safeAge = Number.isFinite(age) ? age : role === "child" ? 8 : 40;
   const adultOffset = sex === "female" ? -10 : sex === "male" ? 7 : 0;

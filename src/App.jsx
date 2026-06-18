@@ -6,7 +6,7 @@ import StartScreen from "./components/StartScreen.jsx";
 import SeasonTransition, { SeasonBackground } from "./components/SeasonTransition.jsx";
 import SeasonGameBoard from "./components/SeasonGameBoard.jsx";
 import Setting from "./setting.js";
-import { createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily } from "./game/family.js";
+import { createEmptyFamily, getFamilyMembers, getFamilySummary, normalizeFamily, removeFamilyMember } from "./game/family.js";
 
 const STORAGE_KEY = "life-map-game";
 const SETTINGS_KEY = "life-map-settings";
@@ -191,7 +191,8 @@ const statConfig = {
   wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
   marriage: { label: "Spousal relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / partner" },
   children: { label: "Children bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Kids / parenting" },
-  wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" }
+  wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" },
+  memory: { label: "Memory", icon: "🧠", max: 100, tone: "good", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.34)", signal: "Remembered moments" }
 };
 
 const summaryStatKeys = Object.keys(statConfig);
@@ -214,6 +215,14 @@ const formatPrivateEffectLabel = (key, value) => {
   const direction = value >= 0 ? "supports" : "strains";
 
   return `${getEffectMagnitudeLabel(value)} ${direction} ${label}`;
+};
+
+const formatEffectDirectionLabel = (key, value) => {
+  const config = displayStatConfig[key] ?? statConfig[key];
+  const label = config?.label ?? key;
+  const direction = value >= 0 ? "↑" : "↓";
+
+  return `${label} ${direction}`;
 };
 
 const eventWisdomBySeverity = {
@@ -470,6 +479,17 @@ const memoryTierConfig = [
 ];
 
 const getChoiceChildrenValue = (choice) => sanitizeEffects(choice?.originalEffects ?? choice?.effects).children ?? 0;
+const getChoiceMemoryScore = (decision, selectedChoice) => {
+  const moments = createChoiceMemoryMoments(decision, selectedChoice);
+  return clamp(
+    moments.reduce((score, moment) => {
+      if (["fond", "core_memory", "defining_memory"].includes(moment.memory)) return score + Math.min(8, Math.max(3, moment.childrenValue ?? 0));
+      return score - Math.min(6, Math.max(2, moment.severity ?? 0));
+    }, 0),
+    -10,
+    10
+  );
+};
 const getMemoryTier = (childrenValue) => memoryTierConfig.find((tier) => childrenValue >= tier.min) ?? null;
 const createMemoryReason = (label) => label ? label.replace(/^./, (char) => char.toLowerCase()) : "showed up";
 const createChoiceMemoryMoments = (decision, selectedChoice, source = "Selected") => {
@@ -845,7 +865,9 @@ const getNextSeasonState = (month, age, year = new Date().getFullYear()) => {
 };
 
 const RANDOM_EVENT_CHANCE = 0.067;
-const MAX_SEASON_DECISIONS = 7;
+const MIN_SEASON_CATEGORY_DECISIONS = 1;
+const MAX_SEASON_CATEGORY_DECISIONS = 3;
+const MAX_SEASON_DECISIONS = MAX_SEASON_CATEGORY_DECISIONS * 2;
 const UNEXPECTED_EVENT_CHANCE = 0.093;
 const surpriseEvents = unexpectedEventRecords.map((event) => ({
   ...event,
@@ -891,6 +913,38 @@ const morbidUnexpectedEvents = [
     visual: { icon: "📜", accent: "amber", label: "Morbid surprise" }
   }
 ];
+const getMorbidDeathChance = (age) => {
+  if (!Number.isFinite(age) || age < 60) return 0;
+  return Math.min(0.36, 0.015 + ((age - 60) ** 1.35) / 900);
+};
+
+const getEarlyFinishFamilyMember = (eventSeed, season, year, gameState, settings = createDefaultSettings()) => {
+  if (!settings.morbid) {
+    return null;
+  }
+
+  const olderFamilyMembers = getFamilyMembers(gameState.family, gameState.age, gameState.month)
+    .filter((member) => Number.isFinite(member.age) && member.age > 60)
+    .sort((a, b) => b.age - a.age);
+
+  return olderFamilyMembers.find((member) =>
+    seededRandom(eventSeed, season.id, year, member.id, "early-finish") < getMorbidDeathChance(member.age)
+  ) ?? null;
+};
+
+const createEarlyFinishStep = (member) => ({
+  key: `early-finish-${member.id}`,
+  dayLabel: "Family news",
+  eventTitle: `${member.name} Finished Early`,
+  choiceLabel: "Say goodbye",
+  choiceSource: "Morbid",
+  effects: sanitizeEffects({ wellbeing: -14, marriage: -4, children: -5, wallet: -3, memory: -8 }),
+  visual: { icon: "🕯️", accent: "violet", label: "End of race" },
+  severity: "major",
+  description: `${member.name} was over 60 and reached the end of their life-map race this season. They are removed from the family timeline, but the family remembers them.`,
+  wisdom: "Grief changes the route, but memory keeps someone present after their marker leaves the map."
+});
+
 const getUnexpectedEventForMonth = (eventSeed, month, year, gameState, settings = createDefaultSettings()) => {
   const surpriseEventPool = settings.morbid ? [...surpriseEvents, ...morbidUnexpectedEvents] : surpriseEvents;
   const eligibleSurpriseEvents = surpriseEventPool.filter((event) => isEventEligible(event, gameState));
@@ -938,29 +992,75 @@ const getMonthSchedule = (month, year, eventSeed, age, eventList = events, gameS
   });
 };
 
-const limitSeasonSchedule = (schedule, maxDecisions = MAX_SEASON_DECISIONS) => {
-  let decisionsSeen = 0;
+const getSeasonCategoryDecisionCount = (eventSeed, season, year, category) =>
+  MIN_SEASON_CATEGORY_DECISIONS + Math.floor(seededRandom(eventSeed, season.id, year, category, "count") * MAX_SEASON_CATEGORY_DECISIONS);
 
-  return schedule.map((day) => {
-    if (day.decisions.length === 0) {
-      return day;
-    }
+const chooseUniqueSeasonEvents = (pool, count, eventSeed, season, year, category, age) => {
+  const remaining = [...pool];
+  const chosen = [];
 
-    const remainingSlots = Math.max(0, maxDecisions - decisionsSeen);
-    const decisions = day.decisions.slice(0, remainingSlots);
-    decisionsSeen += decisions.length;
+  while (remaining.length > 0 && chosen.length < count) {
+    const weighted = remaining.map((event) => ({ event, weight: getEventRelevanceScore(event, age) }));
+    const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
+    const roll = seededRandom(eventSeed, season.id, year, category, chosen.length, "pick") * totalWeight;
+    let running = 0;
+    const pickedIndex = Math.max(0, weighted.findIndex(({ weight }) => {
+      running += weight;
+      return roll < running;
+    }));
 
-    return {
-      ...day,
-      decisions
-    };
-  });
+    chosen.push(remaining[pickedIndex]);
+    remaining.splice(pickedIndex, 1);
+  }
+
+  return chosen;
 };
 
-const getSeasonSchedule = (season, year, eventSeed, age, eventList = events, gameState = null) =>
-  limitSeasonSchedule(
-    season.months.flatMap((month) => getMonthSchedule(month, year, eventSeed, age, eventList, gameState))
+const getSeasonEventPool = (season, age, eventList, gameState, category) => {
+  const priorityTags = getAgePriorityTags(age);
+  const eligibleEvents = eventList.filter((event) => !event.surprise && isEventEligible(event, gameState));
+  const pool = eligibleEvents.filter((event) => {
+    const hasSeason = Array.isArray(event.seasons) && event.seasons.includes(season.id);
+    const tags = event.tags ?? ["general"];
+    const ageRelevant = tags.some((tag) => priorityTags.includes(tag) || tag === "general");
+
+    return category === "season" ? hasSeason : !hasSeason && ageRelevant;
+  });
+
+  return pool.length > 0 ? pool : eligibleEvents;
+};
+
+const getSeasonDecisionDays = (season, year, eventSeed, decisions) => {
+  const seasonDays = season.months.flatMap((month) =>
+    Array.from({ length: getMonthLength(month, year) }, (_, index) => ({
+      date: new Date(year, month - 1, index + 1),
+      month,
+      monthName: monthNames[month - 1],
+      dayNumber: index + 1,
+      dayLabel: `${monthNames[month - 1]} ${index + 1}`,
+      decisions: []
+    }))
   );
+
+  decisions.forEach((decision, index) => {
+    const dayIndex = Math.floor(seededRandom(eventSeed, season.id, year, index, decision.id, "day") * seasonDays.length);
+    seasonDays[Math.min(dayIndex, seasonDays.length - 1)].decisions.push(getDecoratedEvent(decision, eventSeed, seasonDays[dayIndex].month, seasonDays[dayIndex].dayNumber - 1, index));
+  });
+
+  return seasonDays;
+};
+
+const getSeasonSchedule = (season, year, eventSeed, age, eventList = events, gameState = null) => {
+  const agePool = getSeasonEventPool(season, age, eventList, gameState, "age");
+  const seasonPool = getSeasonEventPool(season, age, eventList, gameState, "season");
+  const ageDecisions = chooseUniqueSeasonEvents(agePool, getSeasonCategoryDecisionCount(eventSeed, season, year, "age"), eventSeed, season, year, "age", age);
+  const seasonDecisions = chooseUniqueSeasonEvents(seasonPool.filter((event) => !ageDecisions.some((ageEvent) => ageEvent.id === event.id)), getSeasonCategoryDecisionCount(eventSeed, season, year, "season"), eventSeed, season, year, "season", age);
+
+  return getSeasonDecisionDays(season, year, eventSeed, [...ageDecisions, ...seasonDecisions]).map((day) => ({
+    ...day,
+    decisions: day.decisions.slice(0, MAX_SEASON_DECISIONS)
+  }));
+};
 
 const summaryCopy = {
   chaos: {
@@ -1188,7 +1288,8 @@ const defaultStartingStats = {
   wellbeing: 70,
   marriage: 60,
   children: 35,
-  wallet: 55
+  wallet: 55,
+  memory: 50
 };
 
 const createDefaultGame = () => ({
@@ -1197,6 +1298,7 @@ const createDefaultGame = () => ({
   marriage: 75,
   children: 35,
   wallet: 60,
+  memory: 50,
   month: 1,
   year: new Date().getFullYear(),
   completedDecisions: [],
@@ -1225,6 +1327,7 @@ const normalizeGame = (game) => ({
   marriage: clamp(Number(game?.marriage ?? 40)),
   children: clamp(Number(game?.children ?? 0)),
   wallet: clamp(Number(game?.wallet ?? 60)),
+  memory: clamp(Number(game?.memory ?? 50)),
   month: clamp(Number(game?.month ?? 1), 1, 12),
   year: Number.isFinite(Number(game?.year)) ? Number(game.year) : new Date().getFullYear(),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
@@ -1743,7 +1846,10 @@ export default function App() {
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
         : null;
       const stateBeforeChoice = undoEffects ? applyEffects(prevGame, undoEffects) : prevGame;
-      const modifiedEffects = resolveChoiceEffects(stateBeforeChoice, choice.effects, prevGame.legacy?.difficulty ?? 1);
+      const modifiedEffects = {
+        ...resolveChoiceEffects(stateBeforeChoice, choice.effects, prevGame.legacy?.difficulty ?? 1),
+        memory: getChoiceMemoryScore(decision, choice)
+      };
       const nextState = applyEffects(stateBeforeChoice, modifiedEffects);
       const selectedChoices = {
         ...(prevGame.selectedChoices ?? {}),
@@ -1867,7 +1973,10 @@ export default function App() {
         }
 
         const choice = getRandomChoice(game.eventSeed, day.month, dayIndex, decisionIndex, decision.choices);
-        const modifiedEffects = resolveChoiceEffects(nextState, choice.effects, game.legacy?.difficulty ?? 1);
+        const modifiedEffects = {
+          ...resolveChoiceEffects(nextState, choice.effects, game.legacy?.difficulty ?? 1),
+          memory: getChoiceMemoryScore(decision, choice)
+        };
         nextState = applyEffects(nextState, modifiedEffects);
         resolvedSeasonChoices[decision.key] = {
           dayName: day.dayLabel,
@@ -1899,8 +2008,27 @@ export default function App() {
       }
     });
 
-    const unexpectedEvent = getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState, settings);
+    const earlyFinishMember = getEarlyFinishFamilyMember(game.eventSeed, activeSeason, currentCalendarYear, nextState, settings);
     let unexpectedStep = null;
+
+    if (earlyFinishMember) {
+      unexpectedStep = createEarlyFinishStep(earlyFinishMember);
+      nextState = applyEffects({
+        ...nextState,
+        family: removeFamilyMember(nextState.family, earlyFinishMember.id)
+      }, unexpectedStep.effects);
+      resolvedSeasonChoices[unexpectedStep.key] = {
+        dayName: "Family news",
+        eventTitle: unexpectedStep.eventTitle,
+        label: unexpectedStep.choiceLabel,
+        effects: unexpectedStep.effects,
+        memory: unexpectedStep.description,
+        source: "Morbid"
+      };
+      simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${earlyFinishMember.name} finished the race early and left the family timeline.`);
+    }
+
+    const unexpectedEvent = unexpectedStep ? null : getUnexpectedEventForMonth(game.eventSeed, game.month, currentCalendarYear, nextState, settings);
 
     if (unexpectedEvent) {
       const modifiedEffects = resolveChoiceEffects(nextState, unexpectedEvent.effects, game.legacy?.difficulty ?? 1);
@@ -2124,8 +2252,8 @@ export default function App() {
     return (
     <span className="choice-effects" aria-label="Choice effects">
       {getDisplayEffectEntries(adjustedEffects).map(([key, value]) => (
-        <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {formatPrivateEffectLabel(key, value)}
+        <span className={value >= 0 ? "effect positive" : "effect negative"} key={key} aria-label={formatPrivateEffectLabel(key, value)} title={formatPrivateEffectLabel(key, value)}>
+          {formatEffectDirectionLabel(key, value)}
         </span>
       ))}
     </span>
@@ -2135,8 +2263,8 @@ export default function App() {
   const renderSimulationEffects = (effects) => (
     <span className="choice-effects simulation-effects" aria-label="Simulation stat changes">
       {getDisplayEffectEntries(effects).map(([key, value]) => (
-        <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {formatPrivateEffectLabel(key, value)}
+        <span className={value >= 0 ? "effect positive" : "effect negative"} key={key} aria-label={formatPrivateEffectLabel(key, value)} title={formatPrivateEffectLabel(key, value)}>
+          {formatEffectDirectionLabel(key, value)}
         </span>
       ))}
     </span>

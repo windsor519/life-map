@@ -41,7 +41,7 @@ const familyPhotoCss = `
 
 .family-photo-member {
   --skin: #f5c7a9;
-  --hair: #6b3f2a;
+  --hair: #111827;
   --shirt: #38bdf8;
   --person-size: clamp(38px, 4.6vw, 56px);
   --person-half: calc(var(--person-size) / 2);
@@ -118,7 +118,6 @@ const familyPhotoCss = `
 }
 
 .family-photo-member.family-female {
-  --hair: #7c2d12;
   --shirt: #fb7185;
 }
 
@@ -185,12 +184,10 @@ const familyPhotoCss = `
 }
 
 .family-photo-member.family-male {
-  --hair: #3f2a1d;
   --shirt: #60a5fa;
 }
 
 .family-photo-member.family-unknown {
-  --hair: #475569;
   --shirt: #a78bfa;
 }
 
@@ -363,6 +360,17 @@ const getTimelinePosition = (age) => `${getTimelineAge(age)}%`;
 
 const getTimelineLayer = (age) => 101 - Math.round(getTimelineAge(age));
 
+const getFamilyHairColor = (age) => {
+  const safeAge = getTimelineAge(age);
+
+  if (safeAge >= 82) return "#f8fafc";
+  if (safeAge >= 70) return "#e2e8f0";
+  if (safeAge >= 58) return "#94a3b8";
+  if (safeAge >= 45) return "#475569";
+  if (safeAge >= 28) return "#1f2937";
+  return "#020617";
+};
+
 const getPositionedMembers = (members) => {
   const sortedMembers = members
     .map((member, originalIndex) => ({ member, originalIndex, age: getTimelineAge(member.age) }))
@@ -426,7 +434,7 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
             role="img"
             aria-label={getMemberLabel(member)}
             title={getMemberLabel(member)}
-            style={{ "--timeline-position": getTimelinePosition(member.age), "--timeline-layer": getTimelineLayer(member.age), "--timeline-nudge": member.timelineNudge, "--timeline-lane": member.timelineLane }}
+            style={{ "--timeline-position": getTimelinePosition(member.age), "--timeline-layer": getTimelineLayer(member.age), "--timeline-nudge": member.timelineNudge, "--timeline-lane": member.timelineLane, "--hair": getFamilyHairColor(member.age) }}
           >
             <span className="family-photo-back-hair" aria-hidden="true" />
             <span className="family-photo-hair" aria-hidden="true" />

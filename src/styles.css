@@ -1150,19 +1150,42 @@ textarea:focus {
     rgba(255, 255, 255, 0.1);
 }
 
-.season-panel-spring { --season-glow: rgba(244, 114, 182, 0.28); }
-.season-panel-summer { --season-glow: rgba(251, 191, 36, 0.3); }
-.season-panel-fall { --season-glow: rgba(245, 158, 11, 0.3); }
-.season-panel-winter { --season-glow: rgba(147, 197, 253, 0.3); }
+.season-panel-spring {
+  --season-glow: rgba(244, 114, 182, 0.36);
+  --season-ribbon: linear-gradient(135deg, rgba(244, 114, 182, 0.28), rgba(52, 211, 153, 0.16));
+  --season-edge: rgba(244, 114, 182, 0.4);
+}
+
+.season-panel-summer {
+  --season-glow: rgba(251, 191, 36, 0.38);
+  --season-ribbon: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(56, 189, 248, 0.18));
+  --season-edge: rgba(251, 191, 36, 0.42);
+}
+
+.season-panel-fall {
+  --season-glow: rgba(245, 158, 11, 0.38);
+  --season-ribbon: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(190, 18, 60, 0.18));
+  --season-edge: rgba(249, 115, 22, 0.42);
+}
+
+.season-panel-winter {
+  --season-glow: rgba(147, 197, 253, 0.38);
+  --season-ribbon: linear-gradient(135deg, rgba(147, 197, 253, 0.28), rgba(196, 181, 253, 0.2));
+  --season-edge: rgba(147, 197, 253, 0.44);
+}
 
 .season-panel {
+  border-color: var(--season-edge, rgba(255, 255, 255, 0.14));
   background:
+    var(--season-ribbon, linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent)),
     radial-gradient(circle at 100% 0, var(--season-glow), transparent 11rem),
     rgba(9, 12, 30, 0.38);
 }
 
 .season-panel.active {
   background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
+    var(--season-ribbon, linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent)),
     radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.24), transparent 12rem),
     radial-gradient(circle at 0 100%, var(--season-glow), transparent 14rem),
     rgba(255, 255, 255, 0.1);
@@ -4218,109 +4241,7 @@ textarea:focus {
   }
 }
 
-.skill-tree-panel {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 1.5rem;
-  margin: 1.2rem 0;
-  padding: 1rem;
-  background: rgba(6, 10, 24, 0.36);
-}
-
-.skill-tree-heading,
-.skill-branch-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.skill-tree-heading h3 {
-  margin: 0.15rem 0 0;
-}
-
-.skill-tree-heading > span,
-.skill-tree-intro {
-  color: rgba(248, 251, 255, 0.72);
-}
-
-.skill-tree-heading strong {
-  color: #fef3c7;
-}
-
-.skill-tree-intro {
-  margin: 0.8rem 0 1rem;
-  max-width: 68rem;
-}
-
-.skill-tree-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.8rem;
-}
-
-.skill-branch {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.2rem;
-  padding: 0.8rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
-}
-
-.skill-branch-title {
-  justify-content: flex-start;
-  margin-bottom: 0.7rem;
-}
-
-.skill-node-ladder {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.skill-node {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.15rem 0.45rem;
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.95rem;
-  padding: 0.65rem;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: none;
-}
-
-.skill-node span {
-  color: #93c5fd;
-  font-size: 0.74rem;
-  text-transform: uppercase;
-}
-
-.skill-node small {
-  grid-column: 1 / -1;
-  color: rgba(248, 251, 255, 0.66);
-  font-size: 0.78rem;
-}
-
-.skill-node.learned {
-  border-color: rgba(52, 211, 153, 0.45);
-  background: rgba(16, 185, 129, 0.16);
-}
-
-.skill-node.locked {
-  opacity: 0.48;
-}
-
 .season-panel-memory {
   background: linear-gradient(145deg, rgba(88, 28, 135, 0.34), rgba(15, 23, 42, 0.64));
 }
 
-@media (max-width: 1120px) {
-  .skill-tree-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 680px) {
-  .skill-tree-grid {
-    grid-template-columns: 1fr;
-  }
-}

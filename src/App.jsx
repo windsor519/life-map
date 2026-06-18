@@ -1714,6 +1714,7 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
+          wisdom: decision.wisdom,
           source: "Selected",
           memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Selected")
         }
@@ -1819,7 +1820,8 @@ export default function App() {
             choiceSource: "Selected",
             effects: selectedChoice.effects,
             visual: decision.visual,
-            severity: decision.severity
+            severity: decision.severity,
+            wisdom: decision.wisdom
           });
           return;
         }
@@ -1834,6 +1836,7 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
+          wisdom: decision.wisdom,
           source: "Auto",
           memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Auto")
         };
@@ -1845,7 +1848,8 @@ export default function App() {
           choiceSource: "Random",
           effects: modifiedEffects,
           visual: decision.visual,
-          severity: decision.severity
+          severity: decision.severity,
+          wisdom: decision.wisdom
         });
         randomDayResults.push(`${decision.title}: ${choice.label}`);
       });
@@ -1878,7 +1882,8 @@ export default function App() {
         effects: modifiedEffects,
         visual: unexpectedEvent.visual,
         severity: unexpectedEvent.severity,
-        description: unexpectedEvent.description
+        description: unexpectedEvent.description,
+        wisdom: unexpectedEvent.wisdom
       };
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${unexpectedEvent.memory}`);
     }
@@ -2318,6 +2323,12 @@ export default function App() {
               </span>
             </div>
             {currentSimulationStep.description ? <p>{currentSimulationStep.description}</p> : null}
+            {currentSimulationStep.wisdom ? (
+              <div className="decision-wisdom-card">
+                <span>Wisdom</span>
+                <p>{currentSimulationStep.wisdom}</p>
+              </div>
+            ) : null}
             <div className="simulation-choice-card">
               <span>{simulationState.phase === "unexpected" ? "Only response" : currentSimulationStep.choiceSource === "Selected" ? "Your planned choice" : currentSimulationStep.choiceSource === "Random" ? "Auto-resolved choice" : "Outcome"}</span>
               <strong>{simulationState.phase === "unexpected" ? "Okay" : currentSimulationStep.choiceLabel}</strong>
@@ -2507,6 +2518,12 @@ export default function App() {
 
               <div className="decision-details">
                 <p>{decision.description}</p>
+                {decision.wisdom ? (
+                  <div className="decision-wisdom-card">
+                    <span>Wisdom</span>
+                    <p>{decision.wisdom}</p>
+                  </div>
+                ) : null}
                 {selectedChoice ? (
                   <div className="selected-summary" aria-live="polite">
                     <span>Selected</span>

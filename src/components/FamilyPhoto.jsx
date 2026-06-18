@@ -8,16 +8,16 @@ const familyPhotoCss = `
   position: relative;
   width: 100%;
   min-width: 0;
-  height: 6.2rem;
+  height: 6.9rem;
   margin-top: 0.55rem;
-  padding: 1.55rem 0.75rem 1.9rem;
+  padding: 1.55rem 1rem 1.9rem;
 }
 
 .family-photo-strip::before {
   position: absolute;
-  right: 0.75rem;
+  right: 1rem;
   bottom: 1.25rem;
-  left: 0.75rem;
+  left: 1rem;
   height: 0.24rem;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(34, 211, 238, 0.76), rgba(168, 85, 247, 0.76), rgba(251, 191, 36, 0.76));
@@ -26,9 +26,9 @@ const familyPhotoCss = `
 
 .family-photo-strip::after {
   position: absolute;
-  right: 0.75rem;
+  right: 1rem;
   bottom: 0.15rem;
-  left: 0.75rem;
+  left: 1rem;
   color: rgba(219, 234, 254, 0.72);
   content: "Age timeline";
   text-align: center;
@@ -43,11 +43,11 @@ const familyPhotoCss = `
   --skin: #f5c7a9;
   --hair: #6b3f2a;
   --shirt: #38bdf8;
-  --person-size: 60px;
+  --person-size: clamp(38px, 4.6vw, 56px);
   --person-half: calc(var(--person-size) / 2);
   position: absolute;
-  bottom: 1.05rem;
-  left: clamp(calc(0.75rem + var(--person-half)), var(--timeline-position, 0%), calc(100% - 0.75rem - var(--person-half)));
+  bottom: calc(1.05rem + var(--timeline-lane, 0px));
+  left: clamp(calc(1rem + var(--person-half)), calc(var(--timeline-position, 0%) + var(--timeline-nudge, 0px)), calc(100% - 1rem - var(--person-half)));
   z-index: var(--timeline-layer, 1);
   display: inline-grid;
   width: var(--person-size);
@@ -197,7 +197,7 @@ const familyPhotoCss = `
 .family-photo-member.family-child {
   --skin: #f8d7bd;
   --shirt: #facc15;
-  --person-size: 52px;
+  --person-size: clamp(34px, 4vw, 48px);
 }
 
 .family-photo-member.family-child::before {
@@ -295,11 +295,11 @@ const familyPhotoCss = `
 }
 
 .family-photo-axis-label.age-0 {
-  left: 0.75rem;
+  left: 1rem;
 }
 
 .family-photo-axis-label.age-100 {
-  right: 0.75rem;
+  right: 1rem;
 }
 
 .family-photo-member.family-self {
@@ -363,6 +363,43 @@ const getTimelinePosition = (age) => `${getTimelineAge(age)}%`;
 
 const getTimelineLayer = (age) => 101 - Math.round(getTimelineAge(age));
 
+const getPositionedMembers = (members) => {
+  const sortedMembers = members
+    .map((member, originalIndex) => ({ member, originalIndex, age: getTimelineAge(member.age) }))
+    .sort((a, b) => a.age - b.age || a.originalIndex - b.originalIndex);
+  const positioned = new Map();
+  let cluster = [];
+
+  const flushCluster = () => {
+    if (cluster.length === 0) return;
+
+    const center = (cluster.length - 1) / 2;
+    cluster.forEach((item, clusterIndex) => {
+      const spread = clusterIndex - center;
+
+      positioned.set(item.originalIndex, {
+        ...item.member,
+        timelineNudge: `${spread * 34}px`,
+        timelineLane: `${Math.abs(spread) * 6}px`
+      });
+    });
+    cluster = [];
+  };
+
+  sortedMembers.forEach((item) => {
+    const previous = cluster[cluster.length - 1];
+
+    if (previous && item.age - previous.age > 7) {
+      flushCluster();
+    }
+
+    cluster.push(item);
+  });
+  flushCluster();
+
+  return members.map((_, index) => positioned.get(index));
+};
+
 const getMemberLabel = (member) => {
   const name = member.isPlayer ? "You" : member.name;
   return `${name}, ${member.groupLabel}, ${member.ageLabel}`;
@@ -370,7 +407,7 @@ const getMemberLabel = (member) => {
 
 export default function FamilyPhoto({ family, currentAge, currentMonth, character }) {
   const familyMembers = getFamilyMembers(family, currentAge, currentMonth);
-  const members = [getPlayerMember(currentAge, character), ...familyMembers];
+  const members = getPositionedMembers([getPlayerMember(currentAge, character), ...familyMembers]);
   useFamilyPhotoStyles();
 
   return (
@@ -389,7 +426,7 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
             role="img"
             aria-label={getMemberLabel(member)}
             title={getMemberLabel(member)}
-            style={{ "--timeline-position": getTimelinePosition(member.age), "--timeline-layer": getTimelineLayer(member.age) }}
+            style={{ "--timeline-position": getTimelinePosition(member.age), "--timeline-layer": getTimelineLayer(member.age), "--timeline-nudge": member.timelineNudge, "--timeline-lane": member.timelineLane }}
           >
             <span className="family-photo-back-hair" aria-hidden="true" />
             <span className="family-photo-hair" aria-hidden="true" />

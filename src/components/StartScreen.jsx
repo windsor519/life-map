@@ -322,19 +322,19 @@ export default function StartScreen({
               <span className="startup-brand-kicker">Seasonal life simulator</span>
             </span>
           </div>
-          <p className="seasonal-proverb">☀️ Summer proverb: SPF now, plot twists later.</p>
+          <p className="seasonal-proverb">Seasonal life simulator</p>
           <h1>Map a life that keeps moving.</h1>
           <p className="subtitle">Pick a starting point, add your household, and follow each season.</p>
           <div className="startup-highlights" aria-label="Game highlights">
-            <span>🌦️ Seasonal choices</span>
-            <span>👥 Aging family</span>
-            <span>🎲 Surprise events</span>
+            <span>Seasonal choices</span>
+            <span>Aging family</span>
+            <span>Surprise events</span>
           </div>
         </div>
         <div className="life-board" aria-hidden="true">
-          <span className="board-node node-heart">💞</span>
-          <span className="board-node node-health">💪</span>
-          <span className="board-node node-family">🌱</span>
+          <span className="board-node node-heart">01</span>
+          <span className="board-node node-health">02</span>
+          <span className="board-node node-family">03</span>
           <span className="board-route" />
         </div>
       </section>

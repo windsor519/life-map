@@ -56,13 +56,24 @@ export default function SeasonGameBoard({
     )
   );
   const seasonTimeline = [getTimelineItem(0)];
-  const mapNodes = seasonDecisions.slice(0, 6);
-  const fondMemoryCount = memoryMoments.filter((moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory)).length;
-  const regretMemoryCount = memoryMoments.filter((moment) => ["regret", "soft_regret"].includes(moment.memory)).length;
-  const memoryHighScore = memoryMoments.reduce((score, moment) => score + (["fond", "core_memory", "defining_memory"].includes(moment.memory) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0)), 0);
-  const memoryCardOffset = 1;
-  const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0) + memoryCardOffset;
-  const totalTimelineCards = seasonTimeline.length + memoryCardOffset;
+  const isPositiveMemory = (moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory);
+  const getMemoryMomentScore = (moment) => isPositiveMemory(moment) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0);
+  const memoryHighScore = memoryMoments.reduce((score, moment) => score + getMemoryMomentScore(moment), 0);
+  const memoryGraphSeasons = seasonConfig.map((season) => {
+    const seasonMoments = memoryMoments.filter((moment) => moment.seasonLabel === season.label);
+    const score = seasonMoments.reduce((total, moment) => total + getMemoryMomentScore(moment), 0);
+
+    return {
+      ...season,
+      score,
+      count: seasonMoments.length,
+      fondCount: seasonMoments.filter(isPositiveMemory).length,
+      regretCount: seasonMoments.filter((moment) => !isPositiveMemory(moment)).length
+    };
+  });
+  const memoryGraphPeak = Math.max(1, ...memoryGraphSeasons.map((season) => Math.abs(season.score)));
+  const activeTimelineIndex = 0;
+  const totalTimelineCards = seasonTimeline.length;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
 
@@ -167,24 +178,36 @@ export default function SeasonGameBoard({
         <strong>Your family</strong>
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
       </div>
-      <div className="life-map-strip" aria-label={`${activeSeason.label} life map route`}>
-        <div className="life-map-route" aria-hidden="true">
-          <span className="life-map-path" />
-          <span className="life-map-marker home">🏠</span>
-          {mapNodes.map((decision, index) => (
-            <span
-              className={`life-map-marker node severity-card-${decision.severity} accent-${decision.visual.accent}`}
-              key={`map-${decision.key}`}
-              style={{ left: `${mapNodes.length > 1 ? 18 + (index * (58 / (mapNodes.length - 1))) : 47}%` }}
-            >
-              {decision.visual.icon}
-            </span>
-          ))}
-          <span className="life-map-marker random">🎲</span>
+      <div className="memory-graph-strip" aria-label="Season memory graph">
+        <div className="memory-graph-header">
+          <div>
+            <strong>Memory graph</strong>
+            <span>Each season now plots fond memories above the line and regrets below it.</span>
+          </div>
+          <div className="memory-graph-score">
+            <span>Total memory</span>
+            <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
+          </div>
         </div>
-        <div className="life-map-copy">
-          <strong>Life on the map</strong>
-          <span>Your family marker moves through seasonal stops, planned choices, memories, and more frequent surprise detours.</span>
+        <div className="memory-graph" role="img" aria-label={`Total memory score ${memoryHighScore}`}>
+          <span className="memory-graph-axis" aria-hidden="true" />
+          {memoryGraphSeasons.map((season) => {
+            const magnitude = Math.max(8, Math.round((Math.abs(season.score) / memoryGraphPeak) * 74));
+
+            return (
+              <article className="memory-graph-season" key={`memory-graph-${season.id}`}>
+                <div className="memory-graph-bar-track">
+                  <span
+                    className={`memory-graph-bar ${season.score < 0 ? "negative" : "positive"}`}
+                    style={{ height: `${season.count > 0 ? magnitude : 6}%` }}
+                  />
+                </div>
+                <strong>{season.icon} {season.label}</strong>
+                <span>{season.count} memories</span>
+                <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
+              </article>
+            );
+          })}
         </div>
       </div>
       <div className="flow-panel">
@@ -222,45 +245,13 @@ export default function SeasonGameBoard({
           onTouchEnd={handleSeasonSwipeEnd}
           ref={seasonCarouselRef}
         >
-          <article
-            className={`season-panel season-panel-memory past ${viewedSeasonIndex === 0 ? "in-view" : ""}`}
-            ref={(panel) => {
-              seasonPanelRefs.current[0] = panel;
-            }}
-          >
-            <div className="season-panel-score" aria-label={`Memory score ${memoryHighScore}`}>
-              <span>Memory score</span>
-              <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
-            </div>
-            <div className="season-panel-header">
-              <span className="season-icon" aria-hidden="true">🧠</span>
-              <div>
-                <p className="eyebrow">Unbounded score</p>
-                <h3>Memory</h3>
-              </div>
-            </div>
-            <p>Memory has no minimum or maximum. Fond, core, and defining memories add their children-bond value; regrets subtract the missed-memory gap, so many fond memories can push the score very high and many regrets can drive it negative.</p>
-            <div className="season-memory-history" aria-label="Accumulated fond memories and regrets">
-              <strong>Fond memories & regrets</strong>
-              <div>
-                {memoryMoments.length > 0 ? memoryMoments.slice().reverse().map((moment) => (
-                  <article className={`season-memory-item memory-${moment.memory}`} key={`memory-${moment.selection.id}-${moment.id}`}>
-                    <span>{moment.seasonLabel} {moment.year} · {moment.label}</span>
-                    <em>{moment.source}</em>
-                    <strong>{moment.choice ?? `Missed: ${moment.missed}`}</strong>
-                    <small>{moment.memory === "fond" || moment.memory === "core_memory" || moment.memory === "defining_memory"
-                      ? `Fond memory · ${moment.reason}`
-                      : `Regret · ${moment.reason}`}</small>
-                  </article>
-                )) : (
-                  <p className="season-memory-empty">No fond memories or regrets recorded yet. Simulate seasons to start scoring them.</p>
-                )}
-              </div>
-            </div>
-          </article>
           {seasonTimeline.map(({ season, offset, year: seasonYear }, timelineIndex) => {
-            const cardIndex = timelineIndex + memoryCardOffset;
-            const cardDecisions = seasonDecisions;
+            const cardIndex = timelineIndex;
+            const monthlyDecisionGroups = season.months.map((month) => ({
+              month,
+              monthName: new Date(seasonYear, month - 1, 1).toLocaleString("en", { month: "long" }),
+              decisions: seasonDecisions.filter((decision) => decision.day.month === month)
+            }));
 
             return (
               <article
@@ -278,40 +269,48 @@ export default function SeasonGameBoard({
                   </div>
                 </div>
                 <p>{season.description}</p>
-                <div className="season-decisions">
-                  {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
-                      const selectedChoice = selectedChoices[decision.key];
-                      const lockedLegacyChoice = !selectedChoice && completedDecisions.includes(decision.key);
-                      const completed = Boolean(selectedChoice) || lockedLegacyChoice;
+                <div className="season-decisions season-decisions-by-month">
+                  {monthlyDecisionGroups.map((monthGroup) => (
+                    <section className="season-month-group" key={`${season.id}-${monthGroup.month}`}>
+                      <div className="season-month-heading">
+                        <strong>{monthGroup.monthName}</strong>
+                        <span>{monthGroup.decisions.length} actions</span>
+                      </div>
+                      {monthGroup.decisions.length > 0 ? monthGroup.decisions.map((decision) => {
+                        const selectedChoice = selectedChoices[decision.key];
+                        const lockedLegacyChoice = !selectedChoice && completedDecisions.includes(decision.key);
+                        const completed = Boolean(selectedChoice) || lockedLegacyChoice;
 
-                      return (
-                        <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
-                          <button
-                            className="decision-toggle"
-                            type="button"
-                            aria-haspopup="dialog"
-                            onClick={() => onOpenDecision({ decision, dayLabel: decision.day.dayLabel })}
-                            disabled={isSimulationLocked}
-                          >
-                            <span className="decision-title">
-                              <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
-                              <span>
-                                <small>Action · {decision.day.dayLabel}</small>
-                                <h3>{decision.title}</h3>
+                        return (
+                          <section className={`decision-card severity-card-${decision.severity} accent-${decision.visual.accent} ${completed ? "completed" : ""}`} key={decision.key}>
+                            <button
+                              className="decision-toggle"
+                              type="button"
+                              aria-haspopup="dialog"
+                              onClick={() => onOpenDecision({ decision, dayLabel: decision.day.dayLabel })}
+                              disabled={isSimulationLocked}
+                            >
+                              <span className="decision-title">
+                                <span className="mini-icon" aria-hidden="true">{decision.visual.icon}</span>
+                                <span>
+                                  <small>Action · {decision.day.dayLabel}</small>
+                                  <h3>{decision.title}</h3>
+                                </span>
                               </span>
-                            </span>
-                            <span className="decision-status">
-                              {selectedChoice ? <span className="selected-pill">Picked</span> : null}
-                              <span className={`severity-badge severity-${decision.severity}`}>
-                                <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
-                                {severityConfig[decision.severity]?.label ?? decision.severity}
+                              <span className="decision-status">
+                                {selectedChoice ? <span className="selected-pill">Picked</span> : null}
+                                <span className={`severity-badge severity-${decision.severity}`}>
+                                  <span aria-hidden="true">{severityConfig[decision.severity]?.icon}</span>
+                                  {severityConfig[decision.severity]?.label ?? decision.severity}
+                                </span>
+                                <span className="expand-cue" aria-hidden="true">↗</span>
                               </span>
-                              <span className="expand-cue" aria-hidden="true">↗</span>
-                            </span>
-                          </button>
-                        </section>
-                      );
-                  }) : <p className="season-empty">This season has no planned actions. Simulate to discover which surprise detours appear at the end of the turn.</p>}
+                            </button>
+                          </section>
+                        );
+                      }) : <p className="season-empty">No planned actions this month.</p>}
+                    </section>
+                  ))}
                 </div>
               </article>
             );

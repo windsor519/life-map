@@ -4434,3 +4434,167 @@ textarea:focus {
   color: #cbd5e1;
   font-size: 0.9rem;
 }
+
+.memory-graph-strip {
+  display: grid;
+  gap: 0.9rem;
+  border: 1px solid rgba(196, 181, 253, 0.24);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 16% 25%, rgba(167, 139, 250, 0.2), transparent 9rem),
+    radial-gradient(circle at 86% 35%, rgba(251, 191, 36, 0.14), transparent 8rem),
+    rgba(15, 23, 42, 0.34);
+  padding: 0.9rem;
+}
+
+.memory-graph-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.memory-graph-header > div:first-child,
+.memory-graph-score {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.memory-graph-header strong,
+.memory-graph-score strong {
+  color: #fff;
+}
+
+.memory-graph-header span,
+.memory-graph-score span {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+}
+
+.memory-graph-score {
+  min-width: 8rem;
+  border: 1px solid rgba(196, 181, 253, 0.32);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.58);
+  padding: 0.55rem 0.75rem;
+  text-align: right;
+}
+
+.memory-graph-score span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.memory-graph-score strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.memory-graph {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  min-height: 12rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 100% 25%,
+    rgba(2, 6, 23, 0.32);
+  padding: 0.8rem;
+}
+
+.memory-graph-axis {
+  position: absolute;
+  right: 0.8rem;
+  left: 0.8rem;
+  top: 42%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.memory-graph-season {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: minmax(5.5rem, 1fr) auto auto auto;
+  gap: 0.25rem;
+  min-width: 0;
+  text-align: center;
+}
+
+.memory-graph-bar-track {
+  position: relative;
+  display: flex;
+  min-height: 6.25rem;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.memory-graph-bar {
+  width: min(46%, 3.5rem);
+  min-height: 0.32rem;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, #c4b5fd, #60a5fa);
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.34);
+}
+
+.memory-graph-bar.negative {
+  align-self: flex-start;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(180deg, #fb7185, #f97316);
+  box-shadow: 0 0 24px rgba(251, 113, 133, 0.28);
+}
+
+.memory-graph-season strong {
+  color: #fff;
+  font-size: 0.82rem;
+}
+
+.memory-graph-season span,
+.memory-graph-season small {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.72rem;
+}
+
+.season-decisions-by-month {
+  gap: 0.8rem;
+}
+
+.season-month-group {
+  display: grid;
+  gap: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.22);
+  padding: 0.62rem;
+}
+
+.season-month-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.season-month-heading strong {
+  color: #fff;
+}
+
+.season-month-heading span {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 680px) {
+  .memory-graph {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

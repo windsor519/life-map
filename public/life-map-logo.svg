@@ -1,30 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
   <title id="title">Life Map logo</title>
-  <desc id="desc">A glowing path winding through a four-season map pin.</desc>
+  <desc id="desc">A warm lantern beacon shining light over a winding life path inside a map pin.</desc>
   <defs>
-    <linearGradient id="sky" x1="18" y1="10" x2="112" y2="120" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff7a59"/>
-      <stop offset="0.45" stop-color="#7c3aed"/>
-      <stop offset="1" stop-color="#2563eb"/>
+    <radialGradient id="night" cx="40" cy="24" r="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1f2a6d"/>
+      <stop offset="0.48" stop-color="#172554"/>
+      <stop offset="1" stop-color="#070817"/>
+    </radialGradient>
+    <linearGradient id="pin" x1="24" y1="12" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="0.44" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
     </linearGradient>
-    <linearGradient id="path" x1="27" y1="91" x2="98" y2="32" gradientUnits="userSpaceOnUse">
+    <linearGradient id="beam" x1="64" y1="26" x2="64" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7ad" stop-opacity="0.95"/>
+      <stop offset="0.58" stop-color="#fde68a" stop-opacity="0.48"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="route" x1="35" y1="93" x2="93" y2="36" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fef3c7"/>
-      <stop offset="0.42" stop-color="#a7f3d0"/>
-      <stop offset="1" stop-color="#bae6fd"/>
+      <stop offset="0.48" stop-color="#fde047"/>
+      <stop offset="1" stop-color="#ffffff"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+    <filter id="softGlow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="sunGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <rect width="128" height="128" rx="30" fill="#070817"/>
-  <path d="M64 9c24.3 0 44 18.8 44 42 0 31.5-44 68-44 68S20 82.5 20 51C20 27.8 39.7 9 64 9Z" fill="url(#sky)"/>
-  <path d="M37 87c11-16 44 3 54-17 8-16-20-20-12-33 4.4-7.2 14.5-7.7 21-5" fill="none" stroke="url(#path)" stroke-width="8" stroke-linecap="round" stroke-dasharray="1 15" filter="url(#glow)"/>
-  <circle cx="38" cy="88" r="8" fill="#fbbf24" stroke="#fff7ed" stroke-width="3"/>
-  <circle cx="80" cy="61" r="7" fill="#34d399" stroke="#ecfeff" stroke-width="3"/>
-  <circle cx="99" cy="32" r="8" fill="#7dd3fc" stroke="#eff6ff" stroke-width="3"/>
-  <path d="M46 39h36M47 51h34M48 63h20" stroke="rgba(255,255,255,.32)" stroke-width="4" stroke-linecap="round"/>
+  <rect width="128" height="128" rx="30" fill="url(#night)"/>
+  <path d="M64 8c24.85 0 45 19.08 45 42.62C109 82.5 64 120 64 120S19 82.5 19 50.62C19 27.08 39.15 8 64 8Z" fill="url(#pin)"/>
+  <path d="M64 25 101 104H27L64 25Z" fill="url(#beam)" opacity="0.88"/>
+  <circle cx="64" cy="34" r="17" fill="#facc15" filter="url(#sunGlow)"/>
+  <circle cx="64" cy="34" r="9" fill="#fff7ed"/>
+  <path d="M64 13v8M64 47v8M43 34h8M77 34h8M49.2 19.2l5.7 5.7M73.1 43.1l5.7 5.7M78.8 19.2l-5.7 5.7M54.9 43.1l-5.7 5.7" stroke="#fff7ad" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+  <path d="M34 91c8.5-15.5 30.5-4 37.5-20.5 5.8-13.7-13.7-17.1-6.9-27.7 5.2-8.1 17.4-7.9 25.4-3.8" fill="none" stroke="#fff7ad" stroke-width="14" stroke-linecap="round" opacity="0.24"/>
+  <path d="M34 91c8.5-15.5 30.5-4 37.5-20.5 5.8-13.7-13.7-17.1-6.9-27.7 5.2-8.1 17.4-7.9 25.4-3.8" fill="none" stroke="url(#route)" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 14" filter="url(#softGlow)"/>
+  <circle cx="34" cy="91" r="7.5" fill="#fbbf24" stroke="#fff7ed" stroke-width="3"/>
+  <circle cx="66" cy="69" r="6" fill="#fde047" stroke="#fff7ed" stroke-width="2.6"/>
+  <circle cx="90" cy="39" r="7" fill="#ffffff" stroke="#fde68a" stroke-width="3"/>
+  <path d="M37 105h54" stroke="#fff7ed" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
 </svg>

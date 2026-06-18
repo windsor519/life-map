@@ -4,7 +4,17 @@ const startingStatSliders = [
   { key: "wellbeing", description: "Your starting physical health, emotional margin, and day-to-day calm." },
   { key: "marriage", description: "Your starting spouse / partner connection, not general friendships." },
   { key: "children", description: "Your starting bond with your children and parenting home base." },
-  { key: "wallet", description: "Your starting financial cushion and resource stability." }
+  { key: "wallet", description: "Your starting money, assets, and resource stability." },
+  { key: "reputation", description: "Your starting career standing and social credibility." },
+  { key: "memory", description: "Your starting sense of purpose and fulfillment." }
+];
+
+const archetypeOptions = [
+  { id: "builder", label: "Builder", perk: "+wealth growth", flaw: "-energy" },
+  { id: "caregiver", label: "Caregiver", perk: "+family growth", flaw: "-career growth" },
+  { id: "scholar", label: "Scholar", perk: "+learning", flaw: "slower earnings" },
+  { id: "riskTaker", label: "Risk Taker", perk: "huge upside", flaw: "huge downside" },
+  { id: "socialite", label: "Socialite", perk: "+relationships", flaw: "higher expenses" }
 ];
 
 
@@ -243,8 +253,10 @@ export default function StartScreen({
   setStartingStats,
   setStartAge,
   setStartSex,
+  setStartArchetype,
   startAge,
   startSex,
+  startArchetype,
   startingStats,
   statConfig
 }) {
@@ -324,11 +336,11 @@ export default function StartScreen({
           </div>
           <p className="seasonal-proverb">Seasonal life simulator</p>
           <h1>Map a life that keeps moving.</h1>
-          <p className="subtitle">Pick a starting point, add your household, and follow each season.</p>
+          <p className="subtitle">Pick an archetype, make impossible choices, and manage a whole life across decades.</p>
           <div className="startup-highlights" aria-label="Game highlights">
-            <span>Seasonal choices</span>
-            <span>Aging family</span>
-            <span>Surprise events</span>
+            <span>3 action points / season</span>
+            <span>Persistent NPCs</span>
+            <span>Pressure-driven stories</span>
           </div>
         </div>
         <div className="life-board" aria-hidden="true">
@@ -358,6 +370,16 @@ export default function StartScreen({
                 />
               </div>
             </div>
+          </div>
+          <div className="archetype-grid" aria-label="Character archetypes">
+            {archetypeOptions.map((option) => (
+              <label className={`archetype-card ${startArchetype === option.id ? "selected" : ""}`} key={option.id}>
+                <input type="radio" name="archetype" value={option.id} checked={startArchetype === option.id} onChange={() => setStartArchetype(option.id)} />
+                <strong>{option.label}</strong>
+                <span>{option.perk}</span>
+                <small>{option.flaw}</small>
+              </label>
+            ))}
           </div>
         </section>
 

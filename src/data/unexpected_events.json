@@ -1,5 +1,21 @@
 [
   {
+    "id": "family-emergency",
+    "title": "Family Emergency",
+    "severity": "major",
+    "category": "Random emergency",
+    "icon": "🛟",
+    "accent": "rose",
+    "description": "A relative needs immediate help during a difficult moment.",
+    "effects": {
+      "children": -2,
+      "marriage": -1,
+      "wellbeing": -8,
+      "wallet": -2
+    },
+    "memory": "A family emergency interrupted the season and demanded immediate care."
+  },
+  {
     "id": "car-breakdown",
     "title": "Car Breaks Down",
     "severity": "major",

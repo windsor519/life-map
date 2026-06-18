@@ -56,7 +56,7 @@ export default function SeasonGameBoard({
   const memorySelections = allPastSeasonTimeline
     .slice(0, -1)
     .flatMap((item) => getPreviousSelections(item).map((selection) => ({ ...selection, seasonLabel: item.season.label, year: item.year })));
-  const futureSeasonTimeline = Array.from({ length: 3 }, (_, index) => getTimelineItem(index + 1));
+  const futureSeasonTimeline = Array.from({ length: 1 }, (_, index) => getTimelineItem(index + 1));
   const seasonTimeline = [
     ...pastSeasonTimeline,
     getTimelineItem(0),
@@ -278,7 +278,6 @@ export default function SeasonGameBoard({
             const isActive = offset === 0;
             const isPast = offset < 0;
             const isFuture = offset > 0;
-            const seasonMonthNames = getSeasonMonthNames(season);
             const cardDecisions = isActive ? seasonDecisions : [];
             const previousSelections = getPreviousSelections({ historyKey, offset, season });
             const futureSeasonDistance = Math.abs(offset);
@@ -294,12 +293,11 @@ export default function SeasonGameBoard({
                 <div className="season-panel-header">
                   <span className="season-icon" aria-hidden="true">{season.icon}</span>
                   <div>
-                    <p className="eyebrow">{seasonYear} · {offset === 0 ? "Selected season" : isPast ? "Past season" : "Future season"}</p>
+                    <p className="eyebrow">{offset === 0 ? "Selected season" : isPast ? "Past season" : "Future season"}</p>
                     <h3>{season.label}</h3>
                   </div>
                 </div>
                 <p>{season.description}</p>
-                <span className="season-months">{seasonMonthNames} · {seasonYear}</span>
                 {isActive ? (
                   <div className="season-decisions">
                     {cardDecisions.length > 0 ? cardDecisions.map((decision) => {
@@ -383,7 +381,7 @@ export default function SeasonGameBoard({
                       <div className="season-preview future-season-preview" aria-label={`${season.label} ${seasonYear} is a future season`}>
                         <span className="future-season-lock" aria-hidden="true">🔒</span>
                         <strong>Future season — not playable yet</strong>
-                        <span>{futureSeasonDistance} season{futureSeasonDistance === 1 ? "" : "s"} ahead · {seasonMonthNames} {seasonYear}</span>
+                        <span>{futureSeasonDistance} season{futureSeasonDistance === 1 ? "" : "s"} ahead</span>
                         <small>Finish the current season to unlock this plan. Decisions will appear when this season becomes current.</small>
                       </div>
                     ) : (

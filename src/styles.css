@@ -4763,3 +4763,123 @@ textarea:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.game-over-shell {
+  grid-template-columns: minmax(0, 42rem);
+  justify-content: center;
+  align-content: center;
+  padding-inline: 1rem;
+}
+
+.game-over-card {
+  justify-items: center;
+  text-align: center;
+  padding: clamp(1.35rem, 4vw, 2.5rem);
+}
+
+.game-over-card h1 {
+  max-width: 12ch;
+  font-size: clamp(2.6rem, 7vw, 5.5rem);
+}
+
+.game-over-mascot {
+  display: grid;
+  width: clamp(4.5rem, 13vw, 7rem);
+  height: clamp(4.5rem, 13vw, 7rem);
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.45), transparent 1.8rem),
+    linear-gradient(135deg, rgba(251, 191, 36, 0.92), rgba(244, 114, 182, 0.86));
+  box-shadow: 0 24px 58px rgba(244, 114, 182, 0.28);
+  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  transform: rotate(-5deg);
+}
+
+.game-over-note {
+  max-width: 34rem;
+  margin: 0;
+  color: #dbeafe;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.game-over-actions {
+  justify-content: center;
+}
+
+.cute-board-decor {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0.85rem 0 0.45rem;
+}
+
+.cute-board-decor span {
+  display: grid;
+  min-height: 3.4rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.28), transparent 2.4rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 14px 30px rgba(15, 23, 42, 0.16);
+  font-size: 1.75rem;
+}
+
+.season-board-frame {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.6rem;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(134, 239, 172, 0.18), transparent 12rem),
+    radial-gradient(circle at 86% 18%, rgba(253, 186, 116, 0.16), transparent 12rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+  padding: 0.75rem;
+}
+
+.season-panel {
+  overflow: hidden;
+  border-radius: 1.7rem;
+}
+
+.season-panel::before {
+  position: absolute;
+  right: -1.8rem;
+  bottom: -1.8rem;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 999px;
+  content: "";
+  background:
+    radial-gradient(circle at 36% 34%, rgba(255, 255, 255, 0.42) 0 0.28rem, transparent 0.3rem),
+    radial-gradient(circle at 64% 34%, rgba(255, 255, 255, 0.42) 0 0.28rem, transparent 0.3rem),
+    radial-gradient(ellipse at 50% 60%, rgba(255, 255, 255, 0.3) 0 0.55rem, transparent 0.58rem),
+    var(--season-glow, rgba(147, 197, 253, 0.28));
+  opacity: 0.85;
+}
+
+.board-path-ribbon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.2rem 0 0.55rem;
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.2), rgba(134, 239, 172, 0.18), rgba(147, 197, 253, 0.2));
+  padding: 0.42rem 0.75rem;
+}
+
+.board-path-ribbon span {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.26));
+}
+
+.decision-card {
+  border-color: rgba(255, 255, 255, 0.18);
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.18), transparent 5rem),
+    radial-gradient(circle at 100% 0, var(--accent-glow, rgba(124, 58, 237, 0.25)), transparent 8rem),
+    rgba(255, 255, 255, 0.095);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 24px rgba(15, 23, 42, 0.16);
+}

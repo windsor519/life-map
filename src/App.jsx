@@ -1224,34 +1224,13 @@ const getTotalLegacyBonuses = (legacy) => {
 };
 
 const buildNextLegacy = (legacy, finalGame) => {
-  const currentLegacy = normalizeLegacy(legacy);
-  const runs = currentLegacy.runs + 1;
-  const carryRate = getCarryRate(runs);
-  const carriedStats = {
-    wellbeing: Math.max(0, Math.round((finalGame.wellbeing ?? 0) * carryRate)),
-    marriage: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate)),
-    children: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate)),
-    wallet: Math.max(0, Math.round((finalGame.wallet ?? 0) * carryRate))
-  };
-  const earnedSkills = {
-    grit: Math.max(1, Math.round((finalGame.wellbeing ?? 0) * carryRate * 0.1)),
-    wellness: Math.max(0, Math.round((finalGame.wellbeing ?? 0) * carryRate * 0.18)),
-    bonds: Math.max(0, Math.round((finalGame.marriage ?? 0) * carryRate * 0.18)),
-    parenting: Math.max(0, Math.round((finalGame.children ?? 0) * carryRate * 0.18))
-  };
+  const runs = normalizeLegacy(legacy).runs + 1;
 
   return {
+    ...createDefaultLegacy(),
     runs,
-    difficulty: getDifficultyMultiplier(runs),
-    carryRate,
-    carriedStats,
-    skillPoints: currentLegacy.skillPoints + 3,
-    skills: {
-      ...currentLegacy.skills,
-      ...Object.fromEntries(
-        Object.keys(legacySkillConfig).map((key) => [key, Math.min(99, (currentLegacy.skills?.[key] ?? 0) + earnedSkills[key])])
-      )
-    },
+    difficulty: 1,
+    carryRate: 0,
     lastRun: {
       age: finalGame.age,
       week: finalGame.week,
@@ -1706,7 +1685,7 @@ export default function App() {
     setCustomEventsText("");
     setCustomEventError("");
     setStartingStats({ ...defaultStartingStats });
-    setGame((prevGame) => ({ ...createDefaultGame(), legacy: normalizeLegacy(prevGame.legacy) }));
+    setGame(createDefaultGame());
   };
 
   const currentCalendarYear = game.year;
@@ -2049,7 +2028,7 @@ export default function App() {
     }, sourceGame);
   };
 
-  const handleSimulateFiveYears = () => {
+  const handleSimulateOneYear = () => {
     if (isSimulationLocked || game.gameOver) {
       return;
     }
@@ -2061,7 +2040,7 @@ export default function App() {
     setGame((prevGame) => {
       let nextGame = prevGame;
 
-      for (let index = 0; index < 20; index += 1) {
+      for (let index = 0; index < 4; index += 1) {
         if (nextGame.gameOver) break;
         nextGame = simulateSeasonInstantly(nextGame);
       }
@@ -2476,25 +2455,14 @@ export default function App() {
       {settingsModal}
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
-          <h1>New Game+ unlocked</h1>
+          <div className="game-over-mascot" aria-hidden="true">🦝</div>
+          <p className="eyebrow">Game over</p>
+          <h1>Oops. The life raccoon ate the calendar.</h1>
           <p className="subtitle">{game.gameOverReason}</p>
-          <div className="legacy-meta-grid">
-            <span><strong>{Math.round((legacy.carryRate ?? 0) * 100)}%</strong> Carryover rate</span>
-          </div>
-          <div className="legacy-stat-grid" aria-label="Total New Game Plus bonuses">
-            {displayStatKeys.map((key) => (
-              <article key={key}>
-                <span>{displayStatConfig[key].icon}</span>
-                <strong>{displayStatConfig[key].label}</strong>
-                <em>{formatSummaryDelta(key, getDisplayDeltaValue(totalLegacyBonuses, key))}</em>
-                <small>carryover</small>
-              </article>
-            ))}
-          </div>
-          <div className="actions">
-            <button onClick={prepareNewGamePlus}>Start New Game+</button>
+          <p className="game-over-note">No carry over. No homework. Just a fresh map and a raccoon with absolutely no legal training.</p>
+          <div className="actions game-over-actions">
+            <button onClick={prepareNewGamePlus}>Start fresh</button>
             <button type="button" className="secondary" onClick={() => setSettingsOpen(true)}>⚙️ Settings</button>
-            <button type="button" className="secondary" onClick={resetGame}>Wipe Legacy</button>
           </div>
         </section>
       </main>
@@ -2604,11 +2572,11 @@ export default function App() {
           </button>
           <button
             className="next-turn-button simulate-years-button"
-            onClick={handleSimulateFiveYears}
+            onClick={handleSimulateOneYear}
             disabled={isSimulationLocked}
             type="button"
           >
-            ⏩ Simulate 5 years
+            ⏩ Simulate 1 year
           </button>
         </div>
       </section>

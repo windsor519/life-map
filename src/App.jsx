@@ -859,11 +859,11 @@ const getNextSeasonState = (month, age, year = new Date().getFullYear()) => {
   };
 };
 
-const RANDOM_EVENT_CHANCE = 0.067;
+const RANDOM_EVENT_CHANCE = 0.12;
 const MIN_SEASON_CATEGORY_DECISIONS = 1;
 const MAX_SEASON_CATEGORY_DECISIONS = 3;
 const MAX_SEASON_DECISIONS = MAX_SEASON_CATEGORY_DECISIONS * 2;
-const UNEXPECTED_EVENT_CHANCE = 0.093;
+const UNEXPECTED_EVENT_CHANCE = 0.25;
 const surpriseEvents = unexpectedEventRecords.map((event) => ({
   ...event,
   effects: sanitizeEffects(event.effects),

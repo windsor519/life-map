@@ -4339,3 +4339,98 @@ textarea:focus {
   }
 }
 
+.life-map-strip {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 16% 25%, rgba(52, 211, 153, 0.18), transparent 9rem),
+    radial-gradient(circle at 86% 35%, rgba(96, 165, 250, 0.18), transparent 8rem),
+    rgba(15, 23, 42, 0.32);
+  padding: 0.9rem;
+}
+
+.life-map-route {
+  position: relative;
+  min-height: 5.5rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%) 0 0 / 28px 28px,
+    linear-gradient(225deg, rgba(255, 255, 255, 0.06) 25%, transparent 25%) 0 0 / 28px 28px,
+    rgba(2, 6, 23, 0.36);
+}
+
+.life-map-path {
+  position: absolute;
+  inset: 50% 9% auto 9%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #34d399, #60a5fa, #fbbf24, #fb7185);
+  box-shadow: 0 0 24px rgba(96, 165, 250, 0.35);
+  transform: translateY(-50%) rotate(-2deg);
+}
+
+.life-map-path::before,
+.life-map-path::after {
+  position: absolute;
+  width: 34%;
+  height: 42px;
+  border: 3px dashed rgba(255, 255, 255, 0.28);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+  content: "";
+}
+
+.life-map-path::before {
+  left: 12%;
+  top: -36px;
+}
+
+.life-map-path::after {
+  right: 16%;
+  top: 2px;
+  transform: rotate(180deg);
+}
+
+.life-map-marker {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.76);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.86);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+  transform: translate(-50%, -50%);
+}
+
+.life-map-marker.home {
+  left: 8%;
+}
+
+.life-map-marker.random {
+  left: 91%;
+  background: rgba(251, 191, 36, 0.24);
+}
+
+.life-map-copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.life-map-copy strong {
+  color: #fff;
+}
+
+.life-map-copy span {
+  max-width: 46rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}

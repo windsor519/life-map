@@ -56,6 +56,7 @@ export default function SeasonGameBoard({
     )
   );
   const seasonTimeline = [getTimelineItem(0)];
+  const mapNodes = seasonDecisions.slice(0, 6);
   const fondMemoryCount = memoryMoments.filter((moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory)).length;
   const regretMemoryCount = memoryMoments.filter((moment) => ["regret", "soft_regret"].includes(moment.memory)).length;
   const memoryHighScore = memoryMoments.reduce((score, moment) => score + (["fond", "core_memory", "defining_memory"].includes(moment.memory) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0)), 0);
@@ -159,12 +160,32 @@ export default function SeasonGameBoard({
           <p className="eyebrow">This season</p>
           <h2>Plan {activeSeason.label} {year}</h2>
         </div>
-        <span>{pendingThisSeason} actions left · random events can appear at end of turn</span>
+        <span>{pendingThisSeason} actions left · random events are more likely at end of turn</span>
       </div>
-      <p className="calendar-intro">Actions are planned events placed on your calendar. Pick the choices that matter this season, then simulate; random Events can show up unexpectedly at the end of the turn.</p>
+      <p className="calendar-intro">Actions are planned events placed on your calendar. Pick the choices that matter this season, then simulate; random events are more likely to show up as surprise detours at the end of the turn.</p>
       <div className="board-family-strip" aria-label="Your family">
         <strong>Your family</strong>
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
+      </div>
+      <div className="life-map-strip" aria-label={`${activeSeason.label} life map route`}>
+        <div className="life-map-route" aria-hidden="true">
+          <span className="life-map-path" />
+          <span className="life-map-marker home">🏠</span>
+          {mapNodes.map((decision, index) => (
+            <span
+              className={`life-map-marker node severity-card-${decision.severity} accent-${decision.visual.accent}`}
+              key={`map-${decision.key}`}
+              style={{ left: `${mapNodes.length > 1 ? 18 + (index * (58 / (mapNodes.length - 1))) : 47}%` }}
+            >
+              {decision.visual.icon}
+            </span>
+          ))}
+          <span className="life-map-marker random">🎲</span>
+        </div>
+        <div className="life-map-copy">
+          <strong>Life on the map</strong>
+          <span>Your family marker moves through seasonal stops, planned choices, memories, and more frequent surprise detours.</span>
+        </div>
       </div>
       <div className="flow-panel">
         <div>
@@ -290,7 +311,7 @@ export default function SeasonGameBoard({
                           </button>
                         </section>
                       );
-                  }) : <p className="season-empty">This season has no planned actions. Simulate to discover whether random events appear at the end of the turn.</p>}
+                  }) : <p className="season-empty">This season has no planned actions. Simulate to discover which surprise detours appear at the end of the turn.</p>}
                 </div>
               </article>
             );

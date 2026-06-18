@@ -5,20 +5,51 @@ const FAMILY_PHOTO_STYLE_ID = "family-photo-component-styles";
 
 const familyPhotoCss = `
 .family-photo-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.42rem;
+  position: relative;
+  width: min(100%, 760px);
+  min-width: 0;
+  height: 6.2rem;
   margin-top: 0.55rem;
+  padding: 1.55rem 0.75rem 1.9rem;
+}
+
+.family-photo-strip::before {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 1.25rem;
+  left: 0.75rem;
+  height: 0.24rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.76), rgba(168, 85, 247, 0.76), rgba(251, 191, 36, 0.76));
+  content: "";
+}
+
+.family-photo-strip::after {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.15rem;
+  left: 0.75rem;
+  color: rgba(219, 234, 254, 0.72);
+  content: "Age timeline";
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: pre;
 }
 
 .family-photo-member {
   --skin: #f5c7a9;
   --hair: #6b3f2a;
   --shirt: #38bdf8;
-  position: relative;
-  display: inline-grid;
   --person-size: 60px;
+  --person-half: calc(var(--person-size) / 2);
+  position: absolute;
+  bottom: 1.05rem;
+  left: clamp(calc(0.75rem + var(--person-half)), var(--timeline-position, 0%), calc(100% - 0.75rem - var(--person-half)));
+  z-index: var(--timeline-layer, 1);
+  display: inline-grid;
   width: var(--person-size);
   height: var(--person-size);
   place-items: center;
@@ -30,6 +61,7 @@ const familyPhotoCss = `
     radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.34), transparent calc(var(--person-size) * 0.4)),
     linear-gradient(180deg, rgba(224, 242, 254, 0.54), rgba(30, 41, 59, 0.28));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0.35rem 0.9rem rgba(2, 6, 23, 0.2);
+  transform: translateX(-50%);
 }
 
 .family-photo-member::before {
@@ -253,6 +285,23 @@ const familyPhotoCss = `
   transform: translateX(50%);
 }
 
+.family-photo-axis-label {
+  position: absolute;
+  bottom: 0.15rem;
+  color: rgba(219, 234, 254, 0.78);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.family-photo-axis-label.age-0 {
+  left: 0.75rem;
+}
+
+.family-photo-axis-label.age-100 {
+  right: 0.75rem;
+}
+
 .family-photo-member.family-self {
   --shirt: #22d3ee;
   border-color: rgba(224, 242, 254, 0.88);
@@ -308,6 +357,12 @@ const getPlayerMember = (currentAge, character) => {
 
 const getMemberAgeBadge = (member) => getCompactAgeLabel(Number(member.age));
 
+const getTimelineAge = (age) => Math.max(0, Math.min(100, Number.isFinite(Number(age)) ? Number(age) : 0));
+
+const getTimelinePosition = (age) => `${getTimelineAge(age)}%`;
+
+const getTimelineLayer = (age) => 101 - Math.round(getTimelineAge(age));
+
 const getMemberLabel = (member) => {
   const name = member.isPlayer ? "You" : member.name;
   return `${name}, ${member.groupLabel}, ${member.ageLabel}`;
@@ -319,7 +374,9 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
   useFamilyPhotoStyles();
 
   return (
-    <div className="family-photo-strip" aria-label={`${members.length} family members`}>
+    <div className="family-photo-strip" aria-label={`${members.length} family members on a 0 to 100 age timeline`}>
+      <span className="family-photo-axis-label age-0" aria-hidden="true">0</span>
+      <span className="family-photo-axis-label age-100" aria-hidden="true">100</span>
       {members.map((member) => {
         // Dynamic safeguarding: ensure raw data formats from API/state (e.g. "M"/"F") 
         // are normalized into exact string keys expected by your CSS ("male"/"female")
@@ -332,6 +389,7 @@ export default function FamilyPhoto({ family, currentAge, currentMonth, characte
             role="img"
             aria-label={getMemberLabel(member)}
             title={getMemberLabel(member)}
+            style={{ "--timeline-position": getTimelinePosition(member.age), "--timeline-layer": getTimelineLayer(member.age) }}
           >
             <span className="family-photo-back-hair" aria-hidden="true" />
             <span className="family-photo-hair" aria-hidden="true" />

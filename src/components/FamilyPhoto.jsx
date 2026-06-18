@@ -6,7 +6,7 @@ const FAMILY_PHOTO_STYLE_ID = "family-photo-component-styles";
 const familyPhotoCss = `
 .family-photo-strip {
   position: relative;
-  width: min(100%, 760px);
+  width: 100%;
   min-width: 0;
   height: 6.2rem;
   margin-top: 0.55rem;

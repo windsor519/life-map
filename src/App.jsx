@@ -389,8 +389,6 @@ const skillTreeNodes = skillTreeBranches.flatMap((branch) => branch.nodes.map((n
 const skillTreeNodeIds = skillTreeNodes.map((node) => node.id);
 const createEmptySkillTreeAllocations = () => Object.fromEntries(skillTreeNodeIds.map((id) => [id, 0]));
 const getSkillNodeRank = (skills, nodeId) => Number(skills?.[nodeId] ?? 0);
-const isSkillNodeUnlocked = (skills, node) => !node.requires || getSkillNodeRank(skills, node.requires) > 0;
-const getSkillTreeSpentPoints = (skills) => skillTreeNodeIds.reduce((total, id) => total + getSkillNodeRank(skills, id), 0);
 const getSkillBranchRank = (skills, branchId) => skillTreeBranches.find((branch) => branch.id === branchId)?.nodes.reduce((total, node) => total + getSkillNodeRank(skills, node.id), 0) ?? 0;
 const getSeasonPointAward = (choices = {}) => {
   const records = Object.values(choices ?? {});
@@ -1987,28 +1985,6 @@ export default function App() {
     setSimulationState(createIdleSimulationState());
   };
 
-  const handleAllocateSkillPoint = (node) => {
-    setGame((prevGame) => {
-      const legacy = normalizeLegacy(prevGame.legacy);
-
-      if (legacy.skillPoints <= 0 || getSkillNodeRank(legacy.skills, node.id) > 0 || !isSkillNodeUnlocked(legacy.skills, node)) {
-        return prevGame;
-      }
-
-      return {
-        ...prevGame,
-        legacy: {
-          ...legacy,
-          skillPoints: legacy.skillPoints - 1,
-          skills: {
-            ...legacy.skills,
-            [node.id]: 1
-          }
-        }
-      };
-    });
-  };
-
   const closeDecisionModal = useCallback(() => setActiveDecisionContext(null), []);
   const closeStatModal = useCallback(() => setActiveStatKey(null), []);
   const openDecisionAtIndex = useCallback((index) => {
@@ -2317,12 +2293,6 @@ export default function App() {
           currentAge={game.age}
           currentMonth={game.month}
           character={game.character}
-          skillTreeBranches={skillTreeBranches}
-          legacy={legacy}
-          onAllocateSkillPoint={handleAllocateSkillPoint}
-          getSkillNodeRank={getSkillNodeRank}
-          isSkillNodeUnlocked={isSkillNodeUnlocked}
-          getSkillTreeSpentPoints={getSkillTreeSpentPoints}
         />
 
       </div>

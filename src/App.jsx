@@ -200,6 +200,32 @@ const displayStatKeys = summaryStatKeys;
 const getDisplayStatValue = (game, key) => game[key] ?? 0;
 const getDisplayDeltaValue = (deltas, key) => deltas[key] ?? 0;
 const getDisplayEffectEntries = (effects) => Object.entries(sanitizeEffects(effects));
+
+const getEffectMagnitudeLabel = (value) => {
+  const magnitude = Math.abs(Number(value) || 0);
+
+  if (magnitude >= 10) return "major";
+  if (magnitude >= 5) return "moderate";
+  return "small";
+};
+
+const formatPrivateEffectLabel = (key, value) => {
+  const label = displayStatConfig[key]?.label ?? statConfig[key]?.label ?? key;
+  const direction = value >= 0 ? "supports" : "strains";
+
+  return `${getEffectMagnitudeLabel(value)} ${direction} ${label}`;
+};
+
+const eventWisdomBySeverity = {
+  minor: "Small choices compound quietly. Pick the option you can repeat without needing a heroic version of yourself.",
+  moderate: "Fair choices usually protect more than one need. Look for the response that lowers regret without pretending tradeoffs are free.",
+  major: "When stakes rise, widen the circle of care. The fairest choice preserves safety first, then repairs what it can."
+};
+
+const getEventWisdom = (event) =>
+  event?.wisdom
+  ?? eventWisdomBySeverity[getSeverity(event)]
+  ?? eventWisdomBySeverity.minor;
 const captureStats = (game) =>
   summaryStatKeys.reduce((stats, key) => ({ ...stats, [key]: game[key] ?? 0 }), {});
 
@@ -884,6 +910,7 @@ const getUnexpectedEventForMonth = (eventSeed, month, year, gameState, settings 
 const getDecoratedEvent = (event, eventSeed, month, dayIndex, decisionIndex) => ({
   ...event,
   severity: getSeverity(event),
+  wisdom: getEventWisdom(event),
   key: `${eventSeed}-${month}-${dayIndex}-${decisionIndex}-${event.id}`,
   visual: eventVisuals[event.id] ?? { icon: event.icon ?? "✨", accent: event.accent ?? "blue", label: event.category ?? "Life" }
 });
@@ -1139,9 +1166,22 @@ const applyLegacyBonuses = (baseStats, legacy) => {
 const scaleEffectsForDifficulty = (effects, difficulty = 1) =>
   Object.fromEntries(Object.entries(sanitizeEffects(effects)).map(([key, value]) => {
     const isBad = value < 0;
-    const multiplier = isBad ? difficulty : Math.max(0.5, 1 - (difficulty - 1) * 0.35);
+    const multiplier = isBad ? Math.min(difficulty, 1.35) : Math.max(0.7, 1 - (difficulty - 1) * 0.22);
     return [key, Math.round(value * multiplier)];
   }));
+
+const improveEffectFairness = (baseState, effects) => {
+  const entries = Object.entries(sanitizeEffects(effects));
+
+  return Object.fromEntries(entries.map(([key, value]) => {
+    const currentValue = Number(baseState?.[key] ?? 50);
+    const softenedLoss = value < 0 && currentValue <= 35 ? Math.ceil(value * 0.72) : value;
+    const temperedGain = value > 0 && currentValue >= 85 ? Math.floor(value * 0.82) : softenedLoss;
+    const maxSwing = Math.abs(value) >= 12 ? 12 : 10;
+
+    return [key, clamp(temperedGain, -maxSwing, maxSwing)];
+  }));
+};
 
 
 const defaultStartingStats = {
@@ -1714,7 +1754,7 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
-          wisdom: decision.wisdom,
+          wisdom: getEventWisdom(decision),
           source: "Selected",
           memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Selected")
         }
@@ -1821,7 +1861,7 @@ export default function App() {
             effects: selectedChoice.effects,
             visual: decision.visual,
             severity: decision.severity,
-            wisdom: decision.wisdom
+            wisdom: getEventWisdom(decision)
           });
           return;
         }
@@ -1836,7 +1876,7 @@ export default function App() {
           effects: modifiedEffects,
           originalEffects: choice.effects,
           memory: choice.memory,
-          wisdom: decision.wisdom,
+          wisdom: getEventWisdom(decision),
           source: "Auto",
           memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Auto")
         };
@@ -1849,7 +1889,7 @@ export default function App() {
           effects: modifiedEffects,
           visual: decision.visual,
           severity: decision.severity,
-          wisdom: decision.wisdom
+          wisdom: getEventWisdom(decision)
         });
         randomDayResults.push(`${decision.title}: ${choice.label}`);
       });
@@ -1883,7 +1923,7 @@ export default function App() {
         visual: unexpectedEvent.visual,
         severity: unexpectedEvent.severity,
         description: unexpectedEvent.description,
-        wisdom: unexpectedEvent.wisdom
+        wisdom: getEventWisdom(unexpectedEvent)
       };
       simulatedMemories.push(`${activeSeason.label}, age ${game.age}: ${unexpectedEvent.memory}`);
     }
@@ -2079,13 +2119,13 @@ export default function App() {
   }, [activeDecisionContext, activeStatKey, closeDecisionModal, closeStatModal, getDecisionNavigation, openDecisionAtIndex]);
 
   const renderEffectPreview = (effects) => {
-    const adjustedEffects = scaleEffectsForDifficulty(effects, difficultyMultiplier);
+    const adjustedEffects = improveEffectFairness(game, scaleEffectsForDifficulty(effects, difficultyMultiplier));
 
     return (
     <span className="choice-effects" aria-label="Choice effects">
       {getDisplayEffectEntries(adjustedEffects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {displayStatConfig[key]?.label ?? statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+          {formatPrivateEffectLabel(key, value)}
         </span>
       ))}
     </span>
@@ -2096,7 +2136,7 @@ export default function App() {
     <span className="choice-effects simulation-effects" aria-label="Simulation stat changes">
       {getDisplayEffectEntries(effects).map(([key, value]) => (
         <span className={value >= 0 ? "effect positive" : "effect negative"} key={key}>
-          {displayStatConfig[key]?.label ?? statConfig[key]?.label ?? key} {value > 0 ? "+" : ""}{value}
+          {formatPrivateEffectLabel(key, value)}
         </span>
       ))}
     </span>
@@ -2334,7 +2374,7 @@ export default function App() {
               <strong>{simulationState.phase === "unexpected" ? "Okay" : currentSimulationStep.choiceLabel}</strong>
             </div>
             <div className="simulation-stat-changes">
-              <span>Stat changes</span>
+              <span>Score impact</span>
               {Object.keys(currentSimulationStep.effects ?? {}).length > 0 ? renderSimulationEffects(currentSimulationStep.effects) : <p>No stat changes this season.</p>}
             </div>
             {simulationState.phase === "unexpected" ? (
@@ -2441,7 +2481,7 @@ export default function App() {
                       <strong>{selection.eventTitle}</strong>
                       <small>{selection.label}</small>
                     </div>
-                    <em className={effectValue >= 0 ? "positive" : "negative"}>{effectValue > 0 ? "+" : ""}{effectValue}</em>
+                    <em className={effectValue >= 0 ? "positive" : "negative"}>{effectValue >= 0 ? "Helped" : "Strained"}</em>
                   </article>
                 );
               }) : (

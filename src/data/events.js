@@ -26,6 +26,7 @@ const generatedEvents = Array.from({ length: 279 }, (_, index) => {
     icon: blueprint.icon,
     accent: blueprint.accent,
     description: blueprint.description,
+    wisdom: blueprint.wisdom ?? "Everyday events are practice for the life you are building. Choose the response that is kind to both today and next season.",
     tags: blueprint.tags ?? ["general"],
     choices: [
       { label: blueprint.minor[0], effects: blueprint.minor[1], memory: blueprint.minor[2] },

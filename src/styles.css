@@ -5258,3 +5258,43 @@ button:focus-visible {
   .startup-hero { min-height: 520px; }
   .memory-graph-strip { display: none; }
 }
+
+.archetype-grid,
+.life-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.archetype-card,
+.dashboard-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: rgba(15, 23, 42, 0.52);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.archetype-card input { display: none; }
+.archetype-card.selected {
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
+}
+
+.pressure-meter span,
+.project-meter span,
+.npc-meter span {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #34d399, #f59e0b, #fb7185);
+}
+
+.pressure-meter,
+.project-meter,
+.npc-meter {
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}

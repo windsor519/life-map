@@ -190,16 +190,18 @@ const seasonalAudioConfig = {
 const getSeasonalAudioConfig = (seasonId) => seasonalAudioConfig[seasonId] ?? seasonalAudioConfig.spring;
 
 const statConfig = {
-  wellbeing: { label: "Wellbeing", icon: "🌿", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Health + calm" },
-  marriage: { label: "Spousal relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / partner" },
-  children: { label: "Children bond", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Kids / parenting" },
-  wallet: { label: "Wallet", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Resources" },
-  memory: { label: "Memory", icon: "🧠", tone: "good", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.34)", signal: "Remembered moments" }
+  wellbeing: { label: "Energy", icon: "⚡", max: 100, tone: "good", accent: "#34d399", glow: "rgba(52, 211, 153, 0.34)", signal: "Mental + physical capacity" },
+  marriage: { label: "Relationship", icon: "💞", max: 100, tone: "good", accent: "#fb7185", glow: "rgba(251, 113, 133, 0.34)", signal: "Spouse / friends" },
+  children: { label: "Family", icon: "🌱", max: 100, tone: "good", accent: "#22d3ee", glow: "rgba(34, 211, 238, 0.3)", signal: "Children / household bonds" },
+  wallet: { label: "Wealth", icon: "👛", max: 100, tone: "good", accent: "#f59e0b", glow: "rgba(245, 158, 11, 0.34)", signal: "Money / assets" },
+  reputation: { label: "Reputation", icon: "🏛️", max: 100, tone: "good", accent: "#60a5fa", glow: "rgba(96, 165, 250, 0.32)", signal: "Career / standing" },
+  memory: { label: "Purpose", icon: "🧠", max: 100, tone: "good", accent: "#a78bfa", glow: "rgba(167, 139, 250, 0.34)", signal: "Fulfillment / meaning" }
 };
 
 const summaryStatKeys = Object.keys(statConfig);
 const displayStatConfig = statConfig;
-const displayStatKeys = summaryStatKeys.filter((key) => key !== "memory");
+const displayStatKeys = summaryStatKeys;
+const ACTION_POINTS_PER_SEASON = 3;
 const getDisplayStatValue = (game, key) => game[key] ?? 0;
 const getDisplayDeltaValue = (deltas, key) => deltas[key] ?? 0;
 const getDisplayEffectEntries = (effects) => Object.entries(sanitizeEffects(effects));
@@ -455,7 +457,7 @@ const createDefaultLegacy = () => ({
 
 
 const allowedEffectKeys = new Set(summaryStatKeys);
-const normalizeEffectKey = (key) => ({ money: "wallet", welling: "wellbeing", health: "wellbeing", stress: "wellbeing" })[key] ?? key;
+const normalizeEffectKey = (key) => ({ money: "wallet", wealth: "wallet", energy: "wellbeing", relationship: "marriage", family: "children", purpose: "memory", welling: "wellbeing", health: "wellbeing", stress: "wellbeing", career: "reputation" })[key] ?? key;
 const normalizeEffectValue = (key, value) => key === "stress" ? -value : value;
 const sanitizeEffects = (effects) => {
   const sanitizedEffects = {};
@@ -945,7 +947,8 @@ const createEarlyFinishStep = (member) => ({
 });
 
 const getUnexpectedEventsForSeason = (eventSeed, season, year, gameState, settings = createDefaultSettings()) => {
-  const surpriseEventPool = settings.morbid ? [...surpriseEvents, ...morbidUnexpectedEvents] : surpriseEvents;
+  const systemicPressureEvents = getSystemicPressureEvents(gameState);
+  const surpriseEventPool = settings.morbid ? [...systemicPressureEvents, ...surpriseEvents, ...morbidUnexpectedEvents] : [...systemicPressureEvents, ...surpriseEvents];
   const eligibleSurpriseEvents = surpriseEventPool.filter((event) => {
     const eventSeasons = Array.isArray(event.seasons) ? event.seasons : [];
     return (eventSeasons.length === 0 || eventSeasons.includes(season.id)) && isEventEligible(event, gameState);
@@ -1197,11 +1200,27 @@ const formatSummaryDelta = (_key, value) => {
   return `${prefix}${value}`;
 };
 
+const getLegacyEnding = (game) => {
+  const scores = [
+    ["The Titan", game.wallet + game.reputation],
+    ["The Loving Parent", game.children + game.marriage],
+    ["The Community Pillar", game.reputation + game.memory],
+    ["The Visionary", game.memory + game.reputation + Math.max(0, game.wallet - 50)],
+    ["The Forgotten Millionaire", game.wallet * 1.4 - game.children - game.marriage],
+    ["The Wanderer", game.memory + game.wellbeing - game.wallet / 2],
+    ["The Teacher", game.memory + game.children + game.reputation / 2],
+    ["The Builder", game.wallet + game.memory]
+  ].sort((a, b) => b[1] - a[1]);
+
+  return scores[0]?.[0] ?? "A Life Lived";
+};
+
 const getGameOverReason = (game) => {
-  if (game.wellbeing <= 0) return "Wellbeing hit zero. The run collapsed into a cautionary smoothie ad.";
-  if (game.marriage <= 0) return "The relationship meter bottomed out. The couch has entered witness protection.";
-  if (game.children <= 0) return "Family bond hit zero. The snack-based legacy needs a reboot.";
-  if (game.wallet <= 0) return "Wallet hit zero. The budget goblin demanded a rematch.";
+  if (game.age >= 90) return `Life complete: ${getLegacyEnding(game)}. Death is the scoring screen, not a failure.`;
+  if (game.wellbeing <= 0) return "Energy hit zero. Burnout ended this chapter early.";
+  if (game.marriage <= 0) return "Relationship hit zero. The partnership could not carry the tradeoffs.";
+  if (game.children <= 0) return "Family hit zero. Estrangement became the dominant legacy.";
+  if (game.wallet <= 0) return "Wealth hit zero. Debt narrowed the map to survival.";
   return null;
 };
 
@@ -1268,11 +1287,71 @@ const improveEffectFairness = (baseState, effects) => {
 };
 
 
+const pressureConfig = {
+  career: { label: "Career Pressure", stat: "reputation", icon: "💼", trigger: "missed promotions, layoffs, stagnation" },
+  family: { label: "Family Pressure", stat: "children", icon: "🏠", trigger: "resentment, divorce, estrangement" },
+  financial: { label: "Financial Pressure", stat: "wallet", icon: "💸", trigger: "debt, emergencies, lost options" },
+  health: { label: "Health Pressure", stat: "wellbeing", icon: "🩺", trigger: "burnout, illness, weaker actions" }
+};
+
+const createDefaultPressures = () => ({ career: 20, family: 20, financial: 20, health: 20 });
+const normalizePressures = (pressures) => Object.fromEntries(Object.keys(pressureConfig).map((key) => [key, clamp(Number(pressures?.[key] ?? 20))]));
+
+const careerTracks = {
+  teacher: { id: "teacher", title: "Teacher", salary: "Low", stress: "Moderate", reputation: "+Purpose", advancement: "Tenure → Department Lead", flexibility: "High family flexibility" },
+  executive: { id: "executive", title: "Executive", salary: "High", stress: "Very high", reputation: "+Status", advancement: "Manager → Board", flexibility: "Relationship risk" },
+  entrepreneur: { id: "entrepreneur", title: "Entrepreneur", salary: "Volatile", stress: "Extreme", reputation: "High variance", advancement: "Idea → Exit", flexibility: "Bankruptcy risk" },
+  scholar: { id: "scholar", title: "Scholar", salary: "Slow", stress: "Low", reputation: "+Expertise", advancement: "Degree → Professor", flexibility: "Long runway" },
+  artist: { id: "artist", title: "Artist", salary: "Unstable", stress: "Medium", reputation: "+Legacy", advancement: "Practice → Patronage", flexibility: "Purpose rich" }
+};
+
+const archetypes = {
+  builder: { id: "builder", label: "Builder", perk: "+wealth growth", flaw: "-energy", careerId: "entrepreneur" },
+  caregiver: { id: "caregiver", label: "Caregiver", perk: "+family growth", flaw: "-career growth", careerId: "teacher" },
+  scholar: { id: "scholar", label: "Scholar", perk: "+learning", flaw: "slower earnings", careerId: "scholar" },
+  riskTaker: { id: "riskTaker", label: "Risk Taker", perk: "huge upside", flaw: "huge downside", careerId: "entrepreneur" },
+  socialite: { id: "socialite", label: "Socialite", perk: "+relationships", flaw: "higher expenses", careerId: "artist" }
+};
+const getArchetypeCareer = (archetypeId) => careerTracks[archetypes[archetypeId]?.careerId] ?? careerTracks.teacher;
+
+const createDefaultLifeProjects = () => ([
+  { id: "business", title: "Build a Business", stage: "idea", progress: 8, horizon: "20 years", risk: "bankruptcy" },
+  { id: "family", title: "Raise a Family", stage: "childhood", progress: 20, horizon: "18 years", risk: "estrangement" },
+  { id: "independence", title: "Wealth Independence", stage: "emergency fund", progress: 12, horizon: "30 years", risk: "market loss" },
+  { id: "legacy", title: "Legacy", stage: "values", progress: 10, horizon: "lifetime", risk: "forgotten impact" }
+]);
+const normalizeLifeProjects = (projects) => Array.isArray(projects) && projects.length ? projects.map((project) => ({ ...project, progress: clamp(Number(project.progress ?? 0)) })) : createDefaultLifeProjects();
+const createDefaultNpcs = (family = null) => ([
+  { id: "spouse", role: "Spouse", name: family?.spouse?.name || "Partner", bond: 65, remembers: "whether ambition leaves room for them" },
+  { id: "child", role: "Child", name: "Your child", bond: 45, remembers: "missed milestones and protected rituals" },
+  { id: "mentor", role: "Mentor", name: "Mentor", bond: 50, remembers: "career promises kept" },
+  { id: "rival", role: "Rival", name: "Rival", bond: 35, remembers: "opportunities you passed up" }
+]);
+const normalizeNpcs = (npcs) => Array.isArray(npcs) && npcs.length ? npcs.map((npc) => ({ ...npc, bond: clamp(Number(npc.bond ?? 50)) })) : createDefaultNpcs();
+
+const derivePressures = (gameState) => normalizePressures({
+  career: 100 - Number(gameState.reputation ?? 50),
+  family: 100 - Math.min(Number(gameState.children ?? 50), Number(gameState.marriage ?? 50)),
+  financial: 100 - Number(gameState.wallet ?? 50),
+  health: 100 - Number(gameState.wellbeing ?? 50)
+});
+
+const getSystemicPressureEvents = (gameState) => {
+  const pressures = normalizePressures(gameState.pressures ?? derivePressures(gameState));
+  const events = [];
+  if (pressures.career > 78) events.push({ id: "pressure-career", title: "Promotion Window Closes", severity: "major", category: "Systemic pressure", icon: "💼", accent: "blue", description: "Work has been ignored long enough that your reputation quietly stops compounding.", effects: sanitizeEffects({ reputation: -9, wallet: -4, memory: -3 }), memory: "A career opportunity disappeared because the long game had been neglected." });
+  if (pressures.family > 78) events.push({ id: "pressure-family", title: "Daughter Stops Calling", severity: "major", category: "Systemic pressure", icon: "📵", accent: "rose", description: "An old pattern becomes visible: the family remembers when you were absent.", effects: sanitizeEffects({ children: -10, marriage: -5, memory: -5 }), memory: "Family distance became a consequence of earlier tradeoffs." });
+  if (pressures.financial > 78) events.push({ id: "pressure-financial", title: "Debt Narrows Your Choices", severity: "major", category: "Systemic pressure", icon: "💸", accent: "amber", description: "Money instability converts future opportunities into obligations.", effects: sanitizeEffects({ wallet: -10, wellbeing: -5, reputation: -3 }), memory: "Financial pressure made the map smaller." });
+  if (pressures.health > 78) events.push({ id: "pressure-health", title: "Burnout", severity: "major", category: "Systemic pressure", icon: "🩺", accent: "green", description: "Energy debt comes due and every plan becomes less effective.", effects: sanitizeEffects({ wellbeing: -11, reputation: -4, marriage: -3 }), memory: "Burnout turned optimization into survival." });
+  return events.map((event) => ({ ...event, visual: { icon: event.icon, accent: event.accent, label: event.category } }));
+};
+
 const defaultStartingStats = {
   wellbeing: 70,
   marriage: 60,
   children: 35,
   wallet: 55,
+  reputation: 50,
   memory: 50
 };
 
@@ -1282,7 +1361,13 @@ const createDefaultGame = () => ({
   marriage: 75,
   children: 35,
   wallet: 60,
+  reputation: 50,
   memory: 50,
+  pressures: createDefaultPressures(),
+  lifeProjects: createDefaultLifeProjects(),
+  npcs: createDefaultNpcs(),
+  career: careerTracks.teacher,
+  actionPoints: ACTION_POINTS_PER_SEASON,
   month: 1,
   year: new Date().getFullYear(),
   completedDecisions: [],
@@ -1311,7 +1396,13 @@ const normalizeGame = (game) => ({
   marriage: clamp(Number(game?.marriage ?? 40)),
   children: clamp(Number(game?.children ?? 0)),
   wallet: clamp(Number(game?.wallet ?? 60)),
-  memory: Number.isFinite(Number(game?.memory)) ? Number(game.memory) : 50,
+  reputation: clamp(Number(game?.reputation ?? 50)),
+  memory: Number.isFinite(Number(game?.memory)) ? clamp(Number(game.memory), 0, 100) : 50,
+  pressures: normalizePressures(game?.pressures),
+  lifeProjects: normalizeLifeProjects(game?.lifeProjects),
+  npcs: normalizeNpcs(game?.npcs),
+  career: careerTracks[game?.career?.id] ?? game?.career ?? careerTracks.teacher,
+  actionPoints: clamp(Number(game?.actionPoints ?? ACTION_POINTS_PER_SEASON), 0, ACTION_POINTS_PER_SEASON),
   month: clamp(Number(game?.month ?? 1), 1, 12),
   year: Number.isFinite(Number(game?.year)) ? Number(game.year) : new Date().getFullYear(),
   completedDecisions: Array.isArray(game?.completedDecisions) ? game.completedDecisions : [],
@@ -1364,6 +1455,7 @@ export default function App() {
   const [game, setGame] = useState(loadSavedGame);
   const [startAge, setStartAge] = useState(game.initialized ? game.age : 38);
   const [startSex, setStartSex] = useState(game.character?.sex ?? "");
+  const [startArchetype, setStartArchetype] = useState(game.character?.archetype?.id ?? "caregiver");
   const [startingStats, setStartingStats] = useState(() => ({
     ...defaultStartingStats,
     wellbeing: game.initialized ? game.wellbeing : defaultStartingStats.wellbeing,
@@ -1622,7 +1714,9 @@ export default function App() {
       wellbeing: clamp(startingStats.wellbeing),
       marriage: clamp(startingStats.marriage),
       children: clamp(startingStats.children),
-      wallet: clamp(startingStats.wallet)
+      wallet: clamp(startingStats.wallet),
+      reputation: clamp(startingStats.reputation ?? 50),
+      memory: clamp(startingStats.memory ?? 50)
     }, game.legacy);
 
     const newGame = {
@@ -1643,7 +1737,12 @@ export default function App() {
       gameOver: false,
       gameOverReason: null,
       legacy: normalizeLegacy(game.legacy),
-      character: { name: "", sex: startSex.trim() },
+      pressures: createDefaultPressures(),
+      lifeProjects: createDefaultLifeProjects(),
+      npcs: createDefaultNpcs(family),
+      career: getArchetypeCareer(startArchetype),
+      actionPoints: ACTION_POINTS_PER_SEASON,
+      character: { name: "", sex: startSex.trim(), archetype: startArchetype },
       initialized: true
     };
 
@@ -1670,6 +1769,7 @@ export default function App() {
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
     setStartSex("");
+    setStartArchetype("caregiver");
     setCustomEventsText("");
     setCustomEventError("");
     setStartingStats({ ...defaultStartingStats });
@@ -1682,6 +1782,7 @@ export default function App() {
     setStartAge(25);
     setFamilyInput(createEmptyFamily());
     setStartSex("");
+    setStartArchetype("caregiver");
     setCustomEventsText("");
     setCustomEventError("");
     setStartingStats({ ...defaultStartingStats });
@@ -1721,6 +1822,7 @@ export default function App() {
   const selectedChoices = game.selectedChoices ?? {};
   const seasonHistory = { ...createEmptySeasonHistory(), ...(game.seasonHistory ?? {}) };
   const completedThisSeason = Object.keys(selectedChoices).length || game.completedDecisions.length;
+  const actionPointsLeft = Math.max(0, ACTION_POINTS_PER_SEASON - Object.keys(selectedChoices).length);
   const pendingThisSeason = Math.max(0, totalSeasonDecisions - completedThisSeason);
   const legacy = normalizeLegacy(game.legacy);
   const totalLegacyBonuses = getTotalLegacyBonuses(legacy);
@@ -1825,6 +1927,9 @@ export default function App() {
     }
 
     setGame((prevGame) => {
+      if (!prevGame.selectedChoices?.[decision.key] && Object.keys(prevGame.selectedChoices ?? {}).length >= ACTION_POINTS_PER_SEASON) {
+        return prevGame;
+      }
       const previousSelection = prevGame.selectedChoices?.[decision.key];
       const undoEffects = previousSelection
         ? Object.fromEntries(Object.entries(previousSelection.effects).map(([key, value]) => [key, -value]))
@@ -2015,6 +2120,10 @@ export default function App() {
       selectedChoices: {},
       currentEventId: getRandomEventId(sourceGame.currentEventId, playableActions),
       memories: [...sourceGame.memories, ...simulatedMemories].slice(-8),
+      pressures: derivePressures(nextState),
+      lifeProjects: normalizeLifeProjects(sourceGame.lifeProjects).map((project) => ({ ...project, progress: clamp(project.progress + (project.id === "family" ? Math.max(0, (nextState.children - sourceGame.children) / 3) : project.id === "independence" ? Math.max(0, (nextState.wallet - sourceGame.wallet) / 3) : project.id === "legacy" ? Math.max(0, (nextState.memory - sourceGame.memory) / 3) : Math.max(0, (nextState.reputation - sourceGame.reputation) / 3))) })),
+      npcs: normalizeNpcs(sourceGame.npcs).map((npc) => ({ ...npc, bond: clamp(npc.bond + (npc.id === "child" ? (nextState.children - sourceGame.children) / 4 : npc.id === "spouse" ? (nextState.marriage - sourceGame.marriage) / 4 : (nextState.reputation - sourceGame.reputation) / 6)) })),
+      actionPoints: ACTION_POINTS_PER_SEASON,
       legacy: {
         ...normalizeLegacy(sourceGame.legacy),
         skillPoints: normalizeLegacy(sourceGame.legacy).skillPoints + getSeasonPointAward(resolvedSeasonChoices)
@@ -2205,6 +2314,10 @@ export default function App() {
       selectedChoices: {},
       currentEventId: getRandomEventId(game.currentEventId, playableActions),
       memories: [...game.memories, ...simulatedMemories].slice(-8),
+      pressures: derivePressures(nextState),
+      lifeProjects: normalizeLifeProjects(game.lifeProjects).map((project) => ({ ...project, progress: clamp(project.progress + (project.id === "family" ? Math.max(0, (nextState.children - game.children) / 3) : project.id === "independence" ? Math.max(0, (nextState.wallet - game.wallet) / 3) : project.id === "legacy" ? Math.max(0, (nextState.memory - game.memory) / 3) : Math.max(0, (nextState.reputation - game.reputation) / 3))) })),
+      npcs: normalizeNpcs(game.npcs).map((npc) => ({ ...npc, bond: clamp(npc.bond + (npc.id === "child" ? (nextState.children - game.children) / 4 : npc.id === "spouse" ? (nextState.marriage - game.marriage) / 4 : (nextState.reputation - game.reputation) / 6)) })),
+      actionPoints: ACTION_POINTS_PER_SEASON,
       legacy: {
         ...normalizeLegacy(game.legacy),
         skillPoints: normalizeLegacy(game.legacy).skillPoints + getSeasonPointAward(resolvedSeasonChoices)
@@ -2456,10 +2569,10 @@ export default function App() {
       <main className="app-shell game-over-shell">
         <section className="panel game-over-card">
           <div className="game-over-mascot" aria-hidden="true">🦝</div>
-          <p className="eyebrow">Game over</p>
-          <h1>Oops. The life raccoon ate the calendar.</h1>
+          <p className="eyebrow">Legacy complete</p>
+          <h1>{game.age >= 90 ? getLegacyEnding(game) : "A hard ending"}</h1>
           <p className="subtitle">{game.gameOverReason}</p>
-          <p className="game-over-note">No carry over. No homework. Just a fresh map and a raccoon with absolutely no legal training.</p>
+          <p className="game-over-note">Score comes from Wealth, Family, Reputation, Purpose, memories, and the people who still remember your choices.</p>
           <div className="actions game-over-actions">
             <button onClick={prepareNewGamePlus}>Start fresh</button>
             <button type="button" className="secondary" onClick={() => setSettingsOpen(true)}>⚙️ Settings</button>
@@ -2482,8 +2595,10 @@ export default function App() {
         setStartingStats={setStartingStats}
         setStartAge={setStartAge}
         setStartSex={setStartSex}
+        setStartArchetype={setStartArchetype}
         startAge={startAge}
         startSex={startSex}
+        startArchetype={startArchetype}
         startingStats={startingStats}
         statConfig={statConfig}
       />
@@ -2589,6 +2704,12 @@ export default function App() {
           isSimulationLocked={isSimulationLocked}
           onOpenDecision={setActiveDecisionContext}
           pendingThisSeason={pendingThisSeason}
+          actionPointsLeft={actionPointsLeft}
+          actionPointMax={ACTION_POINTS_PER_SEASON}
+          pressures={game.pressures}
+          lifeProjects={game.lifeProjects}
+          npcs={game.npcs}
+          career={game.career}
           seasonConfig={seasonConfig}
           seasonDecisions={seasonDecisions}
           seasonHistory={seasonHistory}

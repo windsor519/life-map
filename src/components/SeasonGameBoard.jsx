@@ -48,7 +48,13 @@ export default function SeasonGameBoard({
   family,
   currentAge,
   currentMonth,
-  character
+  character,
+  actionPointsLeft = 3,
+  actionPointMax = 3,
+  pressures = {},
+  lifeProjects = [],
+  npcs = [],
+  career = null
 }) {
   const seasonCarouselRef = useRef(null);
   const seasonPanelRefs = useRef([]);
@@ -233,9 +239,28 @@ export default function SeasonGameBoard({
           <p className="eyebrow">This season</p>
           <h2>Plan {activeSeason.label} {year}</h2>
         </div>
-        <span>{pendingThisSeason} actions left · random events are more likely at end of turn</span>
+        <span>{actionPointsLeft}/{actionPointMax} opportunity points left · unchosen paths become the story</span>
       </div>
-      <p className="calendar-intro">Actions are planned events placed on your calendar. Pick the choices that matter this season, then simulate; random events are more likely to show up as surprise detours at the end of the turn.</p>
+      <p className="calendar-intro">You only get 3 opportunity points each season. Choose what you will actively protect; everything else is auto-resolved and pressure meters decide which consequences surface later.</p>
+      <div className="life-dashboard-grid" aria-label="Life dashboard">
+        <article className="dashboard-card"><span>Career</span><strong>{career?.title ?? "Unassigned"}</strong><small>Salary {career?.salary} · Stress {career?.stress} · {career?.advancement}</small></article>
+        <article className="dashboard-card"><span>Opportunity Points</span><strong>{actionPointsLeft}/{actionPointMax}</strong><small>Impossible choices: work, family, health, social, education, side business.</small></article>
+        {Object.entries(pressures).map(([key, value]) => (
+          <article className="dashboard-card" key={key}>
+            <span>{key} pressure</span><strong>{value}</strong><div className="pressure-meter"><span style={{ width: `${value}%` }} /></div>
+          </article>
+        ))}
+        {lifeProjects.slice(0, 4).map((project) => (
+          <article className="dashboard-card" key={project.id}>
+            <span>{project.stage} · {project.horizon}</span><strong>{project.title}</strong><div className="project-meter"><span style={{ width: `${project.progress}%` }} /></div><small>Risk: {project.risk}</small>
+          </article>
+        ))}
+        {npcs.slice(0, 4).map((npc) => (
+          <article className="dashboard-card" key={npc.id}>
+            <span>{npc.role}</span><strong>{npc.name}</strong><div className="npc-meter"><span style={{ width: `${npc.bond}%` }} /></div><small>Remembers {npc.remembers}</small>
+          </article>
+        ))}
+      </div>
       <div className="board-family-strip" aria-label="Your family">
         <strong>Your family</strong>
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />

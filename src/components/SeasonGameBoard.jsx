@@ -1,6 +1,36 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import FamilyPhoto from "./FamilyPhoto.jsx";
 
+const monthAverageTemperaturesF = {
+  1: 32,
+  2: 36,
+  3: 46,
+  4: 58,
+  5: 68,
+  6: 78,
+  7: 84,
+  8: 82,
+  9: 73,
+  10: 60,
+  11: 48,
+  12: 36
+};
+
+const getMonthTemperatureStyle = (month) => {
+  const averageTemperature = monthAverageTemperaturesF[month] ?? 60;
+  const warmth = Math.max(0, Math.min(1, (averageTemperature - 30) / 55));
+  const hue = Math.round(210 - warmth * 185);
+  const glowHue = Math.round(220 - warmth * 190);
+
+  return {
+    "--month-temp": averageTemperature,
+    "--month-temp-hue": hue,
+    "--month-temp-glow-hue": glowHue,
+    "--month-temp-alpha": (0.18 + warmth * 0.16).toFixed(3),
+    "--month-temp-edge-alpha": (0.24 + warmth * 0.2).toFixed(3)
+  };
+};
+
 export default function SeasonGameBoard({
   activeSeason,
   completedDecisions,
@@ -23,13 +53,25 @@ export default function SeasonGameBoard({
   const seasonCarouselRef = useRef(null);
   const seasonPanelRefs = useRef([]);
   const seasonSwipeStartXRef = useRef(null);
-  const activeSeasonIndex = Math.max(0, seasonConfig.findIndex((season) => season.id === activeSeason.id));
+  const availableSeasons = Array.isArray(seasonConfig) ? seasonConfig : [];
+  const hasMemoryGraphSeasons = availableSeasons.length > 0;
+  const activeSeasonIndex = Math.max(0, availableSeasons.findIndex((season) => season.id === activeSeason.id));
   const hasYearHistory = Object.keys(seasonHistory ?? {}).some((key) => /^\d{4}-/.test(key));
   const getTimelineItem = (offset) => {
+    if (!hasMemoryGraphSeasons) {
+      return {
+        offset,
+        season: activeSeason,
+        seasonIndex: 0,
+        year,
+        historyKey: `${year}-${activeSeason.id ?? "season"}`
+      };
+    }
+
     const absoluteIndex = activeSeasonIndex + offset;
-    const seasonIndex = ((absoluteIndex % seasonConfig.length) + seasonConfig.length) % seasonConfig.length;
-    const yearOffset = Math.floor(absoluteIndex / seasonConfig.length);
-    const season = seasonConfig[seasonIndex];
+    const seasonIndex = ((absoluteIndex % availableSeasons.length) + availableSeasons.length) % availableSeasons.length;
+    const yearOffset = Math.floor(absoluteIndex / availableSeasons.length);
+    const season = availableSeasons[seasonIndex];
     const seasonYear = year + yearOffset;
     const historyKey = `${seasonYear}-${season.id}`;
 
@@ -64,7 +106,7 @@ export default function SeasonGameBoard({
   const isPositiveMemory = (moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory);
   const getMemoryMomentScore = (moment) => isPositiveMemory(moment) ? Math.max(3, moment.childrenValue ?? 0) : -Math.max(2, moment.severity ?? 0);
   const memoryHighScore = memoryMoments.reduce((score, moment) => score + getMemoryMomentScore(moment), 0);
-  const memoryGraphSeasons = seasonConfig.map((season) => {
+  const memoryGraphSeasons = availableSeasons.map((season) => {
     const seasonMoments = memoryMoments.filter((moment) => moment.seasonLabel === season.label);
     const scoredMoments = seasonMoments.map((moment) => ({
       ...moment,
@@ -90,6 +132,7 @@ export default function SeasonGameBoard({
     return { ...season, x, y: Math.max(12, Math.min(88, y)) };
   });
   const memoryLinePath = memoryLinePoints.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+  const memoryGraphColumnCount = Math.max(1, memoryLinePoints.length);
   const activeTimelineIndex = 0;
   const totalTimelineCards = seasonTimeline.length;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
@@ -209,26 +252,34 @@ export default function SeasonGameBoard({
             <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
           </div>
         </div>
-        <div className="memory-graph" role="img" aria-label={`Total memory score ${memoryHighScore}`}>
-          <span className="memory-graph-axis" aria-hidden="true" />
-          <svg className="memory-graph-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path className="memory-graph-line-glow" d={memoryLinePath} />
-            <path className="memory-graph-line-path" d={memoryLinePath} />
-          </svg>
-          {memoryLinePoints.map((season) => (
-            <button
-              className="memory-graph-season"
-              key={`memory-graph-${season.id}`}
-              onClick={() => setActiveMemorySeasonId(season.id)}
-              style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
-              type="button"
-            >
-              <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
-              <strong>{season.icon} {season.label}</strong>
-              <span>{season.count} memories</span>
-              <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
-            </button>
-          ))}
+        <div className="memory-graph-viewport" role="img" aria-label={`Total memory score ${memoryHighScore}`}>
+          <div className="memory-graph" style={{ "--memory-season-count": memoryGraphColumnCount }}>
+            {memoryLinePoints.length > 0 ? (
+              <>
+                <span className="memory-graph-axis" aria-hidden="true" />
+                <svg className="memory-graph-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                  <path className="memory-graph-line-glow" d={memoryLinePath} />
+                  <path className="memory-graph-line-path" d={memoryLinePath} />
+                </svg>
+              </>
+            ) : (
+              <p className="memory-graph-empty">No seasons configured yet. Memories will appear here once seasons are available.</p>
+            )}
+            {memoryLinePoints.map((season) => (
+              <button
+                className="memory-graph-season"
+                key={`memory-graph-${season.id}`}
+                onClick={() => setActiveMemorySeasonId(season.id)}
+                style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
+                type="button"
+              >
+                <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
+                <strong>{season.icon} {season.label}</strong>
+                <span>{season.count} memories</span>
+                <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
+              </button>
+            ))}
+          </div>
         </div>
         {activeMemorySeason ? (
           <div className="memory-detail-panel" aria-live="polite">
@@ -286,6 +337,7 @@ export default function SeasonGameBoard({
               <article
                 className={`season-panel season-panel-${season.id} active ${cardIndex === viewedSeasonIndex ? "in-view" : ""}`}
                 key={`${seasonYear}-${season.id}-${offset}-${month}`}
+                style={getMonthTemperatureStyle(month)}
                 ref={(panel) => {
                   seasonPanelRefs.current[cardIndex] = panel;
                 }}
@@ -293,7 +345,7 @@ export default function SeasonGameBoard({
                 <div className="season-panel-header">
                   <span className="season-icon" aria-hidden="true">{season.icon}</span>
                   <div>
-                    <p className="eyebrow">Month {monthIndex + 1} of 3 · {season.label} {seasonYear}</p>
+                    <p className="eyebrow">Month {monthIndex + 1} of {activeSeason.months.length} · {season.label} {seasonYear} · avg {monthAverageTemperaturesF[month] ?? 60}°F</p>
                     <h3>{monthName}</h3>
                   </div>
                 </div>

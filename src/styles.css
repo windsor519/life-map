@@ -1124,7 +1124,7 @@ textarea:focus {
 .season-panel {
   position: relative;
   display: grid;
-  flex: 0 0 clamp(280px, 30vw, 420px);
+  flex: 0 0 calc((100% - 2rem) / 3);
   gap: 0.8rem;
   min-height: 360px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1135,7 +1135,7 @@ textarea:focus {
   padding: 1rem;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
   scroll-snap-align: center;
-  max-width: calc(100vw - 3rem);
+  max-width: calc((100% - 2rem) / 3);
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
@@ -1177,19 +1177,21 @@ textarea:focus {
 }
 
 .season-panel {
-  border-color: var(--season-edge, rgba(255, 255, 255, 0.14));
+  border-color: hsl(var(--month-temp-hue, 210) 88% 64% / var(--month-temp-edge-alpha, 0.3));
   background:
+    linear-gradient(135deg, hsl(var(--month-temp-hue, 210) 82% 56% / var(--month-temp-alpha, 0.22)), hsl(var(--month-temp-glow-hue, 220) 88% 62% / 0.09)),
     var(--season-ribbon, linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent)),
-    radial-gradient(circle at 100% 0, var(--season-glow), transparent 11rem),
+    radial-gradient(circle at 100% 0, hsl(var(--month-temp-hue, 210) 90% 62% / 0.34), transparent 11rem),
     rgba(9, 12, 30, 0.38);
 }
 
 .season-panel.active {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
+    linear-gradient(135deg, hsl(var(--month-temp-hue, 210) 86% 56% / var(--month-temp-alpha, 0.22)), hsl(var(--month-temp-glow-hue, 220) 92% 62% / 0.12)),
     var(--season-ribbon, linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent)),
-    radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.24), transparent 12rem),
-    radial-gradient(circle at 0 100%, var(--season-glow), transparent 14rem),
+    radial-gradient(circle at 100% 0, hsl(var(--month-temp-hue, 210) 92% 66% / 0.38), transparent 12rem),
+    radial-gradient(circle at 0 100%, hsl(var(--month-temp-glow-hue, 220) 92% 62% / 0.28), transparent 14rem),
     rgba(255, 255, 255, 0.1);
 }
 
@@ -1441,8 +1443,16 @@ textarea:focus {
 
 @media (max-width: 1120px) {
   .season-panel {
-    flex-basis: min(90vw, 520px);
+    flex-basis: calc((100% - 2rem) / 3);
+    max-width: calc((100% - 2rem) / 3);
     scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .season-panel {
+    flex-basis: min(90vw, 520px);
+    max-width: min(90vw, 520px);
   }
 }
 
@@ -4494,17 +4504,20 @@ textarea:focus {
   line-height: 1;
 }
 
-.memory-graph {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.65rem;
-  min-height: 13rem;
-  overflow: hidden;
+.memory-graph-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
   border-radius: 1rem;
   background:
     linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 100% 25%,
     rgba(2, 6, 23, 0.32);
+}
+
+.memory-graph {
+  position: relative;
+  min-width: 100%;
+  width: max(100%, calc(var(--memory-season-count, 1) * 8.5rem));
+  min-height: 13rem;
   padding: 0.8rem;
 }
 
@@ -4548,21 +4561,23 @@ textarea:focus {
 }
 
 .memory-graph-season {
-  position: relative;
+  position: absolute;
+  left: var(--point-x);
+  top: var(--point-y);
   z-index: 2;
   display: grid;
-  grid-template-rows: 1fr auto auto auto;
   gap: 0.25rem;
-  min-width: 0;
-  min-height: 11rem;
-  padding-top: 8rem;
+  width: min(8rem, 24vw);
+  min-height: 0;
+  padding: 1.25rem 0.45rem 0.45rem;
   text-align: center;
+  transform: translate(-50%, -0.45rem);
 }
 
 .memory-graph-point {
   position: absolute;
-  left: var(--point-x);
-  top: var(--point-y);
+  left: 50%;
+  top: 0;
   width: 0.82rem;
   height: 0.82rem;
   border: 2px solid rgba(255, 255, 255, 0.9);
@@ -4622,8 +4637,22 @@ textarea:focus {
 
 @media (max-width: 680px) {
   .memory-graph {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: max(100%, calc(var(--memory-season-count, 1) * 7.5rem));
   }
+
+  .memory-graph-season {
+    width: min(7rem, 36vw);
+  }
+}
+
+.memory-graph-empty {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  min-height: 11rem;
+  place-items: center;
+  color: rgba(226, 232, 240, 0.76);
+  text-align: center;
 }
 
 /* Warm visual refresh and usability polish */

@@ -1482,7 +1482,7 @@ textarea:focus {
 
 .board-family-strip {
   display: grid;
-  width: fit-content;
+  width: min(100%, 42rem);
   max-width: 100%;
   gap: 0.3rem;
   margin: -0.3rem 0 1.25rem;
@@ -1784,6 +1784,31 @@ textarea:focus {
   color: #d8e3f8;
   font-size: 1rem;
   line-height: 1.6;
+}
+
+.decision-wisdom-card {
+  display: grid;
+  gap: 0.28rem;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(14, 165, 233, 0.08));
+  color: #fef3c7;
+  padding: 0.75rem 0.85rem;
+}
+
+.decision-wisdom-card span {
+  color: #fde68a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.decision-wisdom-card p {
+  margin: 0;
+  color: #fff7ed;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .decision-modal .decision-options {

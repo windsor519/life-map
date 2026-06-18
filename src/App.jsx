@@ -1935,6 +1935,141 @@ export default function App() {
     });
   };
 
+
+  const simulateSeasonInstantly = (sourceGame) => {
+    const sourceSeason = getSeasonForMonth(sourceGame.month);
+    const sourceYear = sourceGame.year;
+    const schedule = getSeasonSchedule(sourceSeason, sourceYear, sourceGame.eventSeed, sourceGame.age, playableActions, sourceGame);
+    let nextState = sourceGame;
+    const resolvedSeasonChoices = {};
+    const simulatedMemories = [];
+
+    schedule.forEach((day, dayIndex) => {
+      const randomDayResults = [];
+
+      day.decisions.forEach((decision, decisionIndex) => {
+        const selectedChoice = sourceGame.selectedChoices?.[decision.key];
+
+        if (selectedChoice) {
+          resolvedSeasonChoices[decision.key] = {
+            ...selectedChoice,
+            dayName: selectedChoice.dayName ?? day.dayLabel,
+            eventTitle: selectedChoice.eventTitle ?? decision.title,
+            source: "Selected",
+            memoryMoments: selectedChoice.memoryMoments ?? createChoiceMemoryMoments(decision, selectedChoice, "Selected")
+          };
+          return;
+        }
+
+        const choice = getRandomChoice(sourceGame.eventSeed, day.month, dayIndex, decisionIndex, decision.choices);
+        const modifiedEffects = {
+          ...resolveChoiceEffects(nextState, choice.effects, sourceGame.legacy?.difficulty ?? 1),
+          memory: getChoiceMemoryScore(decision, choice)
+        };
+        nextState = applyEffects(nextState, modifiedEffects);
+        resolvedSeasonChoices[decision.key] = {
+          dayName: day.dayLabel,
+          eventTitle: decision.title,
+          label: choice.label,
+          effects: modifiedEffects,
+          originalEffects: choice.effects,
+          memory: choice.memory,
+          wisdom: getEventWisdom(decision),
+          source: "Auto",
+          memoryMoments: createChoiceMemoryMoments(decision, { ...choice, effects: modifiedEffects, originalEffects: choice.effects }, "Auto")
+        };
+        randomDayResults.push(`${decision.title}: ${choice.label}`);
+      });
+
+      if (randomDayResults.length > 0) {
+        simulatedMemories.push(`${sourceSeason.label}, ${day.dayLabel}, age ${sourceGame.age}: Went with the flow (${randomDayResults.join("; ")}).`);
+      }
+    });
+
+    const earlyFinishMember = getEarlyFinishFamilyMember(sourceGame.eventSeed, sourceSeason, sourceYear, nextState, settings);
+
+    if (earlyFinishMember) {
+      const unexpectedStep = createEarlyFinishStep(earlyFinishMember);
+      nextState = applyEffects({
+        ...nextState,
+        family: removeFamilyMember(nextState.family, earlyFinishMember.id)
+      }, unexpectedStep.effects);
+      resolvedSeasonChoices[unexpectedStep.key] = {
+        dayName: "Family news",
+        eventTitle: unexpectedStep.eventTitle,
+        label: unexpectedStep.choiceLabel,
+        effects: unexpectedStep.effects,
+        memory: unexpectedStep.description,
+        source: "Morbid"
+      };
+      simulatedMemories.push(`${sourceSeason.label}, age ${sourceGame.age}: ${earlyFinishMember.name} finished the race early and left the family timeline.`);
+    }
+
+    getUnexpectedEventsForSeason(sourceGame.eventSeed, sourceSeason, sourceYear, nextState, settings)
+      .slice(0, MAX_UNEXPECTED_EVENTS_PER_TURN)
+      .forEach((unexpectedEvent) => {
+        const modifiedEffects = resolveChoiceEffects(nextState, unexpectedEvent.effects, sourceGame.legacy?.difficulty ?? 1);
+        const unexpectedKey = `unexpected-${unexpectedEvent.id ?? unexpectedEvent.title}`;
+        nextState = applyEffects(nextState, modifiedEffects);
+        resolvedSeasonChoices[unexpectedKey] = {
+          dayName: "Surprise",
+          eventTitle: unexpectedEvent.title,
+          label: "Life happens",
+          effects: modifiedEffects,
+          memory: unexpectedEvent.memory,
+          source: "Unexpected"
+        };
+        simulatedMemories.push(`${sourceSeason.label}, age ${sourceGame.age}: ${unexpectedEvent.memory}`);
+      });
+
+    const nextSeasonState = getNextSeasonState(sourceGame.month, sourceGame.age, sourceGame.year);
+    const seasonHistoryState = {
+      ...nextState,
+      selectedChoices: resolvedSeasonChoices
+    };
+    const advancedGameBase = {
+      ...nextState,
+      ...nextSeasonState,
+      seasonHistory: updateSeasonHistory(seasonHistoryState),
+      seasonScores: updateSeasonScores(sourceGame, nextState),
+      completedDecisions: [],
+      selectedChoices: {},
+      currentEventId: getRandomEventId(sourceGame.currentEventId, playableActions),
+      memories: [...sourceGame.memories, ...simulatedMemories].slice(-8),
+      legacy: {
+        ...normalizeLegacy(sourceGame.legacy),
+        skillPoints: normalizeLegacy(sourceGame.legacy).skillPoints + getSeasonPointAward(resolvedSeasonChoices)
+      }
+    };
+
+    return finishRunIfNeeded({
+      ...advancedGameBase,
+      weekStartStats: captureStats(advancedGameBase),
+      weeklySummary: createSeasonalSummary({ previousGame: sourceGame, nextState })
+    }, sourceGame);
+  };
+
+  const handleSimulateFiveYears = () => {
+    if (isSimulationLocked || game.gameOver) {
+      return;
+    }
+
+    setActiveDecisionContext(null);
+    setActiveStatKey(null);
+    setSeasonTransition(null);
+    setSimulationState(createIdleSimulationState());
+    setGame((prevGame) => {
+      let nextGame = prevGame;
+
+      for (let index = 0; index < 20; index += 1) {
+        if (nextGame.gameOver) break;
+        nextGame = simulateSeasonInstantly(nextGame);
+      }
+
+      return nextGame;
+    });
+  };
+
   const handleSimulateSeason = () => {
     if (isSimulationLocked || game.gameOver) {
       return;
@@ -2458,14 +2593,24 @@ export default function App() {
             })}
           </section>
         </div>
-        <button
-          className="next-turn-button"
-          data-button-feedback="season-simulate"
-          onClick={handleSimulateSeason}
-          disabled={isSimulationLocked}
-        >
-          ▶ Simulate Season
-        </button>
+        <div className="turn-button-stack">
+          <button
+            className="next-turn-button"
+            data-button-feedback="season-simulate"
+            onClick={handleSimulateSeason}
+            disabled={isSimulationLocked}
+          >
+            ▶ Simulate Season
+          </button>
+          <button
+            className="next-turn-button simulate-years-button"
+            onClick={handleSimulateFiveYears}
+            disabled={isSimulationLocked}
+            type="button"
+          >
+            ⏩ Simulate 5 years
+          </button>
+        </div>
       </section>
 
       <div className="game-layout">

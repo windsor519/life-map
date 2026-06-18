@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import FamilyPhoto from "./FamilyPhoto.jsx";
 
 export default function SeasonGameBoard({
@@ -66,14 +66,20 @@ export default function SeasonGameBoard({
   const memoryHighScore = memoryMoments.reduce((score, moment) => score + getMemoryMomentScore(moment), 0);
   const memoryGraphSeasons = seasonConfig.map((season) => {
     const seasonMoments = memoryMoments.filter((moment) => moment.seasonLabel === season.label);
-    const score = seasonMoments.reduce((total, moment) => total + getMemoryMomentScore(moment), 0);
+    const scoredMoments = seasonMoments.map((moment) => ({
+      ...moment,
+      score: getMemoryMomentScore(moment),
+      isPositive: isPositiveMemory(moment)
+    }));
+    const score = scoredMoments.reduce((total, moment) => total + moment.score, 0);
 
     return {
       ...season,
       score,
-      count: seasonMoments.length,
-      fondCount: seasonMoments.filter(isPositiveMemory).length,
-      regretCount: seasonMoments.filter((moment) => !isPositiveMemory(moment)).length
+      count: scoredMoments.length,
+      fondCount: scoredMoments.filter((moment) => moment.isPositive).length,
+      regretCount: scoredMoments.filter((moment) => !moment.isPositive).length,
+      moments: scoredMoments
     };
   });
   const memoryGraphPeak = Math.max(1, ...memoryGraphSeasons.map((season) => Math.abs(season.score)));
@@ -88,6 +94,8 @@ export default function SeasonGameBoard({
   const totalTimelineCards = seasonTimeline.length;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
   const [viewedSeasonIndex, setViewedSeasonIndex] = useState(activeTimelineIndex);
+  const [activeMemorySeasonId, setActiveMemorySeasonId] = useState(null);
+  const activeMemorySeason = useMemo(() => memoryGraphSeasons.find((season) => season.id === activeMemorySeasonId) ?? null, [activeMemorySeasonId, memoryGraphSeasons]);
 
   const scrollToSeasonCard = useCallback((index, behavior = "smooth") => {
     const carousel = seasonCarouselRef.current;
@@ -208,14 +216,42 @@ export default function SeasonGameBoard({
             <path className="memory-graph-line-path" d={memoryLinePath} />
           </svg>
           {memoryLinePoints.map((season) => (
-            <article className="memory-graph-season" key={`memory-graph-${season.id}`} style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}>
+            <button
+              className="memory-graph-season"
+              key={`memory-graph-${season.id}`}
+              onClick={() => setActiveMemorySeasonId(season.id)}
+              style={{ "--point-x": `${season.x}%`, "--point-y": `${season.y}%` }}
+              type="button"
+            >
               <span className={`memory-graph-point ${season.score < 0 ? "negative" : "positive"}`} aria-hidden="true" />
               <strong>{season.icon} {season.label}</strong>
               <span>{season.count} memories</span>
               <small>{season.fondCount} fond · {season.regretCount} regrets · {season.score >= 0 ? `+${season.score}` : season.score}</small>
-            </article>
+            </button>
           ))}
         </div>
+        {activeMemorySeason ? (
+          <div className="memory-detail-panel" aria-live="polite">
+            <div className="memory-detail-heading">
+              <strong>{activeMemorySeason.icon} {activeMemorySeason.label} memories</strong>
+              <button type="button" className="memory-detail-close" onClick={() => setActiveMemorySeasonId(null)} aria-label="Close memory details">×</button>
+            </div>
+            {activeMemorySeason.moments.length > 0 ? (
+              <div className="memory-detail-list">
+                {activeMemorySeason.moments.map((moment, index) => (
+                  <article className={`memory-detail-item ${moment.score < 0 ? "negative" : "positive"}`} key={`${activeMemorySeason.id}-${moment.selection?.id ?? index}`}>
+                    <span>{moment.year} · {moment.selection?.dayName ?? "Season"}</span>
+                    <strong>{moment.selection?.eventTitle ?? "Memory"}</strong>
+                    <p>{moment.text ?? moment.selection?.memory ?? moment.selection?.label ?? "This choice changed the family story."}</p>
+                    <em>{moment.score >= 0 ? `+${moment.score}` : moment.score}</em>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="memory-detail-empty">No saved memory moments for this season yet. Simulated or selected choices will explain future dips and gains here.</p>
+            )}
+          </div>
+        ) : null}
       </div>
       <div className="flow-panel">
         <div>
@@ -224,26 +260,6 @@ export default function SeasonGameBoard({
         </div>
       </div>
       <div className="season-board-frame">
-        <div className="season-board-nav" aria-label="Season board navigation">
-          <button
-            className="season-board-arrow season-board-arrow-prev"
-            type="button"
-            aria-label="Show previous season card"
-            disabled={viewedSeasonIndex === 0}
-            onClick={() => goToSeasonCard(viewedSeasonIndex - 1)}
-          >
-            ←
-          </button>
-          <button
-            className="season-board-arrow season-board-arrow-next"
-            type="button"
-            aria-label="Show next season card"
-            disabled={viewedSeasonIndex === totalTimelineCards - 1}
-            onClick={() => goToSeasonCard(viewedSeasonIndex + 1)}
-          >
-            →
-          </button>
-        </div>
         <div
           className="season-carousel"
           aria-label="Season cards"

@@ -8,9 +8,9 @@ const familyPhotoCss = `
   position: relative;
   width: 100%;
   min-width: 0;
-  height: 8.2rem;
+  height: 7.4rem;
   margin-top: 0.55rem;
-  padding: 1.8rem 1rem 2.15rem;
+  padding: 1.35rem 1rem 2.15rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 1.25rem;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.34), rgba(15, 23, 42, 0.14));
@@ -23,8 +23,8 @@ const familyPhotoCss = `
   left: 1rem;
   height: 0.34rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.86), rgba(168, 85, 247, 0.86), rgba(251, 191, 36, 0.86));
-  box-shadow: 0 0 26px rgba(34, 211, 238, 0.18);
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.92), rgba(249, 115, 22, 0.9), rgba(244, 114, 182, 0.86));
+  box-shadow: 0 0 26px rgba(249, 115, 22, 0.22);
   content: "";
 }
 
@@ -50,7 +50,7 @@ const familyPhotoCss = `
   --person-size: clamp(42px, 4.9vw, 62px);
   --person-half: calc(var(--person-size) / 2);
   position: absolute;
-  bottom: calc(1.05rem + var(--timeline-lane, 0px));
+  bottom: 1.22rem;
   left: clamp(calc(1rem + var(--person-half)), calc(var(--timeline-position, 0%) + var(--timeline-nudge, 0px)), calc(100% - 1rem - var(--person-half)));
   z-index: var(--timeline-layer, 1);
   display: inline-grid;
@@ -391,8 +391,8 @@ const getPositionedMembers = (members) => {
 
       positioned.set(item.originalIndex, {
         ...item.member,
-        timelineNudge: `${spread * 34}px`,
-        timelineLane: `${Math.abs(spread) * 6}px`
+        timelineNudge: `${spread * 28}px`,
+        timelineLane: "0px"
       });
     });
     cluster = [];

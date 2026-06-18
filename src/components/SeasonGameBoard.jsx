@@ -63,7 +63,10 @@ export default function SeasonGameBoard({
     getTimelineItem(0),
     ...futureSeasonTimeline
   ];
-  const memoryCardOffset = memoryMoments.length > 0 ? 1 : 0;
+  const fondMemoryCount = memoryMoments.filter((moment) => ["fond", "core_memory", "defining_memory"].includes(moment.memory)).length;
+  const regretMemoryCount = memoryMoments.filter((moment) => ["regret", "soft_regret"].includes(moment.memory)).length;
+  const memoryHighScore = fondMemoryCount - regretMemoryCount;
+  const memoryCardOffset = 1;
   const activeTimelineIndex = seasonTimeline.findIndex((item) => item.offset === 0) + memoryCardOffset;
   const totalTimelineCards = seasonTimeline.length + memoryCardOffset;
   const viewedSeasonIndexRef = useRef(activeTimelineIndex);
@@ -205,38 +208,43 @@ export default function SeasonGameBoard({
           onTouchEnd={handleSeasonSwipeEnd}
           ref={seasonCarouselRef}
         >
-          {memoryMoments.length > 0 ? (
-            <article
-              className={`season-panel season-panel-memory past ${viewedSeasonIndex === 0 ? "in-view" : ""}`}
-              ref={(panel) => {
-                seasonPanelRefs.current[0] = panel;
-              }}
-            >
-              <div className="season-panel-header">
-                <span className="season-icon" aria-hidden="true">🧠</span>
-                <div>
-                  <p className="eyebrow">Accumulated past</p>
-                  <h3>Memory</h3>
-                </div>
+          <article
+            className={`season-panel season-panel-memory past ${viewedSeasonIndex === 0 ? "in-view" : ""}`}
+            ref={(panel) => {
+              seasonPanelRefs.current[0] = panel;
+            }}
+          >
+            <div className="season-panel-score" aria-label={`Memory score ${memoryHighScore}`}>
+              <span>Memory score</span>
+              <strong>{memoryHighScore >= 0 ? `+${memoryHighScore}` : memoryHighScore}</strong>
+              <small>{fondMemoryCount} fond − {regretMemoryCount} regrets</small>
+            </div>
+            <div className="season-panel-header">
+              <span className="season-icon" aria-hidden="true">🧠</span>
+              <div>
+                <p className="eyebrow">Accumulated past</p>
+                <h3>Memory</h3>
               </div>
-              <p>Fond memories and regrets from previous seasons are gathered here so the active board stays focused while the story still remembers what mattered.</p>
-              <div className="season-memory-history" aria-label="Accumulated fond memories and regrets">
-                <strong>Fond memories & regrets</strong>
-                <div>
-                  {memoryMoments.slice(-6).reverse().map((moment) => (
-                    <article className={`season-memory-item memory-${moment.memory}`} key={`memory-${moment.selection.id}-${moment.id}`}>
-                      <span>{moment.seasonLabel} {moment.year} · {moment.label}</span>
-                      <em>{moment.source}</em>
-                      <strong>{moment.choice ?? `Missed: ${moment.missed}`}</strong>
-                      <small>{moment.memory === "fond" || moment.memory === "core_memory" || moment.memory === "defining_memory"
-                        ? `Children +${moment.childrenValue} · ${moment.reason}`
-                        : `Regret ${moment.severity} · ${moment.reason}`}</small>
-                    </article>
-                  ))}
-                </div>
+            </div>
+            <p>Fond memories and regrets from previous seasons are gathered here. This score is for high-scoring: win by collecting more fond memories than regrets.</p>
+            <div className="season-memory-history" aria-label="Accumulated fond memories and regrets">
+              <strong>Fond memories & regrets</strong>
+              <div>
+                {memoryMoments.length > 0 ? memoryMoments.slice().reverse().map((moment) => (
+                  <article className={`season-memory-item memory-${moment.memory}`} key={`memory-${moment.selection.id}-${moment.id}`}>
+                    <span>{moment.seasonLabel} {moment.year} · {moment.label}</span>
+                    <em>{moment.source}</em>
+                    <strong>{moment.choice ?? `Missed: ${moment.missed}`}</strong>
+                    <small>{moment.memory === "fond" || moment.memory === "core_memory" || moment.memory === "defining_memory"
+                      ? `Fond memory · ${moment.reason}`
+                      : `Regret · ${moment.reason}`}</small>
+                  </article>
+                )) : (
+                  <p className="season-memory-empty">No fond memories or regrets recorded yet. Simulate seasons to start scoring them.</p>
+                )}
               </div>
-            </article>
-          ) : null}
+            </div>
+          </article>
           {seasonTimeline.map(({ season, offset, year: seasonYear, historyKey }, timelineIndex) => {
             const cardIndex = timelineIndex + memoryCardOffset;
             const isActive = offset === 0;

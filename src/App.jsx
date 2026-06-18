@@ -197,7 +197,7 @@ const statConfig = {
 
 const summaryStatKeys = Object.keys(statConfig);
 const displayStatConfig = statConfig;
-const displayStatKeys = summaryStatKeys;
+const displayStatKeys = summaryStatKeys.filter((key) => key !== "memory");
 const getDisplayStatValue = (game, key) => game[key] ?? 0;
 const getDisplayDeltaValue = (deltas, key) => deltas[key] ?? 0;
 const getDisplayEffectEntries = (effects) => Object.entries(sanitizeEffects(effects));

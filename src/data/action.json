@@ -9,7 +9,7 @@
         "general"
       ],
       "title": "Spring School Garden Day",
-      "description": "Your child\u2019s class is planting the school garden after weeks of rain, but your boss asks you to join a last-minute strategy call.",
+      "description": "Your child’s class is planting the school garden after weeks of rain, but your boss asks you to join a last-minute strategy call.",
       "wisdom": "Spring is about showing up for small beginnings. Seeds, kids, and trust all grow better when someone is there.",
       "choices": [
         {
@@ -58,7 +58,7 @@
       "choices": [
         {
           "label": "Stay for practice",
-          "memory": "You watched your child\u2019s first soccer practice from the sideline.",
+          "memory": "You watched your child’s first soccer practice from the sideline.",
           "effects": {
             "wellbeing": 1,
             "children": 5
@@ -228,7 +228,7 @@
         "music"
       ],
       "title": "School Spring Concert",
-      "description": "Your child\u2019s spring concert lands on the same evening as a networking dinner that could help your career.",
+      "description": "Your child’s spring concert lands on the same evening as a networking dinner that could help your career.",
       "wisdom": "Children scan the crowd before they sing. Be the face they find.",
       "choices": [
         {
@@ -312,12 +312,12 @@
         "relationship"
       ],
       "title": "Mother's Day Brunch",
-      "description": "Mother\u2019s Day brunch reservations are expensive, and you are tempted to keep it simple after a tight month.",
+      "description": "Mother’s Day brunch reservations are expensive, and you are tempted to keep it simple after a tight month.",
       "wisdom": "Appreciation does not need luxury, but it does need intention.",
       "choices": [
         {
           "label": "Plan a thoughtful brunch",
-          "memory": "You made Mother\u2019s Day feel special with a planned brunch.",
+          "memory": "You made Mother’s Day feel special with a planned brunch.",
           "effects": {
             "wallet": -4,
             "wellbeing": 2,
@@ -327,7 +327,7 @@
         },
         {
           "label": "Do nothing extra",
-          "memory": "You treated Mother\u2019s Day like a normal Sunday.",
+          "memory": "You treated Mother’s Day like a normal Sunday.",
           "effects": {
             "wallet": 1,
             "wellbeing": -2,
@@ -336,7 +336,7 @@
         },
         {
           "label": "Cook at home with the kids",
-          "memory": "You made a homemade Mother\u2019s Day meal together.",
+          "memory": "You made a homemade Mother’s Day meal together.",
           "effects": {
             "wallet": -1,
             "wellbeing": 3,
@@ -410,7 +410,7 @@
         },
         {
           "label": "Push through the plans",
-          "memory": "You pushed ahead despite your child\u2019s allergies.",
+          "memory": "You pushed ahead despite your child’s allergies.",
           "effects": {
             "wallet": 1,
             "wellbeing": -3,
@@ -752,7 +752,7 @@
       "choices": [
         {
           "label": "Watch the race",
-          "memory": "You showed up for your child\u2019s track meet.",
+          "memory": "You showed up for your child’s track meet.",
           "effects": {
             "wallet": -1,
             "wellbeing": 1,
@@ -791,12 +791,12 @@
         "food"
       ],
       "title": "Farmer's Market Opening Day",
-      "description": "The first farmer\u2019s market of spring opens downtown, but groceries would be cheaper at the big store.",
+      "description": "The first farmer’s market of spring opens downtown, but groceries would be cheaper at the big store.",
       "wisdom": "Food tastes different when children meet the people who grew it.",
       "choices": [
         {
           "label": "Visit the market",
-          "memory": "You took the family to opening day at the farmer\u2019s market.",
+          "memory": "You took the family to opening day at the farmer’s market.",
           "effects": {
             "wallet": -3,
             "wellbeing": 1,
@@ -867,50 +867,6 @@
       ],
       "seasons": [
         "spring"
-      ]
-    },
-    {
-      "id": "backyard-storm-night",
-      "tags": [
-        "young-family",
-        "summer",
-        "home"
-      ],
-      "title": "Backyard Storm Night",
-      "description": "A hot summer thunderstorm knocks out the power during family movie night, while your phone keeps buzzing with work messages.",
-      "wisdom": "Not every interruption is a problem. Sometimes the power going out is the only way the family turns back on.",
-      "choices": [
-        {
-          "label": "Choose the family moment",
-          "memory": "You protected the summer family moment.",
-          "effects": {
-            "wallet": -2,
-            "wellbeing": 3,
-            "children": 5,
-            "marriage": 1
-          }
-        },
-        {
-          "label": "Prioritize obligations",
-          "memory": "You prioritized obligations over the summer plan.",
-          "effects": {
-            "wallet": 2,
-            "wellbeing": -1,
-            "children": -2,
-            "marriage": -1
-          }
-        },
-        {
-          "label": "Compromise carefully",
-          "memory": "You found a summer compromise that kept the day partly intact.",
-          "effects": {
-            "wellbeing": 1,
-            "children": 3
-          }
-        }
-      ],
-      "seasons": [
-        "summer"
       ]
     },
     {
@@ -1938,7 +1894,7 @@
         "school"
       ],
       "title": "School Fundraiser Drive",
-      "description": "Your child\u2019s school fundraiser starts, and they desperately want to hit their goal.",
+      "description": "Your child’s school fundraiser starts, and they desperately want to hit their goal.",
       "wisdom": "Fundraising teaches effort, but it should not teach pressure.",
       "choices": [
         {
@@ -1965,47 +1921,6 @@
           "effects": {
             "wellbeing": 1,
             "children": 3
-          }
-        }
-      ],
-      "seasons": [
-        "fall"
-      ]
-    },
-    {
-      "id": "halloween-costume-crisis",
-      "tags": [
-        "young-family",
-        "fall",
-        "general"
-      ],
-      "title": "Halloween Costume Crisis",
-      "description": "The Halloween costume plan falls apart two days before trick-or-treating.",
-      "wisdom": "Improvisation is part of the costume.",
-      "choices": [
-        {
-          "label": "Choose the seasonal family plan",
-          "memory": "You leaned into the fall family moment.",
-          "effects": {
-            "wallet": -2,
-            "wellbeing": 1,
-            "children": 2
-          }
-        },
-        {
-          "label": "Choose productivity",
-          "memory": "You skipped the fall moment to stay productive.",
-          "effects": {
-            "wallet": 2,
-            "children": -1
-          }
-        },
-        {
-          "label": "Make a smaller version work",
-          "memory": "You made a smaller fall plan work for everyone.",
-          "effects": {
-            "wellbeing": 1,
-            "children": 2
           }
         }
       ],
@@ -2729,50 +2644,6 @@
       ]
     },
     {
-      "id": "ice-storm-power-outage",
-      "tags": [
-        "young-family",
-        "winter",
-        "home"
-      ],
-      "title": "Ice Storm Power Outage",
-      "description": "An ice storm knocks out power and turns the house cold by dinner.",
-      "wisdom": "In winter, warmth is both a temperature and a tone.",
-      "choices": [
-        {
-          "label": "Show up warmly",
-          "memory": "You chose presence during the winter moment.",
-          "effects": {
-            "wallet": -2,
-            "wellbeing": -2,
-            "children": 3,
-            "marriage": 1
-          }
-        },
-        {
-          "label": "Push through responsibilities",
-          "memory": "You pushed through responsibilities and missed the moment.",
-          "effects": {
-            "wallet": 2,
-            "wellbeing": -4,
-            "children": -2,
-            "marriage": -1
-          }
-        },
-        {
-          "label": "Protect a smaller moment",
-          "memory": "You protected a smaller winter memory.",
-          "effects": {
-            "wellbeing": -1,
-            "children": 2
-          }
-        }
-      ],
-      "seasons": [
-        "winter"
-      ]
-    },
-    {
       "id": "new-years-eve-invitation",
       "tags": [
         "young-family",
@@ -2780,7 +2651,7 @@
         "general"
       ],
       "title": "New Year's Eve Invitation",
-      "description": "Friends invite you out for New Year\u2019s Eve, but your child wants a countdown at home.",
+      "description": "Friends invite you out for New Year’s Eve, but your child wants a countdown at home.",
       "wisdom": "A year can end loudly or lovingly. Choose the room that needs you.",
       "choices": [
         {
@@ -3159,50 +3030,6 @@
       ]
     },
     {
-      "id": "frozen-pipe-emergency",
-      "tags": [
-        "young-family",
-        "winter",
-        "home"
-      ],
-      "title": "Frozen Pipe Emergency",
-      "description": "A pipe freezes overnight, and the morning routine collapses.",
-      "wisdom": "Home emergencies are easier when blame stays out of the room.",
-      "choices": [
-        {
-          "label": "Show up warmly",
-          "memory": "You chose presence during the winter moment.",
-          "effects": {
-            "wallet": -2,
-            "wellbeing": -2,
-            "children": 3,
-            "marriage": 1
-          }
-        },
-        {
-          "label": "Push through responsibilities",
-          "memory": "You pushed through responsibilities and missed the moment.",
-          "effects": {
-            "wallet": 2,
-            "wellbeing": -4,
-            "children": -2,
-            "marriage": -1
-          }
-        },
-        {
-          "label": "Protect a smaller moment",
-          "memory": "You protected a smaller winter memory.",
-          "effects": {
-            "wellbeing": -1,
-            "children": 2
-          }
-        }
-      ],
-      "seasons": [
-        "winter"
-      ]
-    },
-    {
       "id": "winter-festival-weekend",
       "tags": [
         "young-family",
@@ -3279,50 +3106,6 @@
           "memory": "You protected a smaller winter memory.",
           "effects": {
             "children": 2
-          }
-        }
-      ],
-      "seasons": [
-        "winter"
-      ]
-    },
-    {
-      "id": "holiday-travel-delays",
-      "tags": [
-        "young-family",
-        "winter",
-        "general"
-      ],
-      "title": "Holiday Travel Delays",
-      "description": "Holiday travel delays strand your family in an airport or station for hours.",
-      "wisdom": "Children learn how to handle disappointment by watching adults handle delays.",
-      "choices": [
-        {
-          "label": "Show up warmly",
-          "memory": "You chose presence during the winter moment.",
-          "effects": {
-            "wallet": -2,
-            "wellbeing": 2,
-            "children": 4,
-            "marriage": 1
-          }
-        },
-        {
-          "label": "Push through responsibilities",
-          "memory": "You pushed through responsibilities and missed the moment.",
-          "effects": {
-            "wallet": 2,
-            "wellbeing": -1,
-            "children": -1,
-            "marriage": -1
-          }
-        },
-        {
-          "label": "Protect a smaller moment",
-          "memory": "You protected a smaller winter memory.",
-          "effects": {
-            "wellbeing": 1,
-            "children": 3
           }
         }
       ],
@@ -3419,7 +3202,7 @@
   "generatedActionBlueprints": [
     {
       "category": "Recovery",
-      "icon": "\ud83c\udf19",
+      "icon": "🌙",
       "accent": "indigo",
       "title": "Early Bedtime",
       "description": "A quiet evening could become actual rest if you protect it.",
@@ -3450,11 +3233,11 @@
     },
     {
       "category": "Major life event",
-      "icon": "\ud83c\udfe5",
+      "icon": "🏥",
       "accent": "rose",
       "title": "Urgent Care Choice",
       "severity": "major",
-      "description": "Something is wrong. You cannot tell how wrong. This is the problem with bodies \u2014 they are deliberately vague about urgency.",
+      "description": "Something is wrong. You cannot tell how wrong. This is the problem with bodies — they are deliberately vague about urgency.",
       "minor": [
         "Go to urgent care",
         {
@@ -3483,7 +3266,7 @@
     },
     {
       "category": "Major career event",
-      "icon": "\ud83d\udeaa",
+      "icon": "🚪",
       "accent": "violet",
       "title": "Job Interview",
       "severity": "major",

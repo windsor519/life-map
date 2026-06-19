@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import AmbientParticles from "./AmbientParticles.jsx";
 import FamilyPhoto from "./FamilyPhoto.jsx";
+import LegacyEvolutionPanel from "./LegacyEvolutionPanel.jsx";
 import PhaseThreeLegacyPanorama from "./PhaseThreeLegacyPanorama.jsx";
 import PhaseTwoVisuals from "./PhaseTwoVisuals.jsx";
 
@@ -283,6 +284,15 @@ export default function SeasonGameBoard({
       />
       <PhaseThreeLegacyPanorama
         activeSeason={activeSeason}
+        career={career}
+        currentAge={currentAge}
+        family={family}
+        lifeProjects={lifeProjects}
+        memoryHighScore={memoryHighScore}
+        memoryMoments={memoryGraphMoments}
+        pressures={pressures}
+      />
+      <LegacyEvolutionPanel
         career={career}
         currentAge={currentAge}
         family={family}

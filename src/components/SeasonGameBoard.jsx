@@ -4,6 +4,7 @@ import FamilyPhoto from "./FamilyPhoto.jsx";
 import LegacyEvolutionPanel from "./LegacyEvolutionPanel.jsx";
 import PhaseThreeLegacyPanorama from "./PhaseThreeLegacyPanorama.jsx";
 import PhaseTwoVisuals from "./PhaseTwoVisuals.jsx";
+import WorldUnlocksLayer from "./WorldUnlocksLayer.jsx";
 
 const monthAverageTemperaturesF = {
   1: 32,
@@ -295,6 +296,14 @@ export default function SeasonGameBoard({
       <LegacyEvolutionPanel
         career={career}
         currentAge={currentAge}
+        family={family}
+        lifeProjects={lifeProjects}
+        memoryHighScore={memoryHighScore}
+        memoryMoments={memoryGraphMoments}
+        pressures={pressures}
+      />
+      <WorldUnlocksLayer
+        career={career}
         family={family}
         lifeProjects={lifeProjects}
         memoryHighScore={memoryHighScore}

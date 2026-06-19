@@ -91,6 +91,124 @@ const familyEvents = [
     ]
   },
   {
+    id: "child-keeps-score",
+    tags: ["parenting", "teen", "young-family"],
+    title: "Your Child Keeps Score",
+    description: "A child brings up a pattern you hoped they had not noticed: missed events, distracted promises, or choosing work first too often.",
+    wisdom: "Children do not need perfect attendance. They need repair that admits the pattern without arguing with their memory.",
+    severity: "major",
+    category: "Family consequence",
+    icon: "🧾",
+    accent: "rose",
+    familyAgeGroups: [youngChildAgeGroup, teenAgeGroup],
+    condition: { stat: "children", op: "lte", value: 45 },
+    choices: [
+      {
+        label: "Own the pattern and repair",
+        memory: "You admitted the pattern your child named and started repairing it without excuses.",
+        effects: { children: 8, wellbeing: -2, memory: 4 }
+      },
+      {
+        label: "Defend your choices",
+        memory: "You defended your choices and made your child feel like the evidence of their own life was on trial.",
+        effects: { children: -8, marriage: -2, wellbeing: -3 }
+      },
+      {
+        label: "Make a visible commitment",
+        memory: "You made one visible commitment your child could actually watch you keep.",
+        effects: { children: 6, wellbeing: -1, marriage: 1 }
+      }
+    ]
+  },
+  {
+    id: "family-trust-dividend",
+    tags: ["parenting", "family", "general"],
+    title: "Family Trust Dividend",
+    description: "A difficult week lands, and the family handles it better than expected because trust has been quietly built over time.",
+    wisdom: "Strong family bonds do not remove hard days. They make hard days less lonely.",
+    severity: "minor",
+    category: "Family payoff",
+    icon: "🌱",
+    accent: "green",
+    familyAgeGroups: [youngChildAgeGroup, teenAgeGroup, adultChildAgeGroup],
+    condition: { stat: "children", op: "gte", value: 75 },
+    choices: [
+      {
+        label: "Let everyone contribute",
+        memory: "You let the family trust you had built become shared resilience instead of doing everything yourself.",
+        effects: { children: 6, wellbeing: 4, memory: 3 }
+      },
+      {
+        label: "Take over anyway",
+        memory: "You took over even though the family was ready to help, and the trust had less room to grow.",
+        effects: { wellbeing: -2, children: -1 }
+      },
+      {
+        label: "Name what worked",
+        memory: "You named the family's resilience out loud so everyone could recognize what they had become.",
+        effects: { children: 5, marriage: 2, memory: 4 }
+      }
+    ]
+  },
+  {
+    id: "marriage-repair-window",
+    tags: ["relationship", "midlife", "general"],
+    title: "Marriage Repair Window",
+    description: "A small opening appears after a tense stretch: an apology, a quiet drive, or one honest sentence that could become more.",
+    wisdom: "Repair usually arrives smaller than the damage. Take the opening before pride edits it away.",
+    severity: "moderate",
+    category: "Relationship consequence",
+    icon: "🪡",
+    accent: "rose",
+    condition: { stat: "marriage", op: "lte", value: 45 },
+    choices: [
+      {
+        label: "Step into the repair",
+        memory: "You took the small repair window seriously before the distance became normal.",
+        effects: { marriage: 9, wellbeing: 2, memory: 2 }
+      },
+      {
+        label: "Wait for them to fix it",
+        memory: "You waited for your spouse to repair things first and the opening closed quietly.",
+        effects: { marriage: -6, wellbeing: -2 }
+      },
+      {
+        label: "Suggest outside help",
+        memory: "You suggested outside help and treated the relationship like something worth protecting professionally.",
+        effects: { marriage: 7, wallet: -3, wellbeing: 1 }
+      }
+    ]
+  },
+  {
+    id: "marriage-strength-carries-season",
+    tags: ["relationship", "family", "general"],
+    title: "Partnership Carries the Season",
+    description: "A hard decision comes up, but you and your spouse move like a practiced team instead of opponents.",
+    wisdom: "A strong partnership is a multiplier. It does not make life easy, but it makes hard things less chaotic.",
+    severity: "minor",
+    category: "Relationship payoff",
+    icon: "🤝",
+    accent: "green",
+    condition: { stat: "marriage", op: "gte", value: 80 },
+    choices: [
+      {
+        label: "Decide as a team",
+        memory: "You and your spouse made the hard call together, and the unity became its own kind of relief.",
+        effects: { marriage: 5, wellbeing: 4, children: 2 }
+      },
+      {
+        label: "Let one person carry it",
+        memory: "One person carried the decision unnecessarily, even though the partnership was strong enough to share it.",
+        effects: { marriage: -2, wellbeing: -2 }
+      },
+      {
+        label: "Celebrate the teamwork",
+        memory: "You noticed how far the partnership had come and celebrated the teamwork instead of rushing past it.",
+        effects: { marriage: 6, memory: 3, wellbeing: 2 }
+      }
+    ]
+  },
+  {
     id: "adult-child-moving-out-again",
     tags: ["empty-nest", "family", "wallet"],
     title: "Adult Child Moves Out Again",

@@ -4,6 +4,7 @@ import careerEvents from "./events/career.js";
 import communityEvents from "./events/community.js";
 import errandsEvents from "./events/errands.js";
 import familyEvents from "./events/family.js";
+import funEvents from "./events/fun.js";
 import homeEvents from "./events/home.js";
 import parentingEvents from "./events/parenting.js";
 import schoolEvents from "./events/school.js";
@@ -236,6 +237,7 @@ const refactoredActions = [
   ...communityEvents,
   ...errandsEvents,
   ...familyEvents,
+  ...funEvents,
   ...homeEvents,
   ...parentingEvents,
   ...schoolEvents,

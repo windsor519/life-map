@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const STYLE_ID = "phase-three-legacy-panorama-styles";
 
@@ -41,7 +41,8 @@ const phaseThreeCss = `
   line-height: 1.35;
 }
 
-.legacy-panorama-badge {
+.legacy-panorama-badge,
+.legacy-milestone-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -61,8 +62,43 @@ const phaseThreeCss = `
   overflow: hidden;
   border-radius: 1.1rem;
   background:
-    radial-gradient(circle at 52% 16%, rgba(255, 255, 255, 0.2), transparent 5.5rem),
+    radial-gradient(circle at 52% 16%, rgba(255, 255, 255, var(--sky-glow, 0.2)), transparent 5.5rem),
     linear-gradient(180deg, rgba(30, 64, 175, 0.24), rgba(14, 165, 233, 0.12) 40%, rgba(22, 101, 52, 0.16) 41%, rgba(15, 23, 42, 0.5));
+}
+
+.legacy-panorama-stage::after {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, var(--storm-alpha, 0)), transparent 42%),
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, var(--sun-alpha, 0.1)), transparent 6rem);
+  mix-blend-mode: screen;
+}
+
+.legacy-weather-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: var(--weather-opacity, 0.35);
+}
+
+.legacy-weather-layer.storm {
+  background:
+    radial-gradient(ellipse at 20% 14%, rgba(148, 163, 184, 0.36), transparent 10rem),
+    radial-gradient(ellipse at 68% 11%, rgba(71, 85, 105, 0.42), transparent 12rem),
+    repeating-linear-gradient(115deg, transparent 0 1.4rem, rgba(191, 219, 254, 0.18) 1.45rem 1.52rem);
+  animation: legacyWeatherDrift 9s linear infinite;
+}
+
+.legacy-weather-layer.glow {
+  background:
+    radial-gradient(circle at 16% 20%, rgba(254, 240, 138, 0.36), transparent 6rem),
+    radial-gradient(circle at 82% 24%, rgba(134, 239, 172, 0.22), transparent 8rem);
+  animation: legacyGlowPulse 4.8s ease-in-out infinite;
 }
 
 .legacy-panorama-mountains {
@@ -99,6 +135,7 @@ const phaseThreeCss = `
     linear-gradient(90deg, transparent 0 19%, rgba(255,255,255,0.28) 20% 31%, transparent 32% 68%, rgba(255,255,255,0.28) 69% 80%, transparent 81%),
     linear-gradient(180deg, rgba(251, 191, 36, 0.84), rgba(180, 83, 9, 0.8));
   box-shadow: 0 1.1rem 2.4rem rgba(2, 6, 23, 0.34), 0 0 2.8rem rgba(251, 191, 36, var(--legacy-glow, 0.16));
+  transition: width 600ms ease, height 600ms ease, box-shadow 600ms ease;
 }
 
 .legacy-home-estate::before {
@@ -141,6 +178,7 @@ const phaseThreeCss = `
   border-radius: 999px 999px 0.45rem 0.45rem;
   background: hsl(var(--member-hue, 190), 82%, 68%);
   box-shadow: 0 0 1rem rgba(255, 255, 255, 0.16);
+  animation: legacyFamilyBob 3.8s ease-in-out infinite;
 }
 
 .legacy-landmark-row {
@@ -162,6 +200,7 @@ const phaseThreeCss = `
   background: rgba(255, 255, 255, 0.12);
   box-shadow: 0 0.7rem 1.6rem rgba(2, 6, 23, 0.24);
   font-size: 1.2rem;
+  animation: legacyLandmarkPop 650ms ease both;
 }
 
 .legacy-tree-grove {
@@ -177,6 +216,7 @@ const phaseThreeCss = `
   position: relative;
   width: calc(1rem + var(--tree-grow, 0.4) * 1.4rem);
   height: calc(2.1rem + var(--tree-grow, 0.4) * 2.2rem);
+  transition: width 700ms ease, height 700ms ease;
 }
 
 .legacy-tree::before {
@@ -223,6 +263,35 @@ const phaseThreeCss = `
   content: "";
 }
 
+.legacy-milestone-reveal {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 8;
+  max-width: min(24rem, calc(100% - 2rem));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.76);
+  box-shadow: 0 1rem 2.6rem rgba(2, 6, 23, 0.36);
+  backdrop-filter: blur(14px);
+  padding: 0.78rem 0.86rem;
+  animation: legacyMilestoneSlide 620ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+.legacy-milestone-reveal strong {
+  display: block;
+  color: #fff;
+  font-size: 0.92rem;
+}
+
+.legacy-milestone-reveal span {
+  display: block;
+  margin-top: 0.22rem;
+  color: rgba(219, 234, 254, 0.78);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
 .legacy-score-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -251,7 +320,8 @@ const phaseThreeCss = `
   font-size: 0.95rem;
 }
 
-.legacy-share-card {
+.legacy-share-card,
+.legacy-moment-feed {
   position: relative;
   margin-top: 0.85rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -260,15 +330,59 @@ const phaseThreeCss = `
   padding: 0.85rem;
 }
 
-.legacy-share-card p {
+.legacy-share-card p,
+.legacy-moment-feed p {
   margin: 0;
   color: rgba(248, 250, 252, 0.88);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.legacy-share-card strong {
+.legacy-share-card strong,
+.legacy-moment-feed strong {
   color: #fef3c7;
+}
+
+.legacy-moment-feed {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.72rem;
+  align-items: center;
+}
+
+.legacy-moment-icon {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.4rem;
+}
+
+@keyframes legacyWeatherDrift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 2rem 0, -2rem 0, 7rem 12rem; }
+}
+
+@keyframes legacyGlowPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes legacyFamilyBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.12rem); }
+}
+
+@keyframes legacyLandmarkPop {
+  from { opacity: 0; transform: translateY(0.35rem) scale(0.86); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes legacyMilestoneSlide {
+  from { opacity: 0; transform: translateY(0.6rem) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @media (max-width: 1120px) {
@@ -322,6 +436,28 @@ const getLandmarks = ({ career, memoryHighScore, familySize, lifeProjects }) => 
   return landmarks.slice(0, 4);
 };
 
+const getLatestMilestone = ({ age, career, familySize, memoryHighScore, memoryMoments, lifeProjects, walletPressure, relationshipPressure }) => {
+  const latestMemory = memoryMoments.at(-1);
+
+  if (latestMemory) {
+    const score = Number(latestMemory.score ?? 0);
+    return {
+      icon: score < 0 ? "🌧️" : "✨",
+      title: latestMemory.selection?.eventTitle ?? latestMemory.eventTitle ?? "Memory became part of the map",
+      text: score < 0 ? "The panorama darkens and records the cost of this season." : "A new snapshot lights up the legacy scene."
+    };
+  }
+
+  if (familySize >= 4) return { icon: "👨‍👩‍👧", title: "Family gathering unlocked", text: "More household figures now gather beside the estate." };
+  if (memoryHighScore >= 18) return { icon: "🌳", title: "Memory grove growing", text: "Your strongest memories now plant visible trees in the panorama." };
+  if ((career?.salary ?? 0) >= 90000) return { icon: "🏢", title: "Career landmark built", text: "A career marker now appears in the legacy skyline." };
+  if (Array.isArray(lifeProjects) && lifeProjects.some((project) => Number(project.progress) >= 80)) return { icon: "🏆", title: "Project trophy raised", text: "A long-term project has become a visual landmark." };
+  if (walletPressure <= 30) return { icon: "🏡", title: "Home comfort improved", text: "Lower money pressure expands and warms the estate." };
+  if (relationshipPressure <= 30) return { icon: "☀️", title: "Calm weather returns", text: "Low relationship pressure brightens the panorama sky." };
+  if (age >= 70) return { icon: "🌅", title: "Life panorama era", text: "The scene shifts from building a life to showing what remains." };
+  return { icon: "🛤️", title: "Season in motion", text: "Choices will keep reshaping the home, weather, landmarks, and family scene." };
+};
+
 export default function PhaseThreeLegacyPanorama({
   activeSeason,
   career,
@@ -338,6 +474,7 @@ export default function PhaseThreeLegacyPanorama({
   const age = Number(currentAge) || 0;
   const walletPressure = clampPercent(pressures.wallet ?? pressures.money ?? 45);
   const relationshipPressure = clampPercent(pressures.relationship ?? pressures.family ?? 45);
+  const stressPressure = clampPercent(pressures.stress ?? pressures.work ?? Math.max(walletPressure, relationshipPressure));
   const careerStrength = clampPercent((career?.salary ?? 42000) / 1400);
   const memoryStrength = Math.max(0, Math.min(100, memoryHighScore + memoryMoments.length * 4));
   const homeStrength = Math.max(0.16, Math.min(1, (100 - walletPressure + familySize * 8 + age * 0.35) / 150));
@@ -345,7 +482,17 @@ export default function PhaseThreeLegacyPanorama({
   const legacyScore = Math.round((careerStrength + memoryStrength + Math.max(0, 100 - walletPressure) + Math.max(0, 100 - relationshipPressure)) / 4);
   const stage = getLegacyStage(age);
   const landmarks = useMemo(() => getLandmarks({ career, memoryHighScore, familySize, lifeProjects }), [career, familySize, lifeProjects, memoryHighScore]);
+  const milestone = useMemo(
+    () => getLatestMilestone({ age, career, familySize, memoryHighScore, memoryMoments, lifeProjects, walletPressure, relationshipPressure }),
+    [age, career, familySize, lifeProjects, memoryHighScore, memoryMoments, relationshipPressure, walletPressure]
+  );
+  const [visibleMilestone, setVisibleMilestone] = useState(milestone);
+  const weatherMode = stressPressure >= 68 || walletPressure >= 72 || relationshipPressure >= 72 ? "storm" : "glow";
   const shareLine = `${stage}: age ${Math.floor(age)}, ${familySize} in the household, ${memoryMoments.length} memories, legacy score ${legacyScore}.`;
+
+  useEffect(() => {
+    setVisibleMilestone(milestone);
+  }, [milestone]);
 
   return (
     <article className="legacy-panorama-card" aria-label="Legacy panorama">
@@ -363,9 +510,14 @@ export default function PhaseThreeLegacyPanorama({
           "--legacy-home": homeStrength.toFixed(2),
           "--legacy-glow": Math.max(0.1, (100 - walletPressure) / 250).toFixed(2),
           "--tree-grow": treeGrow.toFixed(2),
-          "--legacy-tree-hue": activeSeason?.id === "fall" ? 38 : activeSeason?.id === "winter" ? 204 : 142
+          "--legacy-tree-hue": activeSeason?.id === "fall" ? 38 : activeSeason?.id === "winter" ? 204 : 142,
+          "--storm-alpha": weatherMode === "storm" ? Math.min(0.5, stressPressure / 180).toFixed(2) : "0",
+          "--sun-alpha": weatherMode === "glow" ? Math.max(0.14, (100 - relationshipPressure) / 180).toFixed(2) : "0.04",
+          "--sky-glow": weatherMode === "storm" ? "0.08" : "0.26",
+          "--weather-opacity": weatherMode === "storm" ? "0.62" : "0.48"
         }}
       >
+        <span className={`legacy-weather-layer ${weatherMode}`} aria-hidden="true" />
         <span className="legacy-panorama-mountains" aria-hidden="true" />
         <span className="legacy-panorama-river" aria-hidden="true" />
         <span className="legacy-tree-grove" aria-hidden="true">
@@ -388,6 +540,12 @@ export default function PhaseThreeLegacyPanorama({
             <span className="legacy-landmark" key={landmark.label} title={landmark.label}>{landmark.icon}</span>
           ))}
         </span>
+        {visibleMilestone ? (
+          <div className="legacy-milestone-reveal" aria-live="polite">
+            <strong>{visibleMilestone.icon} {visibleMilestone.title}</strong>
+            <span>{visibleMilestone.text}</span>
+          </div>
+        ) : null}
         <span className="legacy-road" aria-hidden="true" />
       </div>
 
@@ -396,6 +554,11 @@ export default function PhaseThreeLegacyPanorama({
         <div className="legacy-score-card"><span>Household</span><strong>{familySize}</strong><small>people shown</small></div>
         <div className="legacy-score-card"><span>Memories</span><strong>{memoryMoments.length}</strong><small>trees planted</small></div>
         <div className="legacy-score-card"><span>Career</span><strong>{Math.round(careerStrength)}</strong><small>{career?.title ?? "unassigned"}</small></div>
+      </div>
+
+      <div className="legacy-moment-feed">
+        <span className="legacy-moment-icon" aria-hidden="true">{milestone.icon}</span>
+        <p><strong>Latest visual beat:</strong> {milestone.title}. {milestone.text}</p>
       </div>
 
       <div className="legacy-share-card">

@@ -1,0 +1,1 @@
+export default function DynastyEndgamePanel(){ return null; }

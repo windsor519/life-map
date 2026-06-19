@@ -41,8 +41,7 @@ const phaseThreeCss = `
   line-height: 1.35;
 }
 
-.legacy-panorama-badge,
-.legacy-milestone-pill {
+.legacy-panorama-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -119,7 +118,6 @@ const phaseThreeCss = `
   height: 9rem;
   border-radius: 999px 0 0 0;
   background: linear-gradient(115deg, rgba(125, 211, 252, 0.42), rgba(37, 99, 235, 0.24));
-  filter: blur(0.2px);
   transform: rotate(-9deg);
 }
 
@@ -278,18 +276,83 @@ const phaseThreeCss = `
   animation: legacyMilestoneSlide 620ms cubic-bezier(.2,.9,.2,1) both;
 }
 
-.legacy-milestone-reveal strong {
+.legacy-milestone-reveal strong,
+.legacy-cutscene-card strong {
   display: block;
   color: #fff;
-  font-size: 0.92rem;
 }
 
-.legacy-milestone-reveal span {
+.legacy-milestone-reveal span,
+.legacy-cutscene-card span {
   display: block;
   margin-top: 0.22rem;
   color: rgba(219, 234, 254, 0.78);
-  font-size: 0.76rem;
   line-height: 1.4;
+}
+
+.legacy-cutscene-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.16), transparent 8rem),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.62));
+  animation: legacyCutsceneFade 3.8s ease both;
+}
+
+.legacy-cutscene-card {
+  position: relative;
+  display: grid;
+  min-width: min(24rem, calc(100% - 2rem));
+  max-width: min(32rem, calc(100% - 2rem));
+  justify-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 1.4rem;
+  background: rgba(15, 23, 42, 0.78);
+  box-shadow: 0 1.4rem 4rem rgba(2, 6, 23, 0.52), inset 0 1px 0 rgba(255,255,255,0.18);
+  backdrop-filter: blur(18px);
+  padding: 1.15rem;
+  text-align: center;
+  animation: legacyCutsceneCard 3.8s cubic-bezier(.2,.9,.2,1) both;
+}
+
+.legacy-cutscene-icon {
+  display: grid;
+  width: 5.4rem;
+  height: 5.4rem;
+  place-items: center;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,0.44), transparent 42%),
+    linear-gradient(145deg, var(--cutscene-a, #fbbf24), var(--cutscene-b, #7c3aed));
+  box-shadow: 0 0 2.4rem var(--cutscene-glow, rgba(251,191,36,0.42));
+  font-size: 2.8rem;
+  animation: legacyCutsceneIcon 3.8s ease both;
+}
+
+.legacy-cutscene-card strong {
+  margin-top: 0.8rem;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+}
+
+.legacy-cutscene-card span {
+  max-width: 30rem;
+  font-size: 0.92rem;
+}
+
+.legacy-cutscene-sparkles {
+  position: absolute;
+  inset: -1.5rem;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255,255,255,0.9) 0 0.12rem, transparent 0.16rem),
+    radial-gradient(circle at 78% 24%, rgba(255,255,255,0.8) 0 0.1rem, transparent 0.14rem),
+    radial-gradient(circle at 28% 82%, rgba(255,255,255,0.82) 0 0.1rem, transparent 0.14rem),
+    radial-gradient(circle at 86% 76%, rgba(255,255,255,0.78) 0 0.12rem, transparent 0.16rem);
+  animation: legacyCutsceneSparkles 3.8s ease both;
 }
 
 .legacy-score-grid {
@@ -385,6 +448,31 @@ const phaseThreeCss = `
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes legacyCutsceneFade {
+  0% { opacity: 0; }
+  12%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes legacyCutsceneCard {
+  0% { opacity: 0; transform: translateY(1rem) scale(0.92); }
+  14%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-0.65rem) scale(0.98); }
+}
+
+@keyframes legacyCutsceneIcon {
+  0% { transform: rotate(-8deg) scale(0.7); }
+  18% { transform: rotate(4deg) scale(1.12); }
+  34%, 80% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(5deg) scale(0.92); }
+}
+
+@keyframes legacyCutsceneSparkles {
+  0% { opacity: 0; transform: scale(0.82) rotate(-6deg); }
+  18%, 72% { opacity: 1; transform: scale(1.04) rotate(0deg); }
+  100% { opacity: 0; transform: scale(1.16) rotate(8deg); }
+}
+
 @media (max-width: 1120px) {
   .legacy-score-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -425,6 +513,30 @@ const getLegacyStage = (age) => {
   if (safeAge < 50) return "Building years";
   if (safeAge < 70) return "Legacy in motion";
   return "Life panorama";
+};
+
+const getCutsceneConfig = (milestone) => {
+  const text = `${milestone?.title ?? ""} ${milestone?.text ?? ""}`.toLowerCase();
+
+  if (text.includes("family") || text.includes("household") || text.includes("baby") || text.includes("child")) {
+    return { kind: "family", icon: "👨‍👩‍👧", a: "#fb7185", b: "#facc15", glow: "rgba(251,113,133,0.5)" };
+  }
+  if (text.includes("career") || text.includes("promotion") || text.includes("work")) {
+    return { kind: "career", icon: "📈", a: "#60a5fa", b: "#7c3aed", glow: "rgba(96,165,250,0.5)" };
+  }
+  if (text.includes("home") || text.includes("estate") || text.includes("money")) {
+    return { kind: "home", icon: "🏡", a: "#f59e0b", b: "#ef4444", glow: "rgba(245,158,11,0.5)" };
+  }
+  if (text.includes("project") || text.includes("trophy") || text.includes("landmark")) {
+    return { kind: "achievement", icon: "🏆", a: "#facc15", b: "#f97316", glow: "rgba(250,204,21,0.52)" };
+  }
+  if (text.includes("storm") || text.includes("cost") || text.includes("dark")) {
+    return { kind: "hardship", icon: "🌧️", a: "#94a3b8", b: "#334155", glow: "rgba(148,163,184,0.42)" };
+  }
+  if (text.includes("panorama") || text.includes("era") || text.includes("legacy")) {
+    return { kind: "legacy", icon: "🌅", a: "#fbbf24", b: "#8b5cf6", glow: "rgba(251,191,36,0.52)" };
+  }
+  return { kind: "memory", icon: milestone?.icon ?? "✨", a: "#22d3ee", b: "#a78bfa", glow: "rgba(34,211,238,0.46)" };
 };
 
 const getLandmarks = ({ career, memoryHighScore, familySize, lifeProjects }) => {
@@ -486,13 +598,18 @@ export default function PhaseThreeLegacyPanorama({
     () => getLatestMilestone({ age, career, familySize, memoryHighScore, memoryMoments, lifeProjects, walletPressure, relationshipPressure }),
     [age, career, familySize, lifeProjects, memoryHighScore, memoryMoments, relationshipPressure, walletPressure]
   );
+  const cutscene = useMemo(() => getCutsceneConfig(milestone), [milestone]);
   const [visibleMilestone, setVisibleMilestone] = useState(milestone);
+  const [activeCutscene, setActiveCutscene] = useState({ milestone, cutscene });
   const weatherMode = stressPressure >= 68 || walletPressure >= 72 || relationshipPressure >= 72 ? "storm" : "glow";
   const shareLine = `${stage}: age ${Math.floor(age)}, ${familySize} in the household, ${memoryMoments.length} memories, legacy score ${legacyScore}.`;
 
   useEffect(() => {
     setVisibleMilestone(milestone);
-  }, [milestone]);
+    setActiveCutscene({ milestone, cutscene });
+    const timer = window.setTimeout(() => setActiveCutscene(null), 3900);
+    return () => window.clearTimeout(timer);
+  }, [cutscene, milestone]);
 
   return (
     <article className="legacy-panorama-card" aria-label="Legacy panorama">
@@ -544,6 +661,23 @@ export default function PhaseThreeLegacyPanorama({
           <div className="legacy-milestone-reveal" aria-live="polite">
             <strong>{visibleMilestone.icon} {visibleMilestone.title}</strong>
             <span>{visibleMilestone.text}</span>
+          </div>
+        ) : null}
+        {activeCutscene ? (
+          <div className={`legacy-cutscene-overlay cutscene-${activeCutscene.cutscene.kind}`} aria-live="polite">
+            <div
+              className="legacy-cutscene-card"
+              style={{
+                "--cutscene-a": activeCutscene.cutscene.a,
+                "--cutscene-b": activeCutscene.cutscene.b,
+                "--cutscene-glow": activeCutscene.cutscene.glow
+              }}
+            >
+              <span className="legacy-cutscene-sparkles" aria-hidden="true" />
+              <span className="legacy-cutscene-icon" aria-hidden="true">{activeCutscene.cutscene.icon}</span>
+              <strong>{activeCutscene.milestone.title}</strong>
+              <span>{activeCutscene.milestone.text}</span>
+            </div>
           </div>
         ) : null}
         <span className="legacy-road" aria-hidden="true" />

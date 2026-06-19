@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import AmbientParticles from "./AmbientParticles.jsx";
 import FamilyPhoto from "./FamilyPhoto.jsx";
+import PhaseTwoVisuals from "./PhaseTwoVisuals.jsx";
 
 const monthAverageTemperaturesF = {
   1: 32,
@@ -98,6 +100,8 @@ export default function SeasonGameBoard({
       (selection.memoryMoments ?? []).map((moment) => ({
         ...moment,
         selection,
+        eventTitle: selection.eventTitle ?? moment.eventTitle,
+        label: selection.label ?? moment.label,
         seasonLabel: item.season.label,
         year: item.year
       }))
@@ -234,6 +238,7 @@ export default function SeasonGameBoard({
 
   return (
     <section className={`panel season-card season-${activeSeason.id}`}>
+      <AmbientParticles />
       <div className="section-heading calendar-heading">
         <div>
           <p className="eyebrow">This season</p>
@@ -265,6 +270,16 @@ export default function SeasonGameBoard({
         <strong>Your family</strong>
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
       </div>
+      <PhaseTwoVisuals
+        activeSeason={activeSeason}
+        career={career}
+        currentAge={currentAge}
+        family={family}
+        lifeProjects={lifeProjects}
+        memoryHighScore={memoryHighScore}
+        memoryMoments={memoryGraphMoments}
+        pressures={pressures}
+      />
       <div className="memory-graph-strip" aria-label="Season memory graph">
         <div className="memory-graph-header">
           <div>

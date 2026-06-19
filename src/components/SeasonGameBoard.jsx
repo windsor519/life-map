@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import AmbientParticles from "./AmbientParticles.jsx";
+import DynastyProfilePanel from "./DynastyProfilePanel.jsx";
 import FamilyPhoto from "./FamilyPhoto.jsx";
 import LegacyEvolutionPanel from "./LegacyEvolutionPanel.jsx";
 import PhaseThreeLegacyPanorama from "./PhaseThreeLegacyPanorama.jsx";
@@ -304,6 +305,15 @@ export default function SeasonGameBoard({
       />
       <WorldUnlocksLayer
         career={career}
+        family={family}
+        lifeProjects={lifeProjects}
+        memoryHighScore={memoryHighScore}
+        memoryMoments={memoryGraphMoments}
+        pressures={pressures}
+      />
+      <DynastyProfilePanel
+        career={career}
+        currentAge={currentAge}
         family={family}
         lifeProjects={lifeProjects}
         memoryHighScore={memoryHighScore}

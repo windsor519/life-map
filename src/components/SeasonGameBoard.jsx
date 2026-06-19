@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import AmbientParticles from "./AmbientParticles.jsx";
 import FamilyPhoto from "./FamilyPhoto.jsx";
+import PhaseThreeLegacyPanorama from "./PhaseThreeLegacyPanorama.jsx";
 import PhaseTwoVisuals from "./PhaseTwoVisuals.jsx";
 
 const monthAverageTemperaturesF = {
@@ -271,6 +272,16 @@ export default function SeasonGameBoard({
         <FamilyPhoto family={family} currentAge={currentAge} currentMonth={currentMonth} character={character} />
       </div>
       <PhaseTwoVisuals
+        activeSeason={activeSeason}
+        career={career}
+        currentAge={currentAge}
+        family={family}
+        lifeProjects={lifeProjects}
+        memoryHighScore={memoryHighScore}
+        memoryMoments={memoryGraphMoments}
+        pressures={pressures}
+      />
+      <PhaseThreeLegacyPanorama
         activeSeason={activeSeason}
         career={career}
         currentAge={currentAge}
